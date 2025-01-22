@@ -41,8 +41,16 @@ class Chromosome(BaseChromosome):
 
     def __mul__(self, other):
         c = Chromosome(self.lb, self.ub)
-        c.real_value = self.real_value * other
+        if isinstance(other, Chromosome):
+            c.real_value = self.real_value * other.real_value
+        elif isinstance(other, (int, float, np.int32, np.int64, np.float32, np.float64)):
+            c.real_value = self.real_value * other
+        else:
+            raise TypeError(f"Unsupported operand type(s) for *: 'Chromosome' and '{type(other).__name__}'")
         return c
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
 
     def __abs__(self):
         c = Chromosome(self.lb, self.ub)
