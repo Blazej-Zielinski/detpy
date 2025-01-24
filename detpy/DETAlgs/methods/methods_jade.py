@@ -3,6 +3,7 @@ from math import floor
 import random
 import copy
 
+from detpy.DETAlgs.math_functions.lehmer_mean import LehmerMean
 from detpy.models.population import Population
 from detpy.models.member import Member
 from detpy.models.enums.mutation import mutation_curr_to_best_1
@@ -10,6 +11,7 @@ from detpy.models.enums.optimization import OptimizationType
 from detpy.DETAlgs.methods.methods_de import binomial_crossing_ind
 
 
+lehmer_mean_func = LehmerMean()
 def jade_mutation(population: Population, mutation_factors: np.ndarray[float], p_best: float,
                   archive: list[Member] = []) -> Population:
 
@@ -141,7 +143,7 @@ def jade_adapt_crossover_rates(c: float, cr_mean: float, cr_std: float, cr_low: 
 def jade_adapt_mutation_factors(c: float, f_mean: float, f_std: float, size: int,
                                 success_mutation_factors: list[float]) -> tuple[np.ndarray[float], float]:
     if success_mutation_factors:
-        f_mean = (1 - c) * f_mean + c * lehmer_mean(success_mutation_factors)
+        f_mean = (1 - c) * f_mean + c * lehmer_mean_func.evaluate(success_mutation_factors)
 
     new_mutation_factors = draw_cauchy_dist_within_bounds(f_mean, f_std, size)
     success_mutation_factors.clear()
@@ -175,10 +177,4 @@ def draw_cauchy_dist_within_bounds(mean: float, std: float, arr_size: int) -> np
     return np.array(values)
 
 
-def lehmer_mean(mut_factors: list[float]) -> float:
-    numbers_array = np.array(mut_factors)
 
-    numerator = np.sum(numbers_array ** 2)
-    denominator = np.sum(numbers_array)
-
-    return numerator / denominator

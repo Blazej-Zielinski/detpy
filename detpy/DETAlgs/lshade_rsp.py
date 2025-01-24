@@ -7,6 +7,7 @@ from detpy.DETAlgs.data.alg_data import LShadeRSPData
 
 from random import randint, randrange
 
+from detpy.DETAlgs.math_functions.lehmer_mean import LehmerMean
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 from detpy.models.enums.optimization import OptimizationType
 from detpy.models.member import Member
@@ -200,6 +201,8 @@ class LSHADERSP(BaseAlg):
         self.archive_size = 10  # Size of the archive
         self.archive = []  # Archive for storing the members from old populations
 
+        self.lehmer_mean_func = LehmerMean()  # Class for Lehmer mean calculation
+
     def calculate_max_evaluations_lpsr(self, start_pop_size):
         """
         Calculate the maximum number of function evaluations for the Linear Population Size Reduction (LPSR) method.
@@ -263,16 +266,16 @@ class LSHADERSP(BaseAlg):
         """
         epsilon = 1e-10  # Small value to avoid division by zero in the update memory calculation
         if fitness_improvement > epsilon:
-            new_f = self.lehmer_mean(fitness_improvement, self.memory_F[
-                self.H - 1])
+            # Compute the new F value using Lehmer mean
+            new_f = self.lehmer_mean_func.evaluate([fitness_improvement, self.memory_F[self.H - 1]])
             if self._epoch_number < 0.6 * self.nfe_max:  # During the first 60% of evaluations
                 new_f = min(new_f, 0.7)  # Limit F to a maximum of 0.7
             else:  # During the last 40% of evaluations
                 new_f = min(new_f, 1.0)  # Limit F to a maximum of 1.0
 
             # Compute the new Cr value using Lehmer mean
-            new_cr = self.lehmer_mean(fitness_improvement, self.memory_Cr[
-                self.H - 1])
+            new_cr = self.lehmer_mean_func.evaluate([fitness_improvement, self.memory_Cr[
+                self.H - 1]])
 
             # new F and Cr are averaged between the current and the last value f and cr
             new_f = (new_f + self.memory_F[0]) / 2
