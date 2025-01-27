@@ -135,3 +135,9 @@ class LShadeRSPData(BaseData):
     parameter_memory_size: int = 5
     minimum_population_size: int = 20
     archive_size: int = 10
+
+@dataclass
+class ShadeData(BaseData):
+    parameter_memory_size: int = 5
+    archive_size: int = 10
+
