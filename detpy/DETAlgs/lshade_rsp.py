@@ -15,6 +15,14 @@ from detpy.models.population import Population
 
 
 def archive_reduction(archive: list[Member], archive_size: int):
+    """
+    Reduce the size of the archive to the specified size.
+
+    Parameters:
+    - archive (list[Member]): The archive of old population members.
+    - archive_size (int): The desired size of the archive.
+
+    """
     if archive_size == 0:
         archive.clear()
 
@@ -73,7 +81,7 @@ def crossing_internal(org_member: Member, mut_member: Member, cr: float):
     return new_member
 
 
-def crossing(origin_population: Population, mutated_population: Population, cr):
+def crossing(origin_population: Population, mutated_population: Population, cr_table):
     """
     Perform crossing operation for the population.
     Parameters:
@@ -89,7 +97,7 @@ def crossing(origin_population: Population, mutated_population: Population, cr):
 
     new_members = []
     for i in range(origin_population.size):
-        new_member = crossing_internal(origin_population.members[i], mutated_population.members[i], cr)
+        new_member = crossing_internal(origin_population.members[i], mutated_population.members[i], cr_table[i])
         new_members.append(new_member)
 
     new_population = Population(
@@ -103,71 +111,29 @@ def crossing(origin_population: Population, mutated_population: Population, cr):
     return new_population
 
 
-def get_adapted_crossover_rate(memory_cr: np.ndarray):
+def rank_selection(members: List[Member], k: float = 1.0) -> (int, int):
     """
-    Adapts the crossover rate `cr` based on previously successful values stored in `self.memory_Cr`.
-    The new `cr` value is drawn from a normal distribution centered around a randomly chosen value
-    from `self.memory_Cr`, and clipped to the range [0, 1].
-
+    Choose two random members from the population using rank selection.
     Parameters:
-    - memory_cr (np.array): The memory of successful crossover rates.
+    - members (Population): The population from which to select the members.
+    - k (float): Scaling factor for rank selection.
 
-    Returns: The adapted crossover rate, clipped to the range [0, 1].
+    Returns: The indexes of the selected members.
     """
-    mu_crr = np.random.choice(memory_cr)
-    cr = np.random.normal(mu_crr, 0.1)
-    cr = np.clip(cr, 0, 1)
-    return cr
 
+    sorted_population_member_indexes = np.argsort([member.fitness_value for member in members])
+    values = list(range(len(members), 0, -1))
 
-def calculate_fitness_improvement_percentage(pop: Population, new_pop: Population):
-    """
-    Calculate the fitness improvement of the new population compared to the original population.
+    ranks = k * np.array(values)
 
-    Parameters:
-    - pop (Population): The original population.
-    - new_pop (Population): The new population.
+    probabilities = ranks / ranks.sum()
 
-    Returns: The fitness improvement as a percentage.
-    """
-    optimization = pop.optimization
-    improvement = 0
-    for i in range(pop.size):
-        if optimization == OptimizationType.MINIMIZATION:
-            # For minimization, improvement is positive when new fitness is lower
-            improvement += (pop.members[i].fitness_value - new_pop.members[i].fitness_value) / pop.members[
-                i].fitness_value
-        else:
-            # For maximization, improvement is positive when new fitness is higher
-            improvement += (new_pop.members[i].fitness_value - pop.members[i].fitness_value) / pop.members[
-                i].fitness_value
+    selected_indices = np.random.choice(len(sorted_population_member_indexes), size=2, replace=False,
+                                        p=probabilities)
 
-    improvement /= pop.size
-    return improvement
+    selected_values = sorted_population_member_indexes[selected_indices]
 
-
-def calculate_fitness_improvement_average_mean(pop: Population, new_pop: Population):
-    """
-    Calculate the fitness difference between the new population and the original population.
-
-    Parameters:
-    - pop (Population): The original population.
-    - new_pop (Population): The new population.
-
-    Returns: The average fitness difference.
-    """
-    optimization = pop.optimization
-    difference = 0
-    for i in range(pop.size):
-        if optimization == OptimizationType.MINIMIZATION:
-            # For minimization, positive difference means improvement
-            difference += pop.members[i].fitness_value - new_pop.members[i].fitness_value
-        else:
-            # For maximization, positive difference means improvement
-            difference += new_pop.members[i].fitness_value - pop.members[i].fitness_value
-
-    difference /= pop.size
-    return difference
+    return int(selected_values[0]), int(selected_values[1])
 
 
 class LSHADERSP(BaseAlg):
@@ -198,10 +164,19 @@ class LSHADERSP(BaseAlg):
         self.start_population_size = self.population_size
         self.nfe_max = self.calculate_max_evaluations_lpsr(self.population_size)  # Max number of function evaluations
 
-        self.archive_size = 10  # Size of the archive
+        self.archive_size = params.archive_size  # Size of the archive
         self.archive = []  # Archive for storing the members from old populations
 
         self.lehmer_mean_func = LehmerMean()  # Class for Lehmer mean calculation
+
+        self.success_f = []  # List of successful F values
+        self.success_cr = []  # List of successful Cr values
+
+        self.F = np.random.standard_cauchy() * 0.1 + np.random.choice(self.memory_F)
+        self.Fw = 0.7 * self.F if self.nfe < 0.2 * self.nfe_max else (
+            0.8 * self.F if self.nfe < 0.4 * self.nfe_max else 1.2 * self.F)
+
+        self.difference_fitness_success = []
 
     def calculate_max_evaluations_lpsr(self, start_pop_size):
         """
@@ -221,72 +196,48 @@ class LSHADERSP(BaseAlg):
         NFEmax = total_evaluations
         return NFEmax
 
-    def rank_selection(self, members: List[Member]) -> (int, int):
-        """
-        Choose two random members from the population using rank selection.
-        Parameters:
-        - members (Population): The population from which to select the members.
-
-        Returns: The indexes of the selected members.
-        """
-
-        sorted_population_member_indexes = np.argsort([member.fitness_value for member in members])
-        values = list(range(len(members), 0, -1))
-
-        ranks = self.k * np.array(values)
-
-        probabilities = ranks / ranks.sum()
-
-        selected_indices = np.random.choice(len(sorted_population_member_indexes), size=2, replace=False,
-                                            p=probabilities)
-
-        selected_values = sorted_population_member_indexes[selected_indices]
-
-        return int(selected_values[0]), int(selected_values[1])
-
-    def lehmer_mean(self, x1: float, x2: float, p: int = 2):
-        """
-        Calculate the Lehmer mean of two values x1 and x2.
-
-        Parameters:
-        - x1 (float): The first value.
-        - x2 (float): The second value.
-        - p (int): The power parameter for the Lehmer mean.
-
-        Returns: The Lehmer mean of x1 and x2.
-        """
-        return ((x1 ** p + x2 ** p) / 2) ** (1 / p)
-
-    def adapt_parameters(self, fitness_improvement: float):
+    def adapt_parameters(self, fitness_improvement: List[float]):
         """
         Update the memory for F and Cr based on the fitness improvement of the crossover and mutation steps.
 
         Parameters:
-        - fitness_improvement : Value of the fitness improvement.
+        - fitness_improvement: List of fitness improvement values for successful individuals.
         """
-        epsilon = 1e-10  # Small value to avoid division by zero in the update memory calculation
-        if fitness_improvement > epsilon:
-            # Compute the new F value using Lehmer mean
-            new_f = self.lehmer_mean_func.evaluate([fitness_improvement, self.memory_F[self.H - 1]])
-            if self._epoch_number < 0.6 * self.nfe_max:  # During the first 60% of evaluations
-                new_f = min(new_f, 0.7)  # Limit F to a maximum of 0.7
-            else:  # During the last 40% of evaluations
-                new_f = min(new_f, 1.0)  # Limit F to a maximum of 1.0
+        epsilon = 1e-10  # Small value to avoid division by zero
+        if sum(fitness_improvement) > epsilon:
+            # Compute weights based on fitness improvement
+            total_improvement = np.sum(fitness_improvement)
+            weights = fitness_improvement / total_improvement
 
-            # Compute the new Cr value using Lehmer mean
-            new_cr = self.lehmer_mean_func.evaluate([fitness_improvement, self.memory_Cr[
-                self.H - 1]])
+            # Compute new F value as the Lehmer mean of successful F values
+            if len(self.success_f) > 0:
+                new_f = self.lehmer_mean_func.evaluate(self.success_f, weights)
+                new_f = np.clip(new_f, 0, 1)  # Clip to [0, 1]
+            else:
+                new_f = np.random.uniform(0, 1)  # Fallback if no successful F values
 
-            # new F and Cr are averaged between the current and the last value f and cr
-            new_f = (new_f + self.memory_F[0]) / 2
-            new_cr = (new_cr + self.memory_Cr[0]) / 2
+            # Compute new Cr value as the weighted arithmetic mean of successful Cr values
+            if len(self.success_cr) > 0:
+                new_cr = np.sum(weights * self.success_cr)
+                new_cr = np.clip(new_cr, 0, 1)  # Clip to [0, 1]
+            else:
+                new_cr = np.random.uniform(0, 1)  # Fallback if no successful Cr values
 
-            self.memory_F = np.append(self.memory_F[1:], new_f)
-            self.memory_Cr = np.append(self.memory_Cr[1:], new_cr)
+            # Randomly select a memory index to update
+            r = np.random.randint(0, self.H)
+
+            # Update memory_F and memory_Cr
+            self.memory_F[r] = (self.memory_F[r] + new_f) / 2  # Mean of old and new F
+            self.memory_Cr[r] = (self.memory_Cr[r] + new_cr) / 2  # Mean of old and new Cr
 
             # Ensure one cell in the memory always holds the fixed value 0.9
-            self.memory_Cr[0] = 0.9
             self.memory_F[0] = 0.9
+            self.memory_Cr[0] = 0.9
+
+        # Clear the lists of successful F and Cr values for the next generation
+        self.difference_fitness_success = []
+        self.success_cr = []
+        self.success_f = []
 
     def get_best_members(self, best_members: List[Member], archive: List[Member]) -> List[Member]:
         """
@@ -315,29 +266,32 @@ class LSHADERSP(BaseAlg):
 
     def mutate(self,
                population: Population,
-               f: float,
-               fw: float,
                nfe: int,
                nfe_max: int,
-               pop_size: int) -> Population:
+               pop_size: int,
+               f_table: List[float],
+               fw_table: List[float]
+
+               ) -> Population:
         """
         Perform mutation step for the population.
 
         Parameters:
         - population (Population): The population to mutate.
-        - f (float): The scaling factor for the mutation step.
-        - fw (float): The scaling factor for the best member mutation.
         - nfe (int): The current number of function evaluations.
         - nfe_max (int): The maximum number of function evaluations.
         - pop_size (int): The size of the population.
+        - f_table (List[float]): A list of scaling factors F for the current epoch.
+        - fw_table (List[float]): A list of dynamic scaling factors Fw for the current epoch.
 
         Returns: A new Population with mutated members.
         """
+
         new_members = []
         for i in range(population.size):
             members = np.append(population.members, self.archive)
 
-            r1, r2 = self.rank_selection(members)
+            r1, r2 = rank_selection(members, self.k)
             p = 0.085 + (0.085 * nfe) / nfe_max
             how_many_best_to_select = p * pop_size
             how_many_best_to_select = max(1, how_many_best_to_select)  # at least one best member also for pbest it
@@ -352,7 +306,7 @@ class LSHADERSP(BaseAlg):
             # First member in argument is the actual member, second is from the best member from the population and archive,
             # third and fourth are random members from the population and archive using the rank selection
             new_member = mutation_internal(population.members[i], all_best_members[rand_index], members[r1],
-                                           members[r2], f, fw)
+                                           members[r2], f_table[i], fw_table[i])
             new_members.append(new_member)
 
         new_population = Population(
@@ -365,7 +319,7 @@ class LSHADERSP(BaseAlg):
         new_population.members = np.array(new_members)
         return new_population
 
-    def selection(self, origin_population: Population, modified_population: Population):
+    def selection(self, origin_population: Population, modified_population: Population, cr_table, ftable):
         """
         Perform selection operation for the population.
 
@@ -385,12 +339,21 @@ class LSHADERSP(BaseAlg):
                 else:
                     self.archive.append(copy.deepcopy(origin_population.members[i]))
                     new_members.append(copy.deepcopy(modified_population.members[i]))
+                    self.success_f.append(ftable[i])
+                    self.success_cr.append(cr_table[i])
+
+                    self.difference_fitness_success.append(
+                        origin_population.members[i].fitness_value - modified_population.members[i].fitness_value)
             elif optimization == OptimizationType.MAXIMIZATION:
                 if origin_population.members[i] >= modified_population.members[i]:
                     new_members.append(copy.deepcopy(origin_population.members[i]))
                 else:
                     self.archive.append(copy.deepcopy(origin_population.members[i]))
                     new_members.append(copy.deepcopy(modified_population.members[i]))
+                    self.success_f.append(ftable[i])
+                    self.success_cr.append(cr_table[i])
+                    self.difference_fitness_success.append(
+                        modified_population.members[i].fitness_value - origin_population.members[i].fitness_value)
 
         new_population = Population(
             lb=origin_population.lb,
@@ -403,53 +366,96 @@ class LSHADERSP(BaseAlg):
         return new_population
 
     def update_population_size(self, start_pop_size: int, epoch: int, total_epochs: int, min_size: int):
-        """ Calculate new population size using Linear Population Size Reduction (LPSR)
-        Formula:  new_size = start_pop_size - (epoch / total_epochs) * (start_size - min_size)
-        The population size decreases linearly over the course of the epochs.
+        """
+        Calculate new population size using Linear Population Size Reduction (LPSR).
+        Formula: new_size = start_pop_size - (epoch / total_epochs) * (start_size - min_size)
 
         Parameters:
-        start_pop_size: The initial population size at the beginning of the evolution process.
-        epoch: The current generation (epoch) number, indicating how far along the algorithm is.
-        total_epochs: The total number of generations or iterations the algorithm will run.
-        min_size: The minimum population size, ensuring the population doesn't shrink beyond this limit.
-
-        Returns: Resized population.
-
-        The population size is updated after each generation to ensure gradual reduction until the minimum size is
-        reached."""
-        new_size = int(
-            start_pop_size - (epoch / total_epochs) * (
-                    start_pop_size - min_size))
+        - start_pop_size (int): The initial population size.
+        - epoch (int): The current epoch number.
+        - total_epochs (int): The total number of epochs.
+        - min_size (int): The minimum population size.
+        """
+        new_size = int(start_pop_size - (epoch / total_epochs) * (start_pop_size - min_size))
         self._pop.resize(new_size)
+
+    def calculate_factors_for_epoch(self, pop_size):
+        """
+        Calculate the mutation parameters (F, Cr, Fw) for the current epoch based on the LSHADE-RSP algorithm.
+
+        Parameters:
+        - pop_size (int): The size of the population.
+
+        Returns:
+        - f_table (list): A list of scaling factors F for the current epoch.
+        - cr_table (list): A list of crossover rates Cr for the current epoch.
+        - fw_table (list): A list of dynamic scaling factors Fw for the current epoch.
+        """
+        f_table = []
+        cr_table = []
+        fw_table = []
+
+        for i in range(pop_size):
+            ri = np.random.randint(0, self.H)
+            mean_f = self.memory_F[ri]
+            mean_cr = self.memory_Cr[ri]
+
+            # Generate Cr from normal distribution
+            cr = np.random.normal(mean_cr, 0.1)
+            cr = np.clip(cr, 0.0, 1.0)  # Clip to [0, 1]
+
+            # Generate F from Cauchy distribution (ensure F > 0)
+            while True:
+                # Generate F value using Cauchy distribution and memory_F
+                # We need to ensure that F is positive because it is required by L-SHADE-RSP
+                f = np.random.standard_cauchy() * 0.1 + mean_f
+                if f > 0:
+                    break
+
+            # Constrain F based on NFE
+            if self.nfe < 0.6 * self.nfe_max:
+                f = min(f, 0.7)  # F <= 0.7 for the first 60% of evaluations
+            else:
+                f = min(f, 1.0)  # F <= 1.0 for the remaining evaluations
+
+            f_table.append(f)
+            cr_table.append(cr)
+
+            # Set Fw based on the current NFE
+            if self.nfe < 0.2 * self.nfe_max:
+                fw = 0.7 * f
+            elif self.nfe < 0.4 * self.nfe_max:
+                fw = 0.8 * f
+            else:
+                fw = 1.2 * f
+            fw_table.append(fw)
+
+        return f_table, cr_table, fw_table
 
     def next_epoch(self):
         """
         Perform the next epoch of the L-SHADE-RSP algorithm.
         """
-        self.F = np.random.standard_cauchy() * 0.1 + np.random.choice(self.memory_F)
-        self.Fw = 0.7 * self.F if self.nfe < 0.2 * self.nfe_max else (
-            0.8 * self.F if self.nfe < 0.4 * self.nfe_max else 1.2 * self.F)
 
-        mutant = self.mutate(self._pop, self.F, self.Fw, self.nfe, self.nfe_max, self._pop.size)
+        f_table, cr_table, fw_table = self.calculate_factors_for_epoch(self._pop.size)
+
+        mutant = self.mutate(self._pop, self.nfe, self.nfe_max, self._pop.size, f_table, fw_table)
 
         fix_boundary_constraints(mutant, self.boundary_constraints_fun)
 
-        cr = get_adapted_crossover_rate(self.memory_Cr)
-
-        trial = crossing(self._pop, mutant, cr)
+        trial = crossing(self._pop, mutant, cr_table)
 
         trial.update_fitness_values(self._function.eval, self.parallel_processing)
 
-        new_pop = self.selection(self._pop, trial)
+        new_pop = self.selection(self._pop, trial, cr_table, f_table)
 
         archive_reduction(self.archive, self.archive_size)
-
-        fitness_improvement = calculate_fitness_improvement_percentage(self._pop, new_pop)
+        print("Archive size: ", len(self.archive))
 
         # Override the entire population with the new population
         self._pop = new_pop
 
-        self.adapt_parameters(fitness_improvement)
+        self.adapt_parameters(self.difference_fitness_success)
         self.update_population_size(self.start_population_size, self._epoch_number, self.num_of_epochs,
                                     self.min_pop_size)
         self.nfe += self.population_size

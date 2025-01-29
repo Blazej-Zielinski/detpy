@@ -3,7 +3,7 @@ from typing import List
 
 import numpy as np
 from detpy.DETAlgs.base import BaseAlg
-from detpy.DETAlgs.data.alg_data import  ShadeData
+from detpy.DETAlgs.data.alg_data import ShadeData
 
 from random import randrange
 
@@ -331,11 +331,16 @@ class SHADE(BaseAlg):
             mean_f = self.memory_F[ri]
             mean_cr = self.memory_Cr[ri]
 
-            f = np.random.normal(mean_f, 0.1)
-            cr = np.random.standard_cauchy() * 0.1 + mean_cr
-
-            f = np.clip(f, 0.0, 1.0)
+            cr = np.random.normal(mean_cr, 0.1)
             cr = np.clip(cr, 0.0, 1.0)
+
+            while True:
+                f = np.random.standard_cauchy() * 0.1 + mean_f
+                if f > 0:
+                    break
+
+            f = min(f, 1.0)
+
             f_table.append(f)
             cr_table.append(cr)
 
