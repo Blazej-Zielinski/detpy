@@ -16,20 +16,17 @@ from detpy.models.population import Population
 
 def archive_reduction(archive: list[Member], archive_size: int):
     """
-    Reduce the size of the archive to the specified size.
-
-    Parameters:
-    - archive (list[Member]): The archive of old population members.
-    - archive_size (int): The desired size of the archive.
-
+    Reduce the size of the archive to the specified size by removing the worst members.
     """
     if archive_size == 0:
         archive.clear()
+        return
 
-    reduce_num = len(archive) - archive_size
-    for _ in range(reduce_num):
-        idx = randrange(len(archive))
-        archive.pop(idx)
+    if len(archive) > archive_size:
+        # Sort archive by fitness (worst first)
+        archive.sort(key=lambda member: member.fitness_value, reverse=True)
+        # Remove the worst members
+        del archive[archive_size:]
 
 
 def mutation_internal(base_member: Member, best_member: Member, r1: Member, r2: Member, f: float, fw: float):
@@ -120,17 +117,13 @@ def rank_selection(members: List[Member], k: float = 1.0) -> (int, int):
 
     Returns: The indexes of the selected members.
     """
-
     sorted_population_member_indexes = np.argsort([member.fitness_value for member in members])
     values = list(range(len(members), 0, -1))
-
     ranks = k * np.array(values)
-
     probabilities = ranks / ranks.sum()
 
-    selected_indices = np.random.choice(len(sorted_population_member_indexes), size=2, replace=False,
-                                        p=probabilities)
-
+    # Ensure distinct indices
+    selected_indices = np.random.choice(len(sorted_population_member_indexes), size=2, replace=False, p=probabilities)
     selected_values = sorted_population_member_indexes[selected_indices]
 
     return int(selected_values[0]), int(selected_values[1])
@@ -334,7 +327,7 @@ class LSHADERSP(BaseAlg):
         new_members = []
         for i in range(origin_population.size):
             if optimization == OptimizationType.MINIMIZATION:
-                if origin_population.members[i] <= modified_population.members[i]:
+                if origin_population.members[i] < modified_population.members[i]:
                     new_members.append(copy.deepcopy(origin_population.members[i]))
                 else:
                     self.archive.append(copy.deepcopy(origin_population.members[i]))
@@ -345,7 +338,7 @@ class LSHADERSP(BaseAlg):
                     self.difference_fitness_success.append(
                         origin_population.members[i].fitness_value - modified_population.members[i].fitness_value)
             elif optimization == OptimizationType.MAXIMIZATION:
-                if origin_population.members[i] >= modified_population.members[i]:
+                if origin_population.members[i] > modified_population.members[i]:
                     new_members.append(copy.deepcopy(origin_population.members[i]))
                 else:
                     self.archive.append(copy.deepcopy(origin_population.members[i]))
@@ -368,28 +361,16 @@ class LSHADERSP(BaseAlg):
     def update_population_size(self, start_pop_size: int, epoch: int, total_epochs: int, min_size: int):
         """
         Calculate new population size using Linear Population Size Reduction (LPSR).
-        Formula: new_size = start_pop_size - (epoch / total_epochs) * (start_size - min_size)
-
-        Parameters:
-        - start_pop_size (int): The initial population size.
-        - epoch (int): The current epoch number.
-        - total_epochs (int): The total number of epochs.
-        - min_size (int): The minimum population size.
         """
         new_size = int(start_pop_size - (epoch / total_epochs) * (start_pop_size - min_size))
         self._pop.resize(new_size)
 
+        # Update archive size proportionally
+        self.archive_size = int(self.archive_size * (new_size / start_pop_size))
+
     def calculate_factors_for_epoch(self, pop_size):
         """
         Calculate the mutation parameters (F, Cr, Fw) for the current epoch based on the LSHADE-RSP algorithm.
-
-        Parameters:
-        - pop_size (int): The size of the population.
-
-        Returns:
-        - f_table (list): A list of scaling factors F for the current epoch.
-        - cr_table (list): A list of crossover rates Cr for the current epoch.
-        - fw_table (list): A list of dynamic scaling factors Fw for the current epoch.
         """
         f_table = []
         cr_table = []
@@ -406,8 +387,6 @@ class LSHADERSP(BaseAlg):
 
             # Generate F from Cauchy distribution (ensure F > 0)
             while True:
-                # Generate F value using Cauchy distribution and memory_F
-                # We need to ensure that F is positive because it is required by L-SHADE-RSP
                 f = np.random.standard_cauchy() * 0.1 + mean_f
                 if f > 0:
                     break
