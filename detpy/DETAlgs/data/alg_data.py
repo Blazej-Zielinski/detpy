@@ -127,3 +127,9 @@ class FiADEData(BaseData):
 class ImprovedDEData(BaseData):
     mutation_factor: float = 0.1
     crossover_rate: float = 0.5
+
+
+@dataclass
+class ShadeData(BaseData):
+    memory_size: int = 5
+    archive_size: int = 10
