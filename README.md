@@ -23,6 +23,7 @@ The following variants have been implemented:
 | 14  | EIDE (An efficient improved differential evolution algorithm) [13]                            | 2012 |
 | 15  | MGDE (A many-objective guided differential evolution) [14]                                    | 2022 |
 | 16  | ImprovedDE (DE with dynamic mutation parameters) [15]                                         | 2023 |
+| 18  | LSHADE_RSP (Algorithm with a Rank-based Selective Pressure Strategy)                          | 2018 | 
 
 # Installation
 ```
