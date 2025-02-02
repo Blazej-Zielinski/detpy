@@ -127,3 +127,11 @@ class FiADEData(BaseData):
 class ImprovedDEData(BaseData):
     mutation_factor: float = 0.1
     crossover_rate: float = 0.5
+
+
+@dataclass
+class LSHADERSPData(BaseData):
+    scaling_factor_for_rank_selection: float = 3.5
+    parameter_memory_size: int = 5
+    minimum_population_size: int = 20
+    archive_size: int = 10
