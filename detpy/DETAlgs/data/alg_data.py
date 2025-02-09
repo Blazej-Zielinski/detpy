@@ -130,6 +130,12 @@ class ImprovedDEData(BaseData):
 
 
 @dataclass
+class ShadeData(BaseData):
+    memory_size: int = 5
+    archive_size: int = 10
+
+
+@dataclass
 class LSHADERSPData(BaseData):
     scaling_factor_for_rank_selection: float = 3.5
     parameter_memory_size: int = 5

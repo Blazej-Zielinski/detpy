@@ -1,7 +1,7 @@
 # DetPy (Differential Evolution Tools): A Python toolbox for solving optimization problems using differential evolution
 
 # Introduction
-The DetPy library contains implementations of the differential evolution algorithm and 15 modifications of this 
+The DetPy library contains implementations of the differential evolution algorithm and 16 modifications of this 
 algorithm. It can be used to solve advanced optimization problems.
 The following variants have been implemented:
 
@@ -23,6 +23,7 @@ The following variants have been implemented:
 | 14  | EIDE (An efficient improved differential evolution algorithm) [13]                            | 2012 |
 | 15  | MGDE (A many-objective guided differential evolution) [14]                                    | 2022 |
 | 16  | ImprovedDE (DE with dynamic mutation parameters) [15]                                         | 2023 |
+| 17  | SHADE (Success-History Based Parameter Adaptation for Differential Evolution) [16]            | 2013 |
 | 18  | LSHADE_RSP (Algorithm with a Rank-based Selective Pressure Strategy)                          | 2018 | 
 
 # Installation
@@ -140,7 +141,8 @@ Test functions prepared based on https://gitlab.com/luca.baronti/python_benchmar
 13. Zou, Dexuan and Gao, Liqun. *An efficient improved differential evolution algorithm*. Proceedings of the 31st Chinese Control Conference, 2012.
 14. Zouache, Djaafar, Abdelaziz, Fouad Ben. *MGDE: a many-objective guided differential evolution with strengthened dominance relation and bi-goal evolution*. Annals of Operations Research, Springer, 2022.
 15. Lin, Yifeng, Yang, Yuer, Zhang, Yinyan. *Improved differential evolution with dynamic mutation parameters*. Soft Computing, Springer, 2023.
-
+16. Ryoji Tanabe, Alex Fukunaga. *Success-history based parameter adaptation for Differential Evolution*. IEEE Congress on Evolutionary Computation, 2013.
+17. 
 # Documentation
 Full documentation is available: https://blazej-zielinski.github.io/detpy/
 
