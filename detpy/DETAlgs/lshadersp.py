@@ -28,14 +28,14 @@ class LSHADERSP(BaseAlg):
     def __init__(self, params: LSHADERSPData, db_conn=None, db_auto_write=False):
         super().__init__(LSHADERSP.__name__, params, db_conn, db_auto_write)
         self.k = params.scaling_factor_for_rank_selection  # Scaling factor for rank selection
-        self.H = params.parameter_memory_size  # Memory size for f and cr adaptation
+        self.H = params.memory_size  # Memory size for f and cr adaptation
         self.memory_F = np.full(self.H, 0.3)  # Initial memory for F
         self.memory_Cr = np.full(self.H, 0.8)  # Initial memory for Cr
 
         self.memory_F[self.H - 1] = 0.9  # One cell of the memory for F must be set to 0.9
         self.memory_Cr[self.H - 1] = 0.9  # One cell of the memory for Cr must be set to 0.9
 
-        self.F = np.random.standard_cauchy() * 0.1 + np.random.choice(self.memory_F)  # The scaling factor for
+        self.F = np.random.standard_cauchy() * 0.1 + np.random.choice(self.memory_F)
 
         self.nfe = 0  # Number of function evaluations
         self.min_pop_size = params.minimum_population_size  # Minimal population size
@@ -57,7 +57,7 @@ class LSHADERSP(BaseAlg):
 
         self.difference_fitness_success = []
 
-    def calculate_max_evaluations_lpsr(self, start_pop_size):
+    def calculate_max_evaluations_lpsr(self, start_pop_size: int):
         """
         Calculate the maximum number of function evaluations for the Linear Population Size Reduction (LPSR) method.
 

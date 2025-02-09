@@ -75,7 +75,7 @@ def crossing_internal(org_member: Member, mut_member: Member, cr: float):
     return new_member
 
 
-def crossing(origin_population: Population, mutated_population: Population, cr_table):
+def crossing(origin_population: Population, mutated_population: Population, cr_table: List[float]):
     """
     Perform crossing operation for the population.
     Parameters:
