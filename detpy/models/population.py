@@ -53,6 +53,31 @@ class Population:
     def std(self):
         return np.std([member.fitness_value for member in self.members])
 
+    def resize(self, new_size: int):
+        """
+        Resize the population to the new size. If the new size is smaller, truncate the members array by removing the
+        worst members. If the new size is larger, add new members with random chromosomes.
+
+        Parameters:
+        new_size (int): The new size of the population.
+        """
+        if new_size < self.size:
+            if self.optimization == OptimizationType.MINIMIZATION:
+                sorted_indices = np.argsort([member.fitness_value for member in self.members])
+            else:
+                sorted_indices = np.argsort([member.fitness_value for member in self.members])[::-1]
+            self.members = self.members[sorted_indices[:new_size]]
+        elif new_size > self.size:
+            additional_members = [
+                Member(
+                    np.random.uniform(self.lb, self.ub, self.arg_num)
+                )
+                for _ in range(new_size - self.size)
+            ]
+            self.members = np.concatenate((self.members, additional_members))
+
+        self.size = new_size
+
     def __str__(self, population_label=""):
         output = f"Population{population_label}:"
         for m in self.members:

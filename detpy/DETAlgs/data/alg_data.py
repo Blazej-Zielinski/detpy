@@ -133,3 +133,11 @@ class ImprovedDEData(BaseData):
 class ShadeData(BaseData):
     memory_size: int = 5
     archive_size: int = 10
+
+
+@dataclass
+class LSHADERSPData(BaseData):
+    scaling_factor_for_rank_selection: float = 3.5
+    memory_size: int = 5
+    minimum_population_size: int = 20
+    archive_size: int = 10
