@@ -1,7 +1,7 @@
 # DetPy (Differential Evolution Tools): A Python toolbox for solving optimization problems using differential evolution
 
 # Introduction
-The DetPy library contains implementations of the differential evolution algorithm and 17 modifications of this 
+The DetPy library contains implementations of the differential evolution algorithm and 18 modifications of this 
 algorithm. It can be used to solve advanced optimization problems.
 The following variants have been implemented:
 
@@ -25,6 +25,7 @@ The following variants have been implemented:
 | 16  | ImprovedDE (DE with dynamic mutation parameters) [15]                                         | 2023 |
 | 17  | SHADE (Success-History Based Parameter Adaptation for Differential Evolution) [16]            | 2013 |
 | 18  | LSHADE_RSP (Algorithm with a Rank-based Selective Pressure Strategy)  [17]                    | 2018 | 
+| 19  | LSHADE (Improving the Search Performance of SHADE Using Linear Population Size Reduction) [18]| 2014 |
 
 # Installation
 ```
@@ -143,6 +144,7 @@ Test functions prepared based on https://gitlab.com/luca.baronti/python_benchmar
 15. Lin, Yifeng, Yang, Yuer, Zhang, Yinyan. *Improved differential evolution with dynamic mutation parameters*. Soft Computing, Springer, 2023.
 16. Ryoji Tanabe, Alex Fukunaga. *Success-history based parameter adaptation for Differential Evolution*. IEEE Congress on Evolutionary Computation, 2013.
 17. Vladimir Stanovov, Shakhnaz Akhmedova, Eugene Semenkin. *Algorithm with a Rank-based Selective Pressure mutation (LSAHDE-RSP)*. IEEE Congress on Evolutionary Computation, 2018.
+18. Ryoji Tanabe, Alex Fukunaga. *Improving the Search Performance of SHADE Using Linear Population Size Reduction*. IEEE Congress on Evolutionary Computation, 2014.
 # Documentation
 Full documentation is available: https://blazej-zielinski.github.io/detpy/
 
