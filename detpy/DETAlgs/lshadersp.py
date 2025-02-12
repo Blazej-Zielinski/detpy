@@ -43,7 +43,7 @@ class LSHADERSP(BaseAlg):
         self.start_population_size = self.population_size
         self.nfe_max = self.calculate_max_evaluations_lpsr(self.population_size)  # Max number of function evaluations
 
-        self.archive_size = params.archive_size  # Size of the archive
+        self.archive_size = self.population_size  # Size of the archive
         self.archive = []  # Archive for storing the members from old populations
 
         self.lehmer_mean_func = LehmerMean()  # Class for Lehmer mean calculation
@@ -261,7 +261,7 @@ class LSHADERSP(BaseAlg):
         self._pop.resize(new_size)
 
         # Update archive size proportionally
-        self.archive_size = int(self.archive_size * (new_size / start_pop_size))
+        self.archive_size = new_size
 
     def calculate_factors_for_epoch(self, pop_size):
         """
