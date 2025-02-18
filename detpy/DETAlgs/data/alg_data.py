@@ -146,3 +146,10 @@ class LSHADERSPData(BaseData):
 class LShadeData(BaseData):
     minimum_population_size: int = 5
     memory_size: int = 5
+
+
+@dataclass
+class SPSLShadeEEIDGDATA(BaseData):
+    minimum_population_size: int = 5
+    memory_size: int = 5
+    q: int = 20
