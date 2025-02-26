@@ -6,7 +6,7 @@ import numpy as np
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import LShadeData, SPSLShadeEEIDGDATA
 from detpy.DETAlgs.methods.methods_lshade import mutation_internal, calculate_best_member_count, crossing, \
-    archive_reduction
+    archive_reduction, crossing_internal
 
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 from detpy.models.enums.optimization import OptimizationType
@@ -42,6 +42,7 @@ class SPS_LSHADE_EIDG(BaseAlg):
         self.archive_size = self.population_size  # Size of the archive
 
         self.q = params.q
+
 
 
 
@@ -104,9 +105,13 @@ class SPS_LSHADE_EIDG(BaseAlg):
         """
         new_members = []
 
-        sum_archive_and_population = np.concatenate((population.members, self.archive_sps))
+
 
         for i in range(population.size):
+
+            sum_archive_and_population = np.concatenate(([population.members[i]], self.archive))
+
+
             r1 = np.random.choice(len(population.members), 1, replace=False)[0]
 
             # Archive is included population and archive members
@@ -178,6 +183,7 @@ class SPS_LSHADE_EIDG(BaseAlg):
                 if(self.recently_consecutive_unsuccessful_updates_table[i] >= self.q):
                     new_members.pop()
                     new_members.append(random.choice(self.archive_sps))
+
                     self.recently_consecutive_unsuccessful_updates_table[i] = 0
 
             elif optimization == OptimizationType.MAXIMIZATION:
@@ -195,6 +201,7 @@ class SPS_LSHADE_EIDG(BaseAlg):
 
                 if(self.recently_consecutive_unsuccessful_updates_table[i] >= self.q):
                     new_members.pop()
+
                     new_members.append(random.choice(self.archive_sps))
                     self.recently_consecutive_unsuccessful_updates_table[i] = 0
 
@@ -278,6 +285,95 @@ class SPS_LSHADE_EIDG(BaseAlg):
 
         return f_table, cr_table, the_bests_to_select
 
+    def eig_crossover_internal(self, x, v, CR, Q):
+        """
+        Eigenvector-based crossover operation for a single individual.
+
+        Parameters:
+        x  - Parent vector (Member object with chromosomes)
+        v  - Donor vector (Member object with chromosomes)
+        CR - Crossover rate (float between 0 and 1)
+        Q  - Eigenvector matrix (numpy array of shape (D, D)), columns are eigenvectors
+
+        Returns:
+        u  - New trial vector after crossover (numpy array of length D)
+        """
+
+        # Pobranie wartości numerycznych z chromosomów
+        x_values = np.array([chromosome.real_value for chromosome in x.chromosomes])
+        v_values = np.array([chromosome.real_value for chromosome in v.chromosomes])
+
+        D = len(x_values)  # Liczba wymiarów
+
+        # Transformacja x i v do przestrzeni eigenwektorów
+        xt = np.dot(Q.T, x_values)  # Transformed parent vector
+        vt = np.dot(Q.T, v_values)  # Transformed donor vector
+
+        # Przeprowadzenie krzyżowania w przestrzeni eigenwektorów
+        ut = np.copy(xt)
+        jrand = np.random.randint(0, D)  # Zapewnienie, że przynajmniej jeden element się zmieni
+
+        for j in range(D):
+            if np.random.rand() < CR or j == jrand:
+                ut[j] = vt[j]  # Zastąpienie składową z wektora dawcy
+
+        # Powrót do pierwotnego układu współrzędnych
+        u_values = np.dot(Q, ut)  # Wektor próbny
+
+        # Tworzenie nowego obiektu Member z nowymi wartościami
+        new_member = copy.deepcopy(x)  # Kopiujemy strukturę, żeby zachować inne parametry
+        for i, chromosome in enumerate(new_member.chromosomes):
+            chromosome.value = u_values[i]  # Aktualizacja wartości
+
+        return new_member
+
+    def eig_crossing(self,origin_population, mutated_population, cr_table):
+        """
+        Perform eigenvector-based crossing operation for the population.
+
+        Parameters:
+        - origin_population (Population): The original population.
+        - mutated_population (Population): The mutated population.
+        - cr_table (List[float]): List of crossover rates.
+
+        Returns:
+        - Population: A new population with the crossed chromosomes.
+        """
+        if origin_population.size != mutated_population.size:
+            print("Eig_crossing: populations have different sizes")
+            return None
+
+        # Compute eigenvector matrix Q from the covariance of the population
+
+        population_matrix = np.array([
+            [chromosome.real_value for chromosome in member.chromosomes]
+            for member in origin_population.members
+        ])
+
+
+        covariance_matrix = np.cov(population_matrix, rowvar=False)
+        Q = np.linalg.eigh(covariance_matrix)[1]  # Eigenvectors (columns)
+
+        new_members = []
+        for i in range(origin_population.size):
+            new_member = self.eig_crossover_internal(
+                origin_population.members[i],
+                mutated_population.members[i],
+                cr_table[i],
+                Q
+            )
+            new_members.append(new_member)
+
+        new_population = Population(
+            lb=origin_population.lb,
+            ub=origin_population.ub,
+            arg_num=origin_population.arg_num,
+            size=origin_population.size,
+            optimization=origin_population.optimization
+        )
+        new_population.members = np.array(new_members)
+        return new_population
+
     def next_epoch(self):
         """
         Perform the next epoch of the SHADE algorithm.
@@ -289,7 +385,7 @@ class SPS_LSHADE_EIDG(BaseAlg):
         fix_boundary_constraints(mutant, self.boundary_constraints_fun)
 
         # Crossover step
-        trial = crossing(self._pop, mutant, cr_table)
+        trial = self.eig_crossing(self._pop, mutant, cr_table)
 
         # Evaluate fitness values for the trial population
         trial.update_fitness_values(self._function.eval, self.parallel_processing)
@@ -310,4 +406,5 @@ class SPS_LSHADE_EIDG(BaseAlg):
                                     self.min_pop_size)
 
         self._epoch_number += 1
+
 
