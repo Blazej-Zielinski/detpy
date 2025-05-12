@@ -1,7 +1,7 @@
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import OppBasedData
 from detpy.DETAlgs.methods.methods_opposition_based import opp_based_generation_jumping
-from detpy.DETAlgs.methods.methods_de import mutation, binomial_crossing, selection
+from detpy.DETAlgs.methods.methods_de import mutation, selection, crossing
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 
 
@@ -23,6 +23,7 @@ class OppBasedDE(BaseAlg):
 
         self.mutation_factor = params.mutation_factor  # F
         self.crossover_rate = params.crossover_rate  # Cr
+        self.crossing_type = params.crossing_type
         self.nfc = 0  # number of function calls
         self.max_nfc = params.max_nfc
         self.jumping_rate = params.jumping_rate
@@ -35,7 +36,7 @@ class OppBasedDE(BaseAlg):
         fix_boundary_constraints(v_pop, self.boundary_constraints_fun)
 
         # New population after crossing
-        u_pop = binomial_crossing(self._pop, v_pop, cr=self.crossover_rate)
+        u_pop = crossing(self._pop, v_pop, cr=self.crossover_rate, crossing_type=self.crossing_type)
 
         # Update values before selection
         u_pop.update_fitness_values(self._function.eval)

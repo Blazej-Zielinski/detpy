@@ -1,7 +1,7 @@
 import random
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import EIDEData
-from detpy.DETAlgs.methods.methods_de import mutation, binomial_crossing, selection
+from detpy.DETAlgs.methods.methods_de import mutation, selection, crossing
 from detpy.DETAlgs.methods.methods_eide import eide_adopt_parameters
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 
@@ -17,11 +17,13 @@ class EIDE(BaseAlg):
         Z. Dexuan and G. Liqun, "An efficient improved differential evolution algorithm,"
         Proceedings of the 31st Chinese Control Conference, Hefei, China, 2012, pp. 2385-2390.
     """
+
     def __init__(self, params: EIDEData, db_conn=None, db_auto_write=False):
         super().__init__(EIDE.__name__, params, db_conn, db_auto_write)
 
         self.mutation_factor = random.uniform(0, 0.6)
         self.crossover_rate = params.crossover_rate_min
+        self.crossing_type = params.crossing_type
         self.crossover_rate_min = params.crossover_rate_min
         self.crossover_rate_max = params.crossover_rate_max
         self.generation = None
@@ -34,7 +36,7 @@ class EIDE(BaseAlg):
         fix_boundary_constraints(v_pop, self.boundary_constraints_fun)
 
         # New population after crossing
-        u_pop = binomial_crossing(self._pop, v_pop, cr=self.crossover_rate)
+        u_pop = crossing(self._pop, v_pop, cr=self.crossover_rate, crossing_type=self.crossing_type)
 
         # Update values before selection
         u_pop.update_fitness_values(self._function.eval, self.parallel_processing)

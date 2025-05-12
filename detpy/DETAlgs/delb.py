@@ -1,7 +1,7 @@
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import DELBData
 from detpy.DETAlgs.methods.methods_delb import delb_mutation, delb_selection
-from detpy.DETAlgs.methods.methods_de import binomial_crossing
+from detpy.DETAlgs.methods.methods_de import crossing
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 
 
@@ -22,6 +22,7 @@ class DELB(BaseAlg):
 
         self.crossover_rate = params.crossover_rate  # Cr
         self.w_factor = params.w_factor  # w
+        self.crossing_type = params.crossing_type
 
     def next_epoch(self):
         # New population after mutation
@@ -31,7 +32,7 @@ class DELB(BaseAlg):
         fix_boundary_constraints(v_pop, self.boundary_constraints_fun)
 
         # New population after crossing
-        u_pop = binomial_crossing(self._pop, v_pop, cr=self.crossover_rate)
+        u_pop = crossing(self._pop, v_pop, cr=self.crossover_rate, crossing_type=self.crossing_type)
 
         # Update values before selection
         u_pop.update_fitness_values(self._function.eval, self.parallel_processing)

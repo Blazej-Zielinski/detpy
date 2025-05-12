@@ -1,5 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Optional
+
+from detpy.models.enums.CrossingType import CrossingType
 from detpy.models.fitness_function import FitnessFunctionBase
 from detpy.models.enums.boundary_constrain import BoundaryFixing
 from detpy.models.enums.optimization import OptimizationType
@@ -23,18 +25,20 @@ class BaseData:
 class DEData(BaseData):
     mutation_factor: float = 0.5
     crossover_rate: float = 0.5
-
+    crossing_type: CrossingType = CrossingType.BINOMIAL
 
 @dataclass
 class COMDEData(BaseData):
     mutation_factor: float = 0.1
     crossover_rate: float = 0.1
+    crossing_type: CrossingType = CrossingType.BINOMIAL
 
 
 @dataclass
 class DERLData(BaseData):
     mutation_factor: float = 0.1
     crossover_rate: float = 0.1
+    crossing_type: CrossingType = CrossingType.BINOMIAL
 
 
 @dataclass
@@ -53,6 +57,7 @@ class SADEData(BaseData):
 @dataclass
 class EMDEData(BaseData):
     crossover_rate: float = 0.1
+    crossing_type: CrossingType = CrossingType.BINOMIAL
 
 
 @dataclass
@@ -64,12 +69,14 @@ class IDEData(BaseData):
 class DELBData(BaseData):
     crossover_rate: float = 0.1
     w_factor: float = 0.1  # control frequency of local exploration around trial and best vectors
+    crossing_type: CrossingType = CrossingType.BINOMIAL
 
 
 @dataclass
 class OppBasedData(BaseData):
     mutation_factor: float = 0.1
     crossover_rate: float = 0.1
+    crossing_type: CrossingType = CrossingType.BINOMIAL
     max_nfc: float = 0.1
     jumping_rate: float = 0.1
 
@@ -78,6 +85,7 @@ class OppBasedData(BaseData):
 class DEGLData(BaseData):
     mutation_factor: float = 0.1
     crossover_rate: float = 0.1
+    crossing_type: CrossingType = CrossingType.BINOMIAL
     radius: int = 10  # neighborhood size, 2k + 1 <= NP, at least k=2
     weight: float = 0.1  # controls the balance between the exploration and exploitation
 
@@ -105,11 +113,13 @@ class AADEData(BaseData):
 class EIDEData(BaseData):
     crossover_rate_min: float = 0.1
     crossover_rate_max: float = 0.1
+    crossing_type: CrossingType = CrossingType.BINOMIAL
 
 
 @dataclass
 class MGDEData(BaseData):
     crossover_rate: float = 0.1
+    crossing_type: CrossingType = CrossingType.BINOMIAL
     mutation_factor_f: float = 0.1
     mutation_factor_k: float = 0.1
     threshold: float = 0.1
@@ -127,7 +137,7 @@ class FiADEData(BaseData):
 class ImprovedDEData(BaseData):
     mutation_factor: float = 0.1
     crossover_rate: float = 0.5
-
+    crossing_type: CrossingType = CrossingType.BINOMIAL
 
 @dataclass
 class ShadeData(BaseData):

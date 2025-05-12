@@ -1,6 +1,6 @@
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import MGDEData
-from detpy.DETAlgs.methods.methods_de import binomial_crossing, selection
+from detpy.DETAlgs.methods.methods_de import selection, crossing
 from detpy.DETAlgs.methods.methods_mgde import mgde_mutation, mgde_adapt_threshold
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 
@@ -23,6 +23,7 @@ class MGDE(BaseAlg):
         self.mutation_factor_f = params.mutation_factor_f
         self.mutation_factor_k = params.mutation_factor_k
         self.crossover_rate = params.crossover_rate
+        self.crossing_type = params.crossing_type
         self.threshold = params.threshold
         self.mu = params.mu
         self.generation = 1
@@ -36,7 +37,7 @@ class MGDE(BaseAlg):
         fix_boundary_constraints(v_pop, self.boundary_constraints_fun)
 
         # New population after crossing
-        u_pop = binomial_crossing(self._pop, v_pop, cr=self.crossover_rate)
+        u_pop = crossing(self._pop, v_pop, cr=self.crossover_rate, crossing_type=self.crossing_type)
 
         # Update values before selection
         u_pop.update_fitness_values(self._function.eval, self.parallel_processing)

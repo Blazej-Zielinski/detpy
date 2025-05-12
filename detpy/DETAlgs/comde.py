@@ -1,7 +1,7 @@
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import COMDEData
 from detpy.DETAlgs.methods.methods_comde import calculate_cr, comde_mutation
-from detpy.DETAlgs.methods.methods_de import binomial_crossing, selection
+from detpy.DETAlgs.methods.methods_de import selection, crossing
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 
 
@@ -23,6 +23,7 @@ class COMDE(BaseAlg):
 
         self.mutation_factor = params.mutation_factor  # F
         self.crossover_rate = params.crossover_rate  # Cr
+        self.crossing_type = params.crossing_type
 
     def next_epoch(self):
         # Calculate not constant cr depend on generation number
@@ -35,7 +36,7 @@ class COMDE(BaseAlg):
         fix_boundary_constraints(v_pop, self.boundary_constraints_fun)
 
         # New population after crossing
-        u_pop = binomial_crossing(self._pop, v_pop, cr=cr)
+        u_pop = crossing(self._pop, v_pop, cr=cr, crossing_type=self.crossing_type)
 
         # Update values before selection
         u_pop.update_fitness_values(self._function.eval, self.parallel_processing)

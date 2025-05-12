@@ -26,7 +26,7 @@ def mutation(population: Population, mutation_factors: list[list[float, bool]]) 
     return new_population
 
 
-def crossing(origin_population: Population, mutated_population: Population,
+def fiade_crossing(origin_population: Population, mutated_population: Population,
              crossover_rates: list[list[float, bool]]) -> Population:
     if origin_population.size != mutated_population.size:
         raise ValueError("Populations must have the same size for crossing")

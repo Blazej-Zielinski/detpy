@@ -1,5 +1,5 @@
 from detpy.DETAlgs.base import BaseAlg
-from detpy.DETAlgs.methods.methods_fiade import mutation, crossing, selection, adapt_parameters
+from detpy.DETAlgs.methods.methods_fiade import mutation, selection, adapt_parameters, fiade_crossing
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 from detpy.DETAlgs.data.alg_data import FiADEData
 
@@ -33,7 +33,7 @@ class FiADE(BaseAlg):
         fix_boundary_constraints(v_pop, self.boundary_constraints_fun)
 
         # Crossing
-        u_pop = crossing(self._pop, v_pop, self.crossover_rates)
+        u_pop = fiade_crossing(self._pop, v_pop, self.crossover_rates)
 
         # Update values before selection
         u_pop.update_fitness_values(self._function.eval, self.parallel_processing)

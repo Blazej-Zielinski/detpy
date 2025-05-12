@@ -2,6 +2,7 @@ import random
 import numpy as np
 import copy
 
+from detpy.models.enums.CrossingType import CrossingType
 from detpy.models.member import Member
 from detpy.models.population import Population
 from detpy.models.enums.optimization import OptimizationType
@@ -51,15 +52,55 @@ def binomial_crossing_ind(org_member: Member, mut_member: Member, cr):
 
     return new_member
 
+def exponential_crossing_ind(org_member, mut_member, cr):
+    # Deep copy the original to preserve other attributes
+    new_member = copy.deepcopy(org_member)
+    D = new_member.args_num
 
-def binomial_crossing(origin_population: Population, mutated_population: Population, cr):
+    # Choose a random starting index
+    start = np.random.randint(low=0, high=D)
+
+    # Always copy at least one dimension
+    L = 0
+    i = start
+
+    # Continue copying from mutant while random <= cr and haven't covered all parameters
+    while True:
+        new_member.chromosomes[i].real_value = mut_member.chromosomes[i].real_value
+        L += 1
+        i = (i + 1) % D
+
+        # stop if we've copied all dimensions
+        if L >= D:
+            break
+
+        # draw new rand and test against cr
+        if np.random.rand() > cr:
+            break
+
+    # For any dimension not yet copied, retain from original
+    # We know that only L consecutive positions have been replaced
+    # Fill the rest
+    for j in range(D):
+        # if j not in the copied block
+        # compute offset from start in circular sense
+        offset = (j - start) % D
+        if offset >= L:
+            new_member.chromosomes[j].real_value = org_member.chromosomes[j].real_value
+
+    return new_member
+
+def crossing(origin_population: Population, mutated_population: Population, cr, crossing_type: CrossingType):
     if origin_population.size != mutated_population.size:
-        print("Binomial_crossing: populations have different sizes")
+        print("Populations have different sizes")
         return None
 
     new_members = []
     for i in range(origin_population.size):
-        new_member = binomial_crossing_ind(origin_population.members[i], mutated_population.members[i], cr)
+        if crossing_type == CrossingType.BINOMIAL:
+            new_member = binomial_crossing_ind(origin_population.members[i], mutated_population.members[i], cr)
+        if crossing_type == CrossingType.EXPOTENTIAL:
+            new_member = exponential_crossing_ind(origin_population.members[i], mutated_population.members[i], cr)
         new_members.append(new_member)
 
     new_population = Population(

@@ -5,6 +5,8 @@ import copy
 from detpy.models.member import Member
 from detpy.models.population import Population
 from detpy.models.enums.optimization import OptimizationType
+
+
 def mutation_ind(base_member: Member, member1: Member, member2: Member, fs):
     """
         Formula: v_ij = x_r1 + FS(x_r2 - x_r3)
@@ -48,7 +50,7 @@ def binomial_crossing_ind(org_member: Member, mut_member: Member, cr):
     return new_member
 
 
-def binomial_crossing(origin_population: Population, mutated_population: Population, cr):
+def improve_de_binomial_crossing(origin_population: Population, mutated_population: Population, cr):
     if origin_population.size != mutated_population.size:
         print("Binomial_crossing: populations have different sizes")
         return None

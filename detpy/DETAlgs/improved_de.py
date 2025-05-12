@@ -2,7 +2,7 @@ import math
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import ImprovedDEData
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
-from detpy.DETAlgs.methods.methods_improved_de import mutation, binomial_crossing, selection
+from detpy.DETAlgs.methods.methods_improved_de import mutation, selection, improve_de_binomial_crossing
 
 
 class ImprovedDE(BaseAlg):
@@ -43,7 +43,7 @@ class ImprovedDE(BaseAlg):
         fix_boundary_constraints(v_pop, self.boundary_constraints_fun)
 
         # New population after crossing
-        u_pop = binomial_crossing(self._pop, v_pop, cr=self.crossover_rate)
+        u_pop = improve_de_binomial_crossing(self._pop, v_pop, cr=self.crossover_rate)
 
         # Update values before selection
         u_pop.update_fitness_values(self._function.eval, self.parallel_processing)
