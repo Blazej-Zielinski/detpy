@@ -27,7 +27,7 @@ def mutation(population: Population, base_vector_schema: BaseVectorSchema, optim
         selected_members = random.sample(population.members.tolist(), 2)
 
         if base_vector_schema == BaseVectorSchema.RAND:
-            base_vector = random.sample(population.members.tolist(), 1)
+            base_vector = random.choice(population.members.tolist())
         if base_vector_schema == BaseVectorSchema.CURRENT:
             base_vector = population.members[i]
         if base_vector_schema == BaseVectorSchema.BEST:
