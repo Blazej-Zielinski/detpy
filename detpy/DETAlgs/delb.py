@@ -39,6 +39,10 @@ class DELB(BaseAlg):
         # Select new population
         new_pop = delb_selection(self._pop, u_pop, self.w_factor, self._function.eval)
 
+        # Apply boundary constrains after DELB selection
+        fix_boundary_constraints(new_pop, self.boundary_constraints_fun)
+        new_pop.update_fitness_values(self._function.eval, self.parallel_processing)
+
         # Override data
         self._pop = new_pop
 
