@@ -17,7 +17,7 @@ if __name__ == "__main__":
         dimension=10,
         lb=[-5, -100, -100, -100, -100, -100, -100, -100, -100, -100],
         ub=[5, 100, 100, 100, 100, 100, 100, 100, 100, 100],
-        mode=OptimizationType.MINIMIZATION,
+        optimization_type=OptimizationType.MINIMIZATION,
         boundary_constraints_fun=BoundaryFixing.RANDOM,
         function=fitness_fun_opf,
         crossover_rate=0.8,

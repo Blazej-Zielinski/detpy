@@ -43,7 +43,7 @@ if __name__ == "__main__":
         'dimension': 2,
         'lb': [-32.768, -32.768],
         'ub': [32.768, 32.768],
-        'mode': optimization.OptimizationType.MINIMIZATION,
+        'optimization_type': optimization.OptimizationType.MINIMIZATION,
         'boundary_constraints_fun': boundary_constrain.BoundaryFixing.RANDOM,
         'log_population': True,
         'parallel_processing': ['thread', 5]

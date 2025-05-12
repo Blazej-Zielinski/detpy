@@ -24,13 +24,15 @@ class EIDE(BaseAlg):
         self.mutation_factor = random.uniform(0, 0.6)
         self.crossover_rate = params.crossover_rate_min
         self.crossing_type = params.crossing_type
+        self.base_vector_schema = params.base_vector_schema
         self.crossover_rate_min = params.crossover_rate_min
         self.crossover_rate_max = params.crossover_rate_max
         self.generation = None
 
     def next_epoch(self):
         # New population after mutation
-        v_pop = mutation(self._pop, f=self.mutation_factor)
+        v_pop = mutation(self._pop, base_vector_schema=self.base_vector_schema,
+                         optimization_type=self.optimization_type, f=self.mutation_factor)
 
         # Apply boundary constrains on population in place
         fix_boundary_constraints(v_pop, self.boundary_constraints_fun)

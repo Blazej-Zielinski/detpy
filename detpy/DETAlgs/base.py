@@ -35,7 +35,7 @@ class BaseAlg(ABC):
         self.nr_of_args = params.dimension
         self.lb = params.lb
         self.ub = params.ub
-        self.mode = params.mode
+        self.optimization_type = params.optimization_type
         self.boundary_constraints_fun = params.boundary_constraints_fun
 
         if params.function is None:
@@ -65,7 +65,7 @@ class BaseAlg(ABC):
             ub=self.ub,
             arg_num=self.nr_of_args,
             size=self.population_size,
-            optimization=self.mode
+            optimization=self.optimization_type
         )
         population.generate_population()
         population.update_fitness_values(self._function.eval, self.parallel_processing)

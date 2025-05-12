@@ -2,7 +2,8 @@ import random
 import numpy as np
 import copy
 
-from detpy.models.enums.CrossingType import CrossingType
+from detpy.models.enums.basevectorschema import BaseVectorSchema
+from detpy.models.enums.crossingtype import CrossingType
 from detpy.models.member import Member
 from detpy.models.population import Population
 from detpy.models.enums.optimization import OptimizationType
@@ -17,11 +18,22 @@ def mutation_ind(base_member: Member, member1: Member, member2: Member, f):
     return new_member
 
 
-def mutation(population: Population, f):
+def mutation(population: Population, base_vector_schema: BaseVectorSchema, optimization_type: OptimizationType, f):
     new_members = []
-    for _ in range(population.size):
-        selected_members = random.sample(population.members.tolist(), 3)
-        new_member = mutation_ind(selected_members[0], selected_members[1], selected_members[2], f)
+
+    best_member = get_best_member(optimization_type, population)
+
+    for i in range(population.size):
+        selected_members = random.sample(population.members.tolist(), 2)
+
+        if base_vector_schema == BaseVectorSchema.RAND:
+            base_vector = random.sample(population.members.tolist(), 1)
+        if base_vector_schema == BaseVectorSchema.CURRENT:
+            base_vector = population.members[i]
+        if base_vector_schema == BaseVectorSchema.BEST:
+            base_vector = best_member
+
+        new_member = mutation_ind(base_vector, selected_members[0], selected_members[1], f)
         new_members.append(new_member)
 
     new_population = Population(
@@ -33,6 +45,15 @@ def mutation(population: Population, f):
     )
     new_population.members = np.array(new_members)
     return new_population
+
+
+def get_best_member(optimization, population):
+    if optimization == OptimizationType.MINIMIZATION:
+        sorted_indices = np.argsort([member.fitness_value for member in population.members])
+    else:
+        sorted_indices = np.argsort([member.fitness_value for member in population.members])[::-1]
+    best_member = population.members[sorted_indices[0]]
+    return best_member
 
 
 def binomial_crossing_ind(org_member: Member, mut_member: Member, cr):
@@ -51,6 +72,7 @@ def binomial_crossing_ind(org_member: Member, mut_member: Member, cr):
             new_member.chromosomes[i].real_value = org_member.chromosomes[i].real_value
 
     return new_member
+
 
 def exponential_crossing_ind(org_member, mut_member, cr):
     # Deep copy the original to preserve other attributes
@@ -89,6 +111,7 @@ def exponential_crossing_ind(org_member, mut_member, cr):
             new_member.chromosomes[j].real_value = org_member.chromosomes[j].real_value
 
     return new_member
+
 
 def crossing(origin_population: Population, mutated_population: Population, cr, crossing_type: CrossingType):
     if origin_population.size != mutated_population.size:

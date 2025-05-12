@@ -20,6 +20,7 @@ class IDE(BaseAlg):
 
     def __init__(self, params: IDEData, db_conn=None, db_auto_write=False):
         super().__init__(IDE.__name__, params, db_conn, db_auto_write)
+        self.base_vector_schema = params.base_vector_schema
 
     def next_epoch(self):
         # Calculate F and CR
@@ -27,7 +28,8 @@ class IDE(BaseAlg):
         cr_arr = ide_get_cr(self._pop)
 
         # New population after mutation
-        v_pop = mutation(self._pop, f)
+        v_pop = mutation(self._pop, base_vector_schema=self.base_vector_schema,
+                         optimization_type=self.optimization_type, f=f)
 
         # Apply boundary constrains on population in place
         fix_boundary_constraints(v_pop, self.boundary_constraints_fun)

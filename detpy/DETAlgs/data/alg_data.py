@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Optional
 
-from detpy.models.enums.CrossingType import CrossingType
+from detpy.models.enums.basevectorschema import BaseVectorSchema
+from detpy.models.enums.crossingtype import CrossingType
 from detpy.models.fitness_function import FitnessFunctionBase
 from detpy.models.enums.boundary_constrain import BoundaryFixing
 from detpy.models.enums.optimization import OptimizationType
@@ -14,7 +15,7 @@ class BaseData:
     dimension: int = 10
     lb: list = field(default_factory=lambda: [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100])
     ub: list = field(default_factory=lambda: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100])
-    mode: OptimizationType = OptimizationType.MINIMIZATION
+    optimization_type: OptimizationType = OptimizationType.MINIMIZATION
     boundary_constraints_fun: BoundaryFixing = BoundaryFixing.RANDOM
     function: FitnessFunctionBase = None
     log_population: bool = False
@@ -26,6 +27,7 @@ class DEData(BaseData):
     mutation_factor: float = 0.5
     crossover_rate: float = 0.5
     crossing_type: CrossingType = CrossingType.BINOMIAL
+    base_vector_schema: BaseVectorSchema = BaseVectorSchema.CURRENT
 
 @dataclass
 class COMDEData(BaseData):
@@ -62,7 +64,7 @@ class EMDEData(BaseData):
 
 @dataclass
 class IDEData(BaseData):
-    pass
+    base_vector_schema: BaseVectorSchema = BaseVectorSchema.CURRENT
 
 
 @dataclass
@@ -77,6 +79,7 @@ class OppBasedData(BaseData):
     mutation_factor: float = 0.1
     crossover_rate: float = 0.1
     crossing_type: CrossingType = CrossingType.BINOMIAL
+    base_vector_schema: BaseVectorSchema = BaseVectorSchema.CURRENT
     max_nfc: float = 0.1
     jumping_rate: float = 0.1
 
@@ -114,6 +117,7 @@ class EIDEData(BaseData):
     crossover_rate_min: float = 0.1
     crossover_rate_max: float = 0.1
     crossing_type: CrossingType = CrossingType.BINOMIAL
+    base_vector_schema: BaseVectorSchema = BaseVectorSchema.CURRENT
 
 
 @dataclass
