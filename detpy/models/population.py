@@ -42,7 +42,10 @@ class Population:
 
     def get_best_members(self, nr_of_members):
         # Get the indices that would sort the array based on the key function
-        sorted_indices = np.argsort([member.fitness_value for member in self.members])
+        if self.optimization == OptimizationType.MINIMIZATION:
+            sorted_indices = np.argsort([member.fitness_value for member in self.members])
+        else:
+            sorted_indices = np.argsort([member.fitness_value for member in self.members])[::-1]
         # Use the sorted indices to sort the array
         sorted_array = self.members[sorted_indices]
         return sorted_array[:nr_of_members]
