@@ -36,10 +36,11 @@ if __name__ == "__main__":
         lb=a,
         ub=b,
         optimization_type=OptimizationType.MINIMIZATION,
-        base_vector_schema=BaseVectorSchema.RAND,
+        base_vector_schema=BaseVectorSchema.CURRENT,
         boundary_constraints_fun=BoundaryFixing.RANDOM,
         function=fitness_function,
         log_population=True,
+        y=3
     )
     params.parallel_processing = ['thread', 5]
 

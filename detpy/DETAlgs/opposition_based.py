@@ -24,6 +24,7 @@ class OppBasedDE(BaseAlg):
         self.mutation_factor = params.mutation_factor  # F
         self.crossover_rate = params.crossover_rate  # Cr
         self.crossing_type = params.crossing_type
+        self.y = params.y
         self.base_vector_schema = params.base_vector_schema
         self.nfc = 0  # number of function calls
         self.max_nfc = params.max_nfc
@@ -32,7 +33,7 @@ class OppBasedDE(BaseAlg):
     def next_epoch(self):
         # New population after mutation
         v_pop = mutation(self._pop, base_vector_schema=self.base_vector_schema,
-                         optimization_type=self.optimization_type, f=self.mutation_factor)
+                         optimization_type=self.optimization_type, y=self.y, f=self.mutation_factor)
 
         # Apply boundary constrains on population in place
         fix_boundary_constraints(v_pop, self.boundary_constraints_fun)
