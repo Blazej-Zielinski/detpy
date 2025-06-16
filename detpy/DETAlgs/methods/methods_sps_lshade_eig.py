@@ -4,6 +4,7 @@ import numpy as np
 
 from detpy.models.member import Member
 from detpy.models.population import Population
+from random import randrange
 
 
 def calculate_best_member_count(population_size: int, p_best_fraction: float = None) -> int:
@@ -29,7 +30,6 @@ def calculate_best_member_count(population_size: int, p_best_fraction: float = N
         random_percentage = np.random.uniform(min_percentage, max_percentage)
         return int(random_percentage * population_size)
 
-from random import randrange
 
 def archive_reduction(archive: list, pop_size: int, w_ext: float) -> list:
     """
@@ -57,6 +57,7 @@ def archive_reduction(archive: list, pop_size: int, w_ext: float) -> list:
 
     return archive
 
+
 def mutation_internal(base_member: Member, best_member: Member, r1: Member, r2: Member, f: float):
     """
     Formula: bm + Fw * (bm_best - bm) + F * (r1 - r2)
@@ -76,7 +77,8 @@ def mutation_internal(base_member: Member, best_member: Member, r1: Member, r2: 
                                      f * (r1.chromosomes - r2.chromosomes))
     return new_member
 
-def binomial_crossover_internal( x, v, CR):
+
+def binomial_crossover_internal(x, v, CR):
     dim = len(x.chromosomes)
     new_member = copy.deepcopy(x)
     j_rand = np.random.randint(0, dim)
@@ -84,6 +86,7 @@ def binomial_crossover_internal( x, v, CR):
         if np.random.rand() < CR or j == j_rand:
             new_member.chromosomes[j].real_value = v.chromosomes[j].real_value
     return new_member
+
 
 def fix_boundary_constraints(population: Population, trial: Population):
     for member, member_pop in zip(trial.members, population.members):
