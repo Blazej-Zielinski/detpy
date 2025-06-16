@@ -161,3 +161,6 @@ class SPSLShadeEIGDATA(BaseData):
     learning_rate_init: float = 0.1
     p_best_fraction: float = 0.1
     w_ext: float = 1.90
+    w_er: float = 0.6807
+    w_cr: float = 0.2079
+    w_f: float = 0.3530
