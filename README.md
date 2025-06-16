@@ -26,6 +26,7 @@ The following variants have been implemented:
 | 17  | SHADE (Success-History Based Parameter Adaptation for Differential Evolution) [16]            | 2013 |
 | 18  | LSHADE_RSP (Algorithm with a Rank-based Selective Pressure Strategy)  [17]                    | 2018 | 
 | 19  | LSHADE (Improving the Search Performance of SHADE Using Linear Population Size Reduction) [18]| 2014 |
+| 20  | SPS_LSHADE_EIG (Self-Optimizing L-SHADE with Eigenvector Crossover ) [19]                     | 2015 |
 
 # Installation
 ```
@@ -145,6 +146,8 @@ Test functions prepared based on https://gitlab.com/luca.baronti/python_benchmar
 16. Ryoji Tanabe, Alex Fukunaga. *Success-history based parameter adaptation for Differential Evolution*. IEEE Congress on Evolutionary Computation, 2013.
 17. Vladimir Stanovov, Shakhnaz Akhmedova, Eugene Semenkin. *Algorithm with a Rank-based Selective Pressure mutation (LSAHDE-RSP)*. IEEE Congress on Evolutionary Computation, 2018.
 18. Ryoji Tanabe, Alex Fukunaga. *Improving the Search Performance of SHADE Using Linear Population Size Reduction*. IEEE Congress on Evolutionary Computation, 2014.
+19. Shu-Mei Guo, Jason Sheng-Hong Tsai, Chin-Chang Yang, Pang-Han Hsu. *A self-optimization approach for L-SHADE incorporated with eigenvector-based crossover and successful-parent-selecting framework on CEC 2015 benchmark set*. IEEE Congress on Evolutionary Computation (CEC), 2015.
+
 # Documentation
 Full documentation is available: https://blazej-zielinski.github.io/detpy/
 
