@@ -164,3 +164,21 @@ class LSHADERSPData(BaseData):
 class LShadeData(BaseData):
     minimum_population_size: int = 5
     memory_size: int = 5
+
+
+@dataclass
+class SPSLShadeEIGDATA(BaseData):
+    minimum_population_size: int = 5
+    memory_size: int = 20
+    q: int = 64
+    f_init: float = 0.5
+    cr_init: float = 0.3
+    er_init: float = 1.0
+    cr_min: float = 0.6
+    cr_max: float = 0.95
+    learning_rate_init: float = 0.1
+    p_best_fraction: float = 0.1
+    w_ext: float = 1.90
+    w_er: float = 0.6807
+    w_cr: float = 0.2079
+    w_f: float = 0.3530
