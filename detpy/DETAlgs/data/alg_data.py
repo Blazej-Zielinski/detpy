@@ -182,3 +182,11 @@ class SPSLShadeEIGDATA(BaseData):
     w_er: float = 0.6807
     w_cr: float = 0.2079
     w_f: float = 0.3530
+
+
+@dataclass
+class ALSHADEData(BaseData):
+    minimum_population_size: int = 4
+    memory_size : int = 6
+    elite_factor: float = 0.5
+    init_probability_mutation_strategy: float = 0.5
