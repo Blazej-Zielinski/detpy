@@ -27,8 +27,9 @@ class DEData(BaseData):
     mutation_factor: float = 0.5
     crossover_rate: float = 0.5
     crossing_type: CrossingType = CrossingType.BINOMIAL
-    y:int = 1
+    y: int = 1
     base_vector_schema: BaseVectorSchema = BaseVectorSchema.CURRENT
+
 
 @dataclass
 class COMDEData(BaseData):
@@ -66,7 +67,7 @@ class EMDEData(BaseData):
 @dataclass
 class IDEData(BaseData):
     base_vector_schema: BaseVectorSchema = BaseVectorSchema.CURRENT
-    y:int = 1
+    y: int = 1
 
 
 @dataclass
@@ -81,7 +82,7 @@ class OppBasedData(BaseData):
     mutation_factor: float = 0.1
     crossover_rate: float = 0.1
     crossing_type: CrossingType = CrossingType.BINOMIAL
-    y:int = 1
+    y: int = 1
     base_vector_schema: BaseVectorSchema = BaseVectorSchema.CURRENT
     max_nfc: float = 0.1
     jumping_rate: float = 0.1
@@ -120,7 +121,7 @@ class EIDEData(BaseData):
     crossover_rate_min: float = 0.1
     crossover_rate_max: float = 0.1
     crossing_type: CrossingType = CrossingType.BINOMIAL
-    y:int = 1
+    y: int = 1
     base_vector_schema: BaseVectorSchema = BaseVectorSchema.CURRENT
 
 
@@ -146,6 +147,7 @@ class ImprovedDEData(BaseData):
     mutation_factor: float = 0.1
     crossover_rate: float = 0.5
     crossing_type: CrossingType = CrossingType.BINOMIAL
+
 
 @dataclass
 class ShadeData(BaseData):
@@ -187,6 +189,6 @@ class SPSLShadeEIGDATA(BaseData):
 @dataclass
 class ALSHADEData(BaseData):
     minimum_population_size: int = 4
-    memory_size : int = 6
+    memory_size: int = 6
     elite_factor: float = 0.5
     init_probability_mutation_strategy: float = 0.5

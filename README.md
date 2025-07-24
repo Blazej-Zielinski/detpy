@@ -27,7 +27,7 @@ The following variants have been implemented:
 | 18  | LSHADE_RSP (Algorithm with a Rank-based Selective Pressure Strategy)  [17]                             | 2018 | 
 | 19  | LSHADE (Improving the Search Performance of SHADE Using Linear Population Size Reduction) [18]         | 2014 |
 | 20  | SPS_LSHADE_EIG (Self-Optimizing L-SHADE with Eigenvector Crossover ) [19]                              | 2015 |
-| 21  | AL-SHADE (Adaptive L-SHADE with current-to-Amean strategy and adaptive mutation selection scheme)[20]  | 2022 |
+| 21  | AL-SHADE (Adaptive L-SHADE with current-to-Amean strategy and adaptive mutation selection scheme) [20] | 2022 |
 # Installation
 ```
 pip install detpy
