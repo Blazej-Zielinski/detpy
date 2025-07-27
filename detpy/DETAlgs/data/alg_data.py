@@ -192,3 +192,11 @@ class ALSHADEData(BaseData):
     memory_size: int = 6
     elite_factor: float = 0.5
     init_probability_mutation_strategy: float = 0.5
+
+@dataclass
+class DEACRData(BaseData):
+    triangular_distribution_for_crossover_rate = [0.2, 0.5, 1.0]
+    triangular_distribution_for_mutation_factory = [0.3, 0.4, 0.5]
+    number_of_success_crossover_rate: int = 15
+    lineal_recombination_factor: float = 0.75
+    gamma_var : int = 3
