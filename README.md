@@ -29,6 +29,7 @@ The following variants have been implemented:
 | 20  | SPS_LSHADE_EIG (Self-Optimizing L-SHADE with Eigenvector Crossover ) [19]                              | 2015 |
 | 21  | AL-SHADE (Adaptive L-SHADE with current-to-Amean strategy and adaptive mutation selection scheme) [20] | 2022 |
 | 22  | DETCR (Hybrid DE Algorithm With Adaptive Crossover Operator) [21]                                      | 2011 |
+| 23  | EPSDE (Epsilon Constrained Differential Evolution) [22]                                                | 2006 |
 # Installation
 ```
 pip install detpy
@@ -149,10 +150,8 @@ Test functions prepared based on https://gitlab.com/luca.baronti/python_benchmar
 18. Ryoji Tanabe, Alex Fukunaga. *Improving the Search Performance of SHADE Using Linear Population Size Reduction*. IEEE Congress on Evolutionary Computation, 2014.
 19. Shu-Mei Guo, Jason Sheng-Hong Tsai, Chin-Chang Yang, Pang-Han Hsu. *A self-optimization approach for L-SHADE incorporated with eigenvector-based crossover and successful-parent-selecting framework on CEC 2015 benchmark set*. IEEE Congress on Evolutionary Computation (CEC), 2015.
 20. Yintong Li, Tong Han, Huan Zhou, Shangqin Tang, Hui Zhao. *A novel adaptive L-SHADE algorithm and its application in UAV swarm resource configuration problem*. Information Sciences, vol. 606, pp. 350–367, 2022.
-21. Gilberto Reynoso-Meza; Javier Sanchis; Xavier Blasco; Juan M. Herrero,
-          "Hybrid DE algorithm with adaptive crossover operator for solving real-world numerical optimization problems",
-          2011 IEEE Congress of Evolutionary Computation (CEC),
-          New Orleans, LA, USA, 2011, doi: 10.1109/CEC.2011.5949800.
+21. Gilberto Reynoso-Meza, Javier Sanchis, Xavier Blasco, Juan M. Herrero, "Hybrid DE algorithm with adaptive crossover operator for solving real-world numerical optimization problems", 2011 IEEE Congress of Evolutionary Computation (CEC), New Orleans, LA, USA, 2011, doi: 10.1109/CEC.2011.5949800.
+22. Tetsuyuki Takahama, Setsuko Sakai, Noriyuki Iwane, "Solving Nonlinear Constrained Optimization Problems by the Epsilon Constrained Differential Evolution", 2006 IEEE International Conference on Systems, Man and Cybernetics,
 # Documentation
 Full documentation is available: https://blazej-zielinski.github.io/detpy/
 
