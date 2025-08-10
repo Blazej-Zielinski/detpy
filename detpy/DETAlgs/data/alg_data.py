@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Optional, Callable
 
 from detpy.models.enums.basevectorschema import BaseVectorSchema
 from detpy.models.enums.crossingtype import CrossingType
@@ -200,3 +200,12 @@ class DEACRData(BaseData):
     number_of_success_crossover_rate: int = 15
     lineal_recombination_factor: float = 0.75
     gamma_var : int = 3
+
+@dataclass
+class EPSDEData(BaseData):
+    mutation_factor : float = 0.7
+    crossover_rate : float = 0.9
+    epsilon_level : int = 0
+    penalty_power : int = 2
+    g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
+    h_funcs : list[Callable[[list[float]], float]] = field(default_factory=list)
