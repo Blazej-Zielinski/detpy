@@ -3,6 +3,7 @@ from typing import Optional, Callable
 
 from detpy.models.enums.basevectorschema import BaseVectorSchema
 from detpy.models.enums.crossingtype import CrossingType
+from detpy.models.enums.derivative_method import DerivativeMethod
 from detpy.models.fitness_function import FitnessFunctionBase
 from detpy.models.enums.boundary_constrain import BoundaryFixing
 from detpy.models.enums.optimization import OptimizationType
@@ -207,5 +208,21 @@ class EPSDEData(BaseData):
     crossover_rate : float = 0.9
     epsilon_level : int = 0
     penalty_power : int = 2
+    g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
+    h_funcs : list[Callable[[list[float]], float]] = field(default_factory=list)
+
+@dataclass
+class EPSDEAGData(BaseData):
+    init_mutation_factor : float = 0.5
+    init_crossover_rate : float = 0.9
+    theta : float = 0.9
+    penalty_power : int = 2
+    control_generations : int = 150
+    archive_size: int = 300
+    gradient_base_mutation_rate : float = 0.2
+    number_of_repeating_mutation = 3
+    number_of_repeating_de_operations = 2
+    gradient_mutation_interval = 5
+    derivative_method = DerivativeMethod.NUMERIC
     g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
     h_funcs : list[Callable[[list[float]], float]] = field(default_factory=list)
