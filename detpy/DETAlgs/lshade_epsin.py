@@ -4,7 +4,6 @@ import math
 import numpy as np
 from typing import List
 
-
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import LShadeEpsinData
 from detpy.DETAlgs.methods.methods_alshade import mutation_internal, fix_boundary_constraints
@@ -42,8 +41,6 @@ class LShadeEpsin(BaseAlg):
         self.start_population_size = self.population_size
 
         self.freg = params.freg
-
-
 
     def calculate_max_evaluations_lpsr(self, start_pop_size):
         total_evaluations = 0
@@ -133,7 +130,8 @@ class LShadeEpsin(BaseAlg):
         self.memory_Cr = np.append(self.memory_Cr[1:], cr_new)
 
         if len(self.success_freg) > 0:
-            freq_new = np.sum(weights_freg * np.square(self.success_freg)) / np.sum(weights_freg * np.array(self.success_freg))
+            freq_new = np.sum(weights_freg * np.square(self.success_freg)) / np.sum(
+                weights_freg * np.array(self.success_freg))
             freq_new = np.clip(freq_new, 0.01, 1.0)
             self.freq_memory = np.append(self.freq_memory[1:], freq_new)
             self.success_freg = []
@@ -240,7 +238,6 @@ class LShadeEpsin(BaseAlg):
                     (self._pop.optimization == OptimizationType.MAXIMIZATION and
                      candidates.members[i].fitness_value > self._pop.members[idx].fitness_value):
                 self._pop.members[idx] = candidates.members[i]
-
 
     def next_epoch(self):
         f_table, cr_table, bests_to_select, freg_values = self.initialize_parameters_for_epoch()
