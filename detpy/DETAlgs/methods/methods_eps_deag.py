@@ -155,27 +155,28 @@ def constraint_functions(chromosomes : list, derivative_method : DerivativeMetho
     equality_constraints = ([h(chromosomes) for h in h_funcs])
     return np.concatenate((inequality_constraints, equality_constraints))
 
-def gradient_mutation(pop_population: Population, number_of_repeating_mutation : int, derivative_method : DerivativeMethod, g_funcs : list, h_funcs : list, penalty_power : int, is_gradient_mutation : bool):
+def calculate_delta_x(chromosomes : list[float], derivative_method : DerivativeMethod, g_funcs : list, h_funcs : list, epsilon_constrain : float):
+    if DerivativeMethod.NUMERIC == derivative_method:
+        gradient_constraint = derivative_numeric(chromosomes, g_funcs, h_funcs)
+    elif DerivativeMethod.SYMBOLIC == derivative_method:
+        gradient_constraint = derivative_symbolic(chromosomes, g_funcs, h_funcs)
+    else:
+        gradient_constraint = jacobian(constraint_functions)(anp.array(chromosomes))
+
+    inv_gradient_constraint = inverse_gradient_constraints(gradient_constraint)
+
+    return -np.dot(-inv_gradient_constraint, epsilon_constrain)
+
+def gradient_mutation(pop_population: Population, number_of_repeating_mutation : int, gradient_base_mutation_rate : float, derivative_method : DerivativeMethod, g_funcs : list, h_funcs : list, penalty_power : int, gradient_mutation_flag : bool):
     new_members = []
-    if is_gradient_mutation:
+    if gradient_mutation_flag:
         for i in range(len(pop_population.members)):
             member = copy.deepcopy(pop_population.members[i])
-            if  random.uniform(0, 1) < number_of_repeating_mutation:
+            if random.uniform(0, 1) < gradient_base_mutation_rate:
                 h = 0
                 epsilon_constrain = epsilon_constrained_method(member.get_chromosomes(), g_funcs, h_funcs, penalty_power)
                 while h < number_of_repeating_mutation and epsilon_constrain > 0:
-                    chromosomes = member.get_chromosomes()
-                    gradient_constraint = None
-                    if DerivativeMethod.NUMERIC == derivative_method:
-                        gradient_constraint = derivative_numeric(chromosomes, g_funcs, h_funcs)
-                    elif DerivativeMethod.SYMBOLIC == derivative_method:
-                        gradient_constraint = derivative_symbolic(chromosomes, g_funcs, h_funcs)
-                    else:
-                        gradient_constraint = jacobian(constraint_functions)(anp.array(chromosomes))
-
-                    inv_gradient_constraint = inverse_gradient_constraints(gradient_constraint)
-
-                    delta_x =  -np.dot(-inv_gradient_constraint, epsilon_constrain)
+                    delta_x = calculate_delta_x(member.get_chromosomes(), derivative_method, g_funcs, h_funcs, epsilon_constrain)
 
                     for j in range(member.args_num):
                         member.chromosomes[j].real_value = member.chromosomes[j].real_value + delta_x.item(j)

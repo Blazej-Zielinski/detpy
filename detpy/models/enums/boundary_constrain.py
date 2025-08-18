@@ -7,6 +7,7 @@ from detpy.models.population import Population
 class BoundaryFixing(Enum):
     CLIPPING = 'clipping'
     REFLECTION = 'reflection'
+    REFLECTION_BACK = 'reflection_back'
     RANDOM = 'random'
 
 
@@ -14,6 +15,7 @@ def get_boundary_constraints_fun(fix_type: BoundaryFixing):
     return {
         BoundaryFixing.CLIPPING: lambda member: boundary_clipping(member),
         BoundaryFixing.REFLECTION: lambda member: boundary_reflection(member),
+        BoundaryFixing.REFLECTION_BACK: lambda member: boundary_reflection_back(member),
         BoundaryFixing.RANDOM: lambda member: boundary_random(member),
     }.get(fix_type, lambda: None)
 
@@ -65,3 +67,17 @@ def boundary_random(member: Member):
     for chromosome in member.chromosomes:
         if chromosome.real_value < chromosome.lb or chromosome.real_value > chromosome.ub:
             chromosome.real_value = np.random.uniform(chromosome.lb, chromosome.ub)
+
+def boundary_reflection_back(member: Member):
+    """
+    Modifies the values of `member` in-place.
+
+    :param member: The member to be modified.
+    """
+    for chromosome in member.chromosomes:
+        range_i = chromosome.ub - chromosome.lb
+        if chromosome.real_value > chromosome.ub:
+            chromosome.real_value = chromosome.ub - (chromosome.real_value - chromosome.ub) + int((chromosome.real_value - chromosome.ub) / range_i) * range_i
+        elif chromosome.real_value < chromosome.lb:
+            chromosome.real_value = chromosome.lb - (chromosome.lb - chromosome.real_value) + int((chromosome.lb - chromosome.real_value) / range_i) * range_i
+

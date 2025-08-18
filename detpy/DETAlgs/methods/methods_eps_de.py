@@ -40,7 +40,7 @@ def epsilon_level_comparisons(reference_member: Member, comparison_member: Membe
             return False
 
 def selection(origin_population: Population, modified_population: Population,
-              origin_epsilon_constrained : list[float], modified_epsilon_constrained : list[float], selected : list[float],
+              origin_epsilon_constrained : list[float], modified_epsilon_constrained : list[float],
               epsilon_level : int) -> Population:
     """
        Perform selection operation for the population.
