@@ -152,9 +152,9 @@ Test functions prepared based on https://gitlab.com/luca.baronti/python_benchmar
 18. Ryoji Tanabe, Alex Fukunaga. *Improving the Search Performance of SHADE Using Linear Population Size Reduction*. IEEE Congress on Evolutionary Computation, 2014.
 19. Shu-Mei Guo, Jason Sheng-Hong Tsai, Chin-Chang Yang, Pang-Han Hsu. *A self-optimization approach for L-SHADE incorporated with eigenvector-based crossover and successful-parent-selecting framework on CEC 2015 benchmark set*. IEEE Congress on Evolutionary Computation (CEC), 2015.
 20. Yintong Li, Tong Han, Huan Zhou, Shangqin Tang, Hui Zhao. *A novel adaptive L-SHADE algorithm and its application in UAV swarm resource configuration problem*. Information Sciences, vol. 606, pp. 350–367, 2022.
-21. Gilberto Reynoso-Meza, Javier Sanchis, Xavier Blasco, Juan M. Herrero, "Hybrid DE algorithm with adaptive crossover operator for solving real-world numerical optimization problems", 2011 IEEE Congress of Evolutionary Computation (CEC), New Orleans, LA, USA, 2011, doi: 10.1109/CEC.2011.5949800.
-22. Tetsuyuki Takahama, Setsuko Sakai, Noriyuki Iwane, "Solving Nonlinear Constrained Optimization Problems by the Epsilon Constrained Differential Evolution", 2006 IEEE International Conference on Systems, Man and Cybernetics,
-23. Tetsuyuki Takahama, Setsuko Sakai, "Constrained optimization by the ε constrained differential evolution with an archive and gradient-based mutation", 2010 IEEE Congress on Evolutionary Computation,
+21. Gilberto Reynoso-Meza, Javier Sanchis, Xavier Blasco, Juan M. Herrero, *Hybrid DE algorithm with adaptive crossover operator for solving real-world numerical optimization problems*. IEEE Congress of Evolutionary Computation (CEC), New Orleans, LA, USA, 2011, doi: 10.1109/CEC.2011.5949800, 2011.
+22. Tetsuyuki Takahama, Setsuko Sakai, Noriyuki Iwane, *Solving Nonlinear Constrained Optimization Problems by the Epsilon Constrained Differential Evolution* IEEE International Conference on Systems, Man and Cybernetics, 2006.
+23. Tetsuyuki Takahama, Setsuko Sakai, *Constrained optimization by the ε constrained differential evolution with an archive and gradient-based mutation*. IEEE Congress on Evolutionary Computation, 2010.
 24. Noor H. Awad, Mostafa Z. Ali, Ponnuthurai N. Suganthan, Robert G. Reynolds. *L-SHADE with Ensemble Sinusoidal Parameter Adaptation*. IEEE Congress on Evolutionary Computation, 2016.
 # Documentation
 Full documentation is available: https://blazej-zielinski.github.io/detpy/
