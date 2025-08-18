@@ -210,8 +210,6 @@ class LShadeEpsinData(BaseData):
     init_probability_mutation_strategy: float = 0.5
     freg: float = 0.1
 
-    gamma_var : int = 3
-
 @dataclass
 class EPSDEData(BaseData):
     mutation_factor : float = 0.7
