@@ -8,7 +8,7 @@ from scipy.stats import iqr
 
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import DEACRData
-from detpy.DETAlgs.methods.methods_de import mutation, mutation_ind, binomial_crossing_ind, selection
+from detpy.DETAlgs.methods.methods_de import selection
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints, get_boundary_constraints_fun
 from detpy.models.enums.optimization import OptimizationType
 from detpy.models.member import Member
