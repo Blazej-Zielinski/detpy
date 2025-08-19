@@ -26,7 +26,7 @@ class Member:
 
     def is_member_in_interval(self):
         for i in range(len(self.chromosomes)):
-            if not (self.lb[i] <= self.chromosomes[i].real_value <= self.ub[1]):
+            if not (self.lb[i] <= self.chromosomes[i].real_value <= self.ub[i]):
                 return False
         return True
 
