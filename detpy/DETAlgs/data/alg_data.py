@@ -200,7 +200,15 @@ class DEACRData(BaseData):
     triangular_distribution_for_mutation_factory = [0.3, 0.4, 0.5]
     number_of_success_crossover_rate: int = 15
     lineal_recombination_factor: float = 0.75
-    gamma_var : int = 3
+    gamma_var: int = 3
+
+@dataclass
+class LShadeEpsinData(BaseData):
+    minimum_population_size: int = 5
+    memory_size: int = 5
+    elite_factor: float = 0.5
+    init_probability_mutation_strategy: float = 0.5
+    freg: float = 0.1
 
 @dataclass
 class EPSDEData(BaseData):
