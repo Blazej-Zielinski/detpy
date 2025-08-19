@@ -234,3 +234,16 @@ class EPSDEAGData(BaseData):
     derivative_method = DerivativeMethod.NUMERIC
     g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
     h_funcs : list[Callable[[list[float]], float]] = field(default_factory=list)
+
+@dataclass
+class EPSDEGData(BaseData):
+    mutation_factor : float = 0.5
+    crossover_rate : float = 0.9
+    gradient_base_mutation_rate : float = 0.2
+    theta : float = 0.9
+    penalty_power : int = 2
+    control_generations : int = 150
+    gradient_mutation_interval = 5
+    derivative_method = DerivativeMethod.NUMERIC
+    g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
+    h_funcs : list[Callable[[list[float]], float]] = field(default_factory=list)

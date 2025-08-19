@@ -17,7 +17,7 @@ from detpy.models.population import Population
 class EPSDEAG(BaseAlg):
 
     """
-          EPSDEAG - Constrained Optimization by the ε Constrained Differential Evolution with an Archive and Gradient-Based Mutation
+          EPSDEAG - Epsilon Constrained Differential Evolution with an Archive and Gradient-Based Mutation
 
           Links:
           https://ieeexplore.ieee.org/document/5586484
@@ -103,7 +103,8 @@ class EPSDEAG(BaseAlg):
             # New population after crossing
             u_pop = crossing(new_pop, v_pop, cr=crossover_rate, crossing_type=CrossingType.EXPOTENTIAL)
 
-            gradient_mutation_pop = gradient_mutation(u_pop,  self.number_of_repeating_mutation, self.derivative_method, self.g_funcs, self.h_funcs, self.penalty_power, gradient_mutation_flag)
+            gradient_mutation_pop = gradient_mutation(u_pop,  self.number_of_repeating_mutation, self.gradient_base_mutation_rate,
+                                                      self.derivative_method, self.g_funcs, self.h_funcs, self.penalty_power, gradient_mutation_flag)
 
             # Update values before selection
             gradient_mutation_pop.update_fitness_values(self._function.eval, self.parallel_processing)
