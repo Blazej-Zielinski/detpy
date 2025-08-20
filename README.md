@@ -5,35 +5,35 @@ The DetPy library contains implementations of the differential evolution algorit
 algorithm. It can be used to solve advanced optimization problems.
 The following variants have been implemented:
 
-| No.  | Algorithm                                                                                                                        | Year |
-|------|----------------------------------------------------------------------------------------------------------------------------------|------|
-| 1    | DE (Differential evolution) [1]                                                                                                  | 1997 |
-| 2    | COMDE (Constrained optimization-based differential evolution) [2]                                                                | 2012 |
-| 3    | DERL (Differential evolution random locations) [3]                                                                               | 2006 |
-| 4    | NMDE (Novel modified differential evolution algorithm) [4]                                                                       | 2011 |
-| 5    | FIADE (Fitness-Adaptive DE) [5]                                                                                                  | 2011 |
-| 6    | EMDE (Efficient modified differential evolution) [6]                                                                             | 2015 |
-| 7    | IDE (Improved differential evolution) [7]                                                                                        | 2019 |
-| 8    | SADE (Self-adaptive differential evolution) [8]                                                                                  | 2008 |
-| 9    | JADE (Adaptive differential evolution with optional external archive) [9]                                                        | 2009 |
-| 10   | OppBasedDE (Opposition-based differential evolution) [10]                                                                        | 2010 |
-| 11   | AADE (Auto adaptive differential evolution algorithm) [11]                                                                       | 2019 |
-| 12   | DEGL (Differential evolution with neighborhood-based mutation) [12]                                                              | 2009 |
-| 13   | DELB (Differential evolution with localization using the best vector) [3]                                                        | 2006 |
-| 14   | EIDE (An efficient improved differential evolution algorithm) [13]                                                               | 2012 |
-| 15   | MGDE (A many-objective guided differential evolution) [14]                                                                       | 2022 |
-| 16   | ImprovedDE (DE with dynamic mutation parameters) [15]                                                                            | 2023 |
-| 17   | SHADE (Success-History Based Parameter Adaptation for Differential Evolution) [16]                                               | 2013 |
-| 18   | LSHADE_RSP (Algorithm with a Rank-based Selective Pressure Strategy)  [17]                                                       | 2018 | 
-| 19   | LSHADE (Improving the Search Performance of SHADE Using Linear Population Size Reduction) [18]                                   | 2014 |
-| 20   | SPS_LSHADE_EIG (Self-Optimizing L-SHADE with Eigenvector Crossover ) [19]                                                        | 2015 |
-| 21   | AL-SHADE (Adaptive L-SHADE with current-to-Amean strategy and adaptive mutation selection scheme) [20]                           | 2022 |
-| 22   | DETCR (Hybrid DE Algorithm With Adaptive Crossover Operator) [21]                                                                | 2011 |
-| 23   | EPSDE (Epsilon Constrained Differential Evolution) [22]                                                                          | 2006 |
-| 24   | EPSDEAG (Constrained Optimization by the ε Constrained Differential Evolution with an Archive and Gradient-Based Mutation) [23]  | 2010 |
-| 25   | LSHADE_EPSIN (L-SHADE with Ensemble Sinusoidal Parameter Adaptation) [24]                                                        | 2016 |
-| 26   | EPSDEG (Epsilon Constrained Differential Evolution with Gradient-Based Mutation) [25]                  | 2009 |
-
+| No. | Algorithm                                                                                                                       | Year |
+|-----|---------------------------------------------------------------------------------------------------------------------------------|------|
+| 1   | DE (Differential evolution) [1]                                                                                                 | 1997 |
+| 2   | COMDE (Constrained optimization-based differential evolution) [2]                                                               | 2012 |
+| 3   | DERL (Differential evolution random locations) [3]                                                                              | 2006 |
+| 4   | NMDE (Novel modified differential evolution algorithm) [4]                                                                      | 2011 |
+| 5   | FIADE (Fitness-Adaptive DE) [5]                                                                                                 | 2011 |
+| 6   | EMDE (Efficient modified differential evolution) [6]                                                                            | 2015 |
+| 7   | IDE (Improved differential evolution) [7]                                                                                       | 2019 |
+| 8   | SADE (Self-adaptive differential evolution) [8]                                                                                 | 2008 |
+| 9   | JADE (Adaptive differential evolution with optional external archive) [9]                                                       | 2009 |
+| 10  | OppBasedDE (Opposition-based differential evolution) [10]                                                                       | 2010 |
+| 11  | AADE (Auto adaptive differential evolution algorithm) [11]                                                                      | 2019 |
+| 12  | DEGL (Differential evolution with neighborhood-based mutation) [12]                                                             | 2009 |
+| 13  | DELB (Differential evolution with localization using the best vector) [3]                                                       | 2006 |
+| 14  | EIDE (An efficient improved differential evolution algorithm) [13]                                                              | 2012 |
+| 15  | MGDE (A many-objective guided differential evolution) [14]                                                                      | 2022 |
+| 16  | ImprovedDE (DE with dynamic mutation parameters) [15]                                                                           | 2023 |
+| 17  | SHADE (Success-History Based Parameter Adaptation for Differential Evolution) [16]                                              | 2013 |
+| 18  | LSHADE_RSP (Algorithm with a Rank-based Selective Pressure Strategy)  [17]                                                      | 2018 | 
+| 19  | LSHADE (Improving the Search Performance of SHADE Using Linear Population Size Reduction) [18]                                  | 2014 |
+| 20  | SPS_LSHADE_EIG (Self-Optimizing L-SHADE with Eigenvector Crossover ) [19]                                                       | 2015 |
+| 21  | AL-SHADE (Adaptive L-SHADE with current-to-Amean strategy and adaptive mutation selection scheme) [20]                          | 2022 |
+| 22  | DETCR (Hybrid DE Algorithm With Adaptive Crossover Operator) [21]                                                               | 2011 |
+| 23  | EPSDE (Epsilon Constrained Differential Evolution) [22]                                                                         | 2006 |
+| 24  | EPSDEAG (Constrained Optimization by the ε Constrained Differential Evolution with an Archive and Gradient-Based Mutation) [23] | 2010 |
+| 25  | LSHADE_EPSIN (L-SHADE with Ensemble Sinusoidal Parameter Adaptation) [24]                                                       | 2016 |
+| 26  | EPSDEG (Epsilon Constrained Differential Evolution with Gradient-Based Mutation) [25]                                           | 2009 |
+| 27  | EPSADE (Epsilon Constrained adaptive Differential Evolution) [26]                                                               | 2010 |
 # Installation
 ```
 pip install detpy
@@ -158,7 +158,8 @@ Test functions prepared based on https://gitlab.com/luca.baronti/python_benchmar
 22. Tetsuyuki Takahama, Setsuko Sakai, Noriyuki Iwane, *Solving Nonlinear Constrained Optimization Problems by the Epsilon Constrained Differential Evolution* IEEE International Conference on Systems, Man and Cybernetics, 2006.
 23. Tetsuyuki Takahama, Setsuko Sakai, *Constrained optimization by the ε constrained differential evolution with an archive and gradient-based mutation*. IEEE Congress on Evolutionary Computation, 2010.
 24. Noor H. Awad, Mostafa Z. Ali, Ponnuthurai N. Suganthan, Robert G. Reynolds. *L-SHADE with Ensemble Sinusoidal Parameter Adaptation*. IEEE Congress on Evolutionary Computation, 2016.
-25. T. Takahama and S. Sakai, *Solving difficult constrained optimization problems by the ε constrained differential evolution with gradient based mutation*, in Constraint-Handling in Evolutionary Optimization, E. Mezura-Montes, Ed. Springer-Verlag, 2009, pp. 51–72
+25. T. Takahama and S. Sakai, *Solving difficult constrained optimization problems by the ε constrained differential evolution with gradient based mutation*, in Constraint-Handling in Evolutionary Optimization, E. Mezura-Montes, Ed. Springer-Verlag, pp. 51–72, 2009
+26. Tetsuyuki Takahama and Setsuko Sakai, *Efficient Constrained Optimization by the ε Constrained Adaptive Differential Evolution*. IEEE Congress on Evolutionary Computation, 2010
 # Documentation
 Full documentation is available: https://blazej-zielinski.github.io/detpy/
 
