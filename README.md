@@ -34,6 +34,7 @@ The following variants have been implemented:
 | 25  | LSHADE_EPSIN (L-SHADE with Ensemble Sinusoidal Parameter Adaptation) [24]                                                       | 2016 |
 | 26  | EPSDEG (Epsilon Constrained Differential Evolution with Gradient-Based Mutation) [25]                                           | 2009 |
 | 27  | EPSADE (Epsilon Constrained adaptive Differential Evolution) [26]                                                               | 2010 |
+| 28  | EPSRDE (Epsilon Constrained Rank-Based Differential Evolution) [27]                                                             | 2012 |
 # Installation
 ```
 pip install detpy
@@ -160,6 +161,7 @@ Test functions prepared based on https://gitlab.com/luca.baronti/python_benchmar
 24. Noor H. Awad, Mostafa Z. Ali, Ponnuthurai N. Suganthan, Robert G. Reynolds. *L-SHADE with Ensemble Sinusoidal Parameter Adaptation*. IEEE Congress on Evolutionary Computation, 2016.
 25. T. Takahama and S. Sakai, *Solving difficult constrained optimization problems by the ε constrained differential evolution with gradient based mutation*, in Constraint-Handling in Evolutionary Optimization, E. Mezura-Montes, Ed. Springer-Verlag, pp. 51–72, 2009
 26. Tetsuyuki Takahama and Setsuko Sakai, *Efficient Constrained Optimization by the ε Constrained Adaptive Differential Evolution*. IEEE Congress on Evolutionary Computation, 2010
+27. Tetsuyuki Takahama and Setsuko Sakai, *Efficient Constrained Optimization by the ε Constrained Rank-Based Differential Evolution*. IEEE Congress on Evolutionary Computation, 2012
 # Documentation
 Full documentation is available: https://blazej-zielinski.github.io/detpy/
 
