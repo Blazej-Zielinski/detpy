@@ -16,7 +16,7 @@ class EPSRDE(BaseAlg):
           EPSRDE -  Epsilon Constrained Rank-Based Differential Evolution
 
           Links:
-          https://ieeexplore.ieee.org/abstract/document/4274215
+          https://ieeexplore.ieee.org/document/6256111
 
           References:
           Tetsuyuki Takahama and Setsuko Sakai
