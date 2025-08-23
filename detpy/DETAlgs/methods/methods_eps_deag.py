@@ -1,8 +1,9 @@
 import copy
 import random
+from functools import partial
 
 import numpy as np
-import scipy as sp
+import sympy as sp
 from autograd import jacobian
 import autograd.numpy as anp
 
@@ -124,12 +125,13 @@ def inverse_gradient_constraints(gradient_constraint : np.ndarray):
     return np.linalg.pinv(gradient_constraint)
 
 def derivative_numeric(chromosome : list, g_funcs : list, h_funcs : list, eta: float = 1e-5):
-    grad = np.zeros_like(chromosome)
-    for i in range(len(chromosome)):
+    chromosome_length = len(chromosome)
+    grad = []
+    for i in range(chromosome_length):
         e = np.zeros_like(chromosome)
         e[i] = 1.0
-        grad[i] = (constraint_functions((chromosome + eta * e).tolist(), DerivativeMethod.NUMERIC, g_funcs, h_funcs) - constraint_functions(chromosome, DerivativeMethod.NUMERIC, g_funcs, h_funcs)) / eta
-    return grad.reshape(1, -1)
+        grad.append((constraint_functions((chromosome + eta * e).tolist(), DerivativeMethod.NUMERIC, g_funcs, h_funcs) - constraint_functions(chromosome, DerivativeMethod.NUMERIC, g_funcs, h_funcs)) / eta)
+    return np.array(grad).T
 
 def derivative_symbolic(chromosome: list, g_funcs : list, h_funcs : list):
     n = len(chromosome)
@@ -161,7 +163,12 @@ def calculate_delta_x(chromosomes : list[float], derivative_method : DerivativeM
     elif DerivativeMethod.SYMBOLIC == derivative_method:
         gradient_constraint = derivative_symbolic(chromosomes, g_funcs, h_funcs)
     else:
-        gradient_constraint = jacobian(constraint_functions)(anp.array(chromosomes))
+        constraint_func_fixed = partial(
+            constraint_functions,
+            derivative_method=derivative_method,
+            g_funcs=g_funcs,
+            h_funcs=h_funcs)
+        gradient_constraint = jacobian(constraint_func_fixed)(anp.array(chromosomes))
 
     inv_gradient_constraint = inverse_gradient_constraints(gradient_constraint)
 
