@@ -228,9 +228,9 @@ class EPSDEAGData(BaseData):
     control_generations : int = 150
     archive_size: int = 300
     gradient_base_mutation_rate : float = 0.2
-    number_of_repeating_mutation = 3
-    number_of_repeating_de_operations = 2
-    gradient_mutation_interval = 5
+    number_of_repeating_mutation : int = 3
+    number_of_repeating_de_operations : int = 2
+    gradient_mutation_interval : int = 5
     derivative_method = DerivativeMethod.NUMERIC
     g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
     h_funcs : list[Callable[[list[float]], float]] = field(default_factory=list)
@@ -243,7 +243,7 @@ class EPSDEGData(BaseData):
     theta : float = 0.9
     penalty_power : int = 2
     control_generations : int = 150
-    gradient_mutation_interval = 5
+    gradient_mutation_interval : int = 5
     derivative_method = DerivativeMethod.NUMERIC
     g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
     h_funcs : list[Callable[[list[float]], float]] = field(default_factory=list)
@@ -254,11 +254,25 @@ class EPSADEData(BaseData):
     init_crossover_rate : float = 0.9
     mutation_factor_perturbation_width : float = 0.5
     crossover_rate_perturbation_width : float = 0.5
-    weight_of_update = 0.1
+    weight_of_update : float = 0.1
     penalty_power : int = 2
     theta: float = 0.9
-    epsilon_scaling_factor = 5
-    control_generations = 100
-    truncation_mechanism_factory = 0.9
+    epsilon_scaling_factor : int = 5
+    control_generations : int = 100
+    truncation_mechanism_factory : float = 0.9
+    g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
+    h_funcs : list[Callable[[list[float]], float]] = field(default_factory=list)
+
+@dataclass
+class EPSRDEData(BaseData):
+    crossing_type: CrossingType = CrossingType.EXPOTENTIAL
+    min_mutation_factor : float = 0.6
+    max_mutation_factor : float = 0.95
+    min_crossover_rate : float = 0.85
+    max_crossover_rate : float = 0.95
+    penalty_power : int = 2
+    control_generations: int = 150
+    epsilon_scaling_factor : int = 5
+    theta: float = 0.9
     g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
     h_funcs : list[Callable[[list[float]], float]] = field(default_factory=list)

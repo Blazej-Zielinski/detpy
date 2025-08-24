@@ -12,7 +12,7 @@ from detpy.models.population import Population
 
 def gradient_mutation(pop_population: Population, number_of_repeating_mutation : int, gradient_base_mutation_rate : float, epsilon_level : float, derivative_method : DerivativeMethod, g_funcs : list, h_funcs : list, penalty_power : int):
     new_members = []
-    for i in range(len(pop_population.members)):
+    for i in range(pop_population.size):
         member = copy.deepcopy(pop_population.members[i])
         epsilon_constrain = epsilon_constrained_method(member.get_chromosomes(), g_funcs, h_funcs, penalty_power)
         if epsilon_constrain > epsilon_level and random.uniform(0, 1) < gradient_base_mutation_rate:
