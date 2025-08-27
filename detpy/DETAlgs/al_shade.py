@@ -56,7 +56,9 @@ class ALSHADE(BaseAlg):
         if m == 0:
             return np.mean([[chrom.real_value for chrom in ind.chromosomes] for ind in self.archive], axis=0)
 
-        sorted_archive = sorted(self.archive, key=lambda ind: ind.fitness_value)
+        reverse_sort = (self._pop.optimization == OptimizationType.MAXIMIZATION)
+        sorted_archive = sorted(self.archive, key=lambda ind: ind.fitness_value, reverse=reverse_sort)
+
         top_m = sorted_archive[:m]
         weights = np.log(m + 0.5) - np.log(np.arange(1, m + 1))
         weights /= np.sum(weights)
