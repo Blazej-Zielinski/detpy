@@ -17,15 +17,6 @@ def wrap_as_chromosomes(float_array: np.ndarray, template_chromosomes: list) -> 
     return chromosomes
 
 
-def fix_boundary_constraints(population: Population, trial: Population):
-    for member, member_pop in zip(trial.members, population.members):
-        for chromosome, chromosome_pop in zip(member.chromosomes, member_pop.chromosomes):
-            if chromosome.real_value > chromosome.ub:
-                chromosome.real_value = (chromosome.ub + chromosome_pop.real_value) / 2
-            elif chromosome.real_value < chromosome.lb:
-                chromosome.real_value = (chromosome.lb + chromosome_pop.real_value) / 2
-
-
 def current_to_xamean(base_member: Member, xamean: Member, r1: Member, r2: Member, f: float) -> Member:
     """
     Implements the current-to-Amean/1 mutation strategy:

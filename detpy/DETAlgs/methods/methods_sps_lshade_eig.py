@@ -86,12 +86,3 @@ def binomial_crossover_internal(x, v, CR):
         if np.random.rand() < CR or j == j_rand:
             new_member.chromosomes[j].real_value = v.chromosomes[j].real_value
     return new_member
-
-
-def fix_boundary_constraints(population: Population, trial: Population):
-    for member, member_pop in zip(trial.members, population.members):
-        for chromosome, chromosome_pop in zip(member.chromosomes, member_pop.chromosomes):
-            if chromosome.real_value > chromosome.ub:
-                chromosome.real_value = (chromosome.ub + chromosome_pop.real_value) / 2
-            elif chromosome.real_value < chromosome.lb:
-                chromosome.real_value = (chromosome.lb + chromosome_pop.real_value) / 2

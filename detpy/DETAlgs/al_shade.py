@@ -4,8 +4,9 @@ from typing import List
 
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import ALSHADEData
-from detpy.DETAlgs.methods.methods_alshade import mutation_internal, current_to_xamean, fix_boundary_constraints
+from detpy.DETAlgs.methods.methods_alshade import mutation_internal, current_to_xamean
 from detpy.DETAlgs.methods.methods_lshade import calculate_best_member_count, crossing, archive_reduction
+from detpy.models.enums.boundary_constrain import fix_boundary_constraints_with_parent
 from detpy.models.enums.optimization import OptimizationType
 from detpy.models.population import Population
 
@@ -183,7 +184,7 @@ class ALSHADE(BaseAlg):
         mutant = self.mutate(self._pop, bests_to_select, f_table)
 
         trial = crossing(self._pop, mutant, cr_table)
-        fix_boundary_constraints(self._pop, trial)
+        fix_boundary_constraints_with_parent(self._pop, trial, self.boundary_constraints_fun)
         trial.update_fitness_values(self._function.eval, self.parallel_processing)
         self.nfe += self._pop.size
         self._pop = self.selection(self._pop, trial, f_table, cr_table)
