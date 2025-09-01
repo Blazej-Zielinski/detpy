@@ -6,7 +6,8 @@ import numpy as np
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import SPSLShadeEIGDATA
 from detpy.DETAlgs.methods.methods_sps_lshade_eig import archive_reduction, calculate_best_member_count, \
-    mutation_internal, binomial_crossover_internal, fix_boundary_constraints
+    mutation_internal, binomial_crossover_internal
+from detpy.models.enums.boundary_constrain import fix_boundary_constraints_with_parent
 
 from detpy.models.enums.optimization import OptimizationType
 from detpy.models.population import Population
@@ -239,7 +240,7 @@ class SPS_LSHADE_EIG(BaseAlg):
         mutant = self.mutate(self._pop, the_bests_to_select, f_table)
         trial = self.crossing_with_er(self._pop, mutant, cr_table, er_table)
 
-        fix_boundary_constraints(self._pop, trial)
+        fix_boundary_constraints_with_parent(self._pop, trial, self.boundary_constraints_fun)
         trial.update_fitness_values(self._function.eval, self.parallel_processing)
 
         self.nfe += len(trial.members)

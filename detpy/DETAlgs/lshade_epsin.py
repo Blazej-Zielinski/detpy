@@ -6,8 +6,9 @@ from typing import List
 
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import LShadeEpsinData
-from detpy.DETAlgs.methods.methods_alshade import mutation_internal, fix_boundary_constraints
+from detpy.DETAlgs.methods.methods_alshade import mutation_internal
 from detpy.DETAlgs.methods.methods_lshade import calculate_best_member_count, crossing, archive_reduction
+from detpy.models.enums.boundary_constrain import fix_boundary_constraints_with_parent
 from detpy.models.enums.optimization import OptimizationType
 from detpy.models.population import Population
 
@@ -115,8 +116,16 @@ class LShadeEpsin(BaseAlg):
         new_population.members = np.array(new_members)
         return new_population
 
+    def _reset_success_metrics(self):
+        self.success_f = []
+        self.success_cr = []
+        self.difference_fitness_success = []
+        self.difference_fitness_success_freg = []
+
+
     def update_memory(self, success_f, success_cr, df, df_freg):
         if not success_f:
+            self._reset_success_metrics()
             return
         total = sum(df)
         total_freg = sum(df_freg)
@@ -136,10 +145,7 @@ class LShadeEpsin(BaseAlg):
             self.freq_memory = np.append(self.freq_memory[1:], freq_new)
             self.success_freg = []
 
-        self.success_f = []
-        self.success_cr = []
-        self.difference_fitness_success = []
-        self.difference_fitness_success_freg = []
+        self._reset_success_metrics()
 
     def initialize_parameters_for_epoch(self):
         f_table = []
@@ -244,7 +250,7 @@ class LShadeEpsin(BaseAlg):
         mutant = self.mutate(self._pop, bests_to_select, f_table)
 
         trial = crossing(self._pop, mutant, cr_table)
-        fix_boundary_constraints(self._pop, trial)
+        fix_boundary_constraints_with_parent(self._pop, trial, self.boundary_constraints_fun)
         trial.update_fitness_values(self._function.eval, self.parallel_processing)
         self.nfe += self._pop.size
         self._pop = self.selection(self._pop, trial, f_table, cr_table, freg_values)
