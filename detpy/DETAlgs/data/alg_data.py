@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Optional, Callable
 
+from detpy.DETAlgs.population_reduction.linear_population_size_reduction import LinearPopulationSizeReduction
+from detpy.DETAlgs.population_reduction.population_size_reduction_strategy import PopulationSizeReductionStrategy
 from detpy.models.enums.basevectorschema import BaseVectorSchema
 from detpy.models.enums.crossingtype import CrossingType
 from detpy.models.enums.derivative_method import DerivativeMethod
@@ -161,10 +163,12 @@ class LSHADERSPData(BaseData):
     scaling_factor_for_rank_selection: float = 3.5
     memory_size: int = 5
     minimum_population_size: int = 20
+    population_reduction_strategy: PopulationSizeReductionStrategy = LinearPopulationSizeReduction()
 
 
 @dataclass
 class LShadeData(BaseData):
+    population_reduction_strategy: PopulationSizeReductionStrategy = LinearPopulationSizeReduction()
     minimum_population_size: int = 5
     memory_size: int = 5
 
@@ -172,6 +176,7 @@ class LShadeData(BaseData):
 @dataclass
 class SPSLShadeEIGDATA(BaseData):
     minimum_population_size: int = 5
+    population_reduction_strategy: PopulationSizeReductionStrategy = LinearPopulationSizeReduction()
     memory_size: int = 20
     q: int = 64
     f_init: float = 0.5
@@ -193,6 +198,8 @@ class ALSHADEData(BaseData):
     memory_size: int = 6
     elite_factor: float = 0.5
     init_probability_mutation_strategy: float = 0.5
+    population_size_reduction_strategy: PopulationSizeReductionStrategy = LinearPopulationSizeReduction()
+
 
 @dataclass
 class DEACRData(BaseData):
@@ -202,6 +209,7 @@ class DEACRData(BaseData):
     lineal_recombination_factor: float = 0.75
     gamma_var: int = 3
 
+
 @dataclass
 class LShadeEpsinData(BaseData):
     minimum_population_size: int = 5
@@ -209,70 +217,76 @@ class LShadeEpsinData(BaseData):
     elite_factor: float = 0.5
     init_probability_mutation_strategy: float = 0.5
     freg: float = 0.1
+    population_reduction_strategy: PopulationSizeReductionStrategy = LinearPopulationSizeReduction()
+
 
 @dataclass
 class EPSDEData(BaseData):
-    mutation_factor : float = 0.7
-    crossover_rate : float = 0.9
-    epsilon_level : int = 0
-    penalty_power : int = 2
+    mutation_factor: float = 0.7
+    crossover_rate: float = 0.9
+    epsilon_level: int = 0
+    penalty_power: int = 2
     g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
-    h_funcs : list[Callable[[list[float]], float]] = field(default_factory=list)
+    h_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
+
 
 @dataclass
 class EPSDEAGData(BaseData):
-    init_mutation_factor : float = 0.5
-    init_crossover_rate : float = 0.9
-    theta : float = 0.9
-    penalty_power : int = 2
-    control_generations : int = 150
+    init_mutation_factor: float = 0.5
+    init_crossover_rate: float = 0.9
+    theta: float = 0.9
+    penalty_power: int = 2
+    control_generations: int = 150
     archive_size: int = 300
-    gradient_base_mutation_rate : float = 0.2
-    number_of_repeating_mutation : int = 3
-    number_of_repeating_de_operations : int = 2
-    gradient_mutation_interval : int = 5
+    gradient_base_mutation_rate: float = 0.2
+    number_of_repeating_mutation: int = 3
+    number_of_repeating_de_operations: int = 2
+    gradient_mutation_interval: int = 5
     derivative_method = DerivativeMethod.NUMERIC
     g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
-    h_funcs : list[Callable[[list[float]], float]] = field(default_factory=list)
+    h_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
+
 
 @dataclass
 class EPSDEGData(BaseData):
-    mutation_factor : float = 0.5
-    crossover_rate : float = 0.9
-    gradient_base_mutation_rate : float = 0.2
-    theta : float = 0.9
-    penalty_power : int = 2
-    control_generations : int = 150
-    gradient_mutation_interval : int = 5
+    mutation_factor: float = 0.5
+    crossover_rate: float = 0.9
+    gradient_base_mutation_rate: float = 0.2
+    theta: float = 0.9
+    penalty_power: int = 2
+    control_generations: int = 150
+    gradient_mutation_interval: int = 5
     derivative_method = DerivativeMethod.NUMERIC
     g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
-    h_funcs : list[Callable[[list[float]], float]] = field(default_factory=list)
+    h_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
+
 
 @dataclass
 class EPSADEData(BaseData):
-    init_mutation_factor : float = 0.7
-    init_crossover_rate : float = 0.9
-    mutation_factor_perturbation_width : float = 0.5
-    crossover_rate_perturbation_width : float = 0.5
-    weight_of_update : float = 0.1
-    penalty_power : int = 2
+    init_mutation_factor: float = 0.7
+    init_crossover_rate: float = 0.9
+    mutation_factor_perturbation_width: float = 0.5
+    crossover_rate_perturbation_width: float = 0.5
+    weight_of_update: float = 0.1
+    penalty_power: int = 2
     theta: float = 0.9
-    epsilon_scaling_factor : int = 5
-    control_generations : int = 100
-    truncation_mechanism_factory : float = 0.9
+    epsilon_scaling_factor: int = 5
+    control_generations: int = 100
+    truncation_mechanism_factory: float = 0.9
     g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
-    h_funcs : list[Callable[[list[float]], float]] = field(default_factory=list)
+    h_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
+
 
 @dataclass
 class EPSRDEData(BaseData):
     crossing_type: CrossingType = CrossingType.EXPOTENTIAL
-    min_mutation_factor : float = 0.6
-    max_mutation_factor : float = 0.95
-    min_crossover_rate : float = 0.85
-    max_crossover_rate : float = 0.95
-    penalty_power : int = 2
+    min_mutation_factor: float = 0.6
+    max_mutation_factor: float = 0.95
+    min_crossover_rate: float = 0.85
+    max_crossover_rate: float = 0.95
+    penalty_power: int = 2
     control_generations: int = 150
-    epsilon_scaling_factor : int = 5
+    epsilon_scaling_factor: int = 5
     theta: float = 0.9
     g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
-    h_funcs : list[Callable[[list[float]], float]] = field(default_factory=list)
+    h_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)

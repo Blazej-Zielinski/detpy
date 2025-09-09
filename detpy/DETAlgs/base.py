@@ -25,6 +25,7 @@ class BaseAlg(ABC):
     def __init__(self, name, params: BaseData, db_conn=None, db_auto_write=False, verbose=True):
         self.name = name
         self._epoch_number = 0
+        self._nfe = 0  # number of function evaluations
 
         self._origin_pop = None
         self._pop = None
@@ -57,6 +58,11 @@ class BaseAlg(ABC):
     @abstractmethod
     def next_epoch(self):
         pass
+
+    @property
+    def nfe(self) -> int:
+        """Number of function evaluations performed so far."""
+        return self._nfe
 
     def _initialize(self):
         init_time = time.time()
@@ -121,6 +127,7 @@ class BaseAlg(ABC):
                                 f"Best Individual: {[member.real_value for member in best_member.chromosomes]}, "
                                 f"Avg: {avg_fitness}, Std: {std_fitness}")
 
+                self._nfe += self.population_size
                 # Saving after each 50 epochs
                 if epoch > 0 and epoch % self.db_writing_interval == 0:
                     end_index = epoch + 1
@@ -166,8 +173,8 @@ class BaseAlg(ABC):
             best_solution=best_solution
         )
 
-        result.plot_results(best_fitness_values, avg_fitness_values, std_fitness_values, self.num_of_epochs,
-                            method_name=self.name)
+        # result.plot_results(best_fitness_values, avg_fitness_values, std_fitness_values, self.num_of_epochs,
+        #                     method_name=self.name)
 
         return result
 

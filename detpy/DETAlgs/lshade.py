@@ -34,34 +34,16 @@ class LSHADE(BaseAlg):
 
         self.min_the_best_percentage = 2 / self.population_size  # Minimal percentage of the best members to consider
 
-        self.archive_size =  self.population_size  # Size of the archive
+        self.archive_size = self.population_size  # Size of the archive
         self.archive = []  # Archive for storing the members from old populations
 
-        self.nfe = 0  # Number of function evaluations
         self.min_pop_size = params.minimum_population_size  # Minimal population size
 
         self.start_population_size = self.population_size
-        self.nfe_max = self.calculate_max_evaluations_lpsr(self.population_size)  # Max number of function evaluations
 
-    def calculate_max_evaluations_lpsr(self, start_pop_size):
-        """
-        Calculate the maximum number of function evaluations for the Linear Population Size Reduction (LPSR) method.
+        self.population_size_reduction_strategy = params.population_reduction_strategy
 
-        Parameters:
-        - start_pop_size (int): The initial population size at the beginning of the evolution process.
-
-        Returns: sum of the total number of evaluations for each generation.
-        """
-        total_evaluations = 0
-        for generation in range(self.num_of_epochs):
-            current_population_size = int(
-                start_pop_size - (generation / self.num_of_epochs) * (start_pop_size - self.min_pop_size)
-            )
-            total_evaluations += current_population_size
-        NFEmax = total_evaluations
-        return NFEmax
-
-    def update_population_size(self, start_pop_size: int, epoch: int, total_epochs: int, min_size: int):
+    def update_population_size(self, epoch: int, total_epochs: int, start_pop_size: int, min_pop_size: int):
         """
         Calculate new population size using Linear Population Size Reduction (LPSR).
 
@@ -69,14 +51,15 @@ class LSHADE(BaseAlg):
         - start_pop_size (int): The initial population size.
         - epoch (int): The current epoch.
         - total_epochs (int): The total number of epochs.
-        - min_size (int): The minimum population size.
+        - min_pop_size (int): The minimum population size.
         """
-        new_size = int(start_pop_size - (epoch / total_epochs) * (start_pop_size - min_size))
+        new_size = self.population_size_reduction_strategy.get_new_population_size(
+            epoch, total_epochs, start_pop_size, min_pop_size
+        )
         self._pop.resize(new_size)
 
         # Update archive size proportionally
         self.archive_size = new_size
-
 
     def mutate(self,
                population: Population,
@@ -276,8 +259,7 @@ class LSHADE(BaseAlg):
         # Update the memory for CR and F
         self.update_memory(self.successF, self.successCr, self.difference_fitness_success)
 
-        self.update_population_size(self.start_population_size, self._epoch_number, self.num_of_epochs,
+        self.update_population_size(self._epoch_number, self.num_of_epochs, self.start_population_size,
                                     self.min_pop_size)
 
         self._epoch_number += 1
-

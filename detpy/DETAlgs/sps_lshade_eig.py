@@ -21,6 +21,7 @@ class SPS_LSHADE_EIG(BaseAlg):
         self.memory_F = np.full(self.H, params.f_init)
         self.memory_Cr = np.full(self.H, params.cr_init)
         self.er_init = params.er_init
+        self.population_size_reduction_strategy = params.population_reduction_strategy
         self.learning_rate_init = params.learning_rate_init
         self.learning_rate = self.learning_rate_init
         self.cr_min = params.cr_min
@@ -41,12 +42,13 @@ class SPS_LSHADE_EIG(BaseAlg):
         self.successEr = []
 
         self.q = params.q
-        self.nfe = 0
+
         self.min_pop_size = params.minimum_population_size
         self.recently_consecutive_unsuccessful_updates_table = [0] * self.population_size
 
         self.start_population_size = self.population_size
         self.nfe_max = self.calculate_max_evaluations_lpsr(self.population_size)
+
         self.cov_matrix = np.eye(self._pop.arg_num)
         self.learning_rate = self.learning_rate_init
 
@@ -97,7 +99,6 @@ class SPS_LSHADE_EIG(BaseAlg):
         for i in range(origin_population.size):
             if self.recently_consecutive_unsuccessful_updates_table[i] >= self.q:
                 origin_population.members[i].update_fitness_value(self._function.eval, self.parallel_processing)
-                self.nfe += 1
 
             if origin_population.optimization == OptimizationType.MINIMIZATION:
                 better = origin_population.members[i].fitness_value > modified_population.members[i].fitness_value
@@ -196,20 +197,31 @@ class SPS_LSHADE_EIG(BaseAlg):
         new_population.members = np.array(new_members)
         return new_population
 
-    def update_population_size(self, start_pop_size: int, epoch: int, total_epochs: int, min_size: int):
-        new_size = int(start_pop_size - (epoch / total_epochs) * (start_pop_size - min_size))
+    def calculate_max_evaluations_lpsr(self, start_pop_size: int):
+        """
+        Calculate the maximum number of function evaluations for the Linear Population Size Reduction (LPSR) method.
 
-        self._pop.resize(new_size)
-        self.archive_size_sps = new_size
+        Parameters:
+        - start_pop_size (int): The initial population size at the beginning of the evolution process.
 
-    def calculate_max_evaluations_lpsr(self, start_pop_size):
+        Returns: sum of the total number of evaluations for each generation.
+        """
         total_evaluations = 0
         for generation in range(self.num_of_epochs):
             current_population_size = int(
                 start_pop_size - (generation / self.num_of_epochs) * (start_pop_size - self.min_pop_size)
             )
             total_evaluations += current_population_size
-        return total_evaluations
+        NFEmax = total_evaluations
+        return NFEmax
+
+    def update_population_size(self, epoch: int, total_epochs: int, start_pop_size: int, min_pop_size: int):
+        new_size = self.population_size_reduction_strategy.get_new_population_size(
+            epoch, total_epochs, start_pop_size, min_pop_size
+        )
+
+        self._pop.resize(new_size)
+        self.archive_size_sps = new_size
 
     def update_success_history(self):
         if len(self.successF) == 0:
@@ -243,12 +255,13 @@ class SPS_LSHADE_EIG(BaseAlg):
         fix_boundary_constraints_with_parent(self._pop, trial, self.boundary_constraints_fun)
         trial.update_fitness_values(self._function.eval, self.parallel_processing)
 
-        self.nfe += len(trial.members)
         self._pop = self.selection(self._pop, trial, f_table, cr_table, er_table)
 
         self.archive = archive_reduction(self.archive, self.population_size, self.w_ext)
         self.update_covariance_matrix()
-        self.update_population_size(self.start_population_size, self._epoch_number, self.num_of_epochs,
+
+        self.update_population_size(self._epoch_number, self.num_of_epochs, self.start_population_size,
                                     self.min_pop_size)
+
         self._epoch_number += 1
         self.update_success_history()
