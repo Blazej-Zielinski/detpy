@@ -127,7 +127,10 @@ class BaseAlg(ABC):
                                 f"Best Individual: {[member.real_value for member in best_member.chromosomes]}, "
                                 f"Avg: {avg_fitness}, Std: {std_fitness}")
 
+                # We assume that in each epoch, the fitness function
+                # is evaluated for each member of the population once.
                 self._nfe += self.population_size
+
                 # Saving after each 50 epochs
                 if epoch > 0 and epoch % self.db_writing_interval == 0:
                     end_index = epoch + 1
@@ -173,8 +176,8 @@ class BaseAlg(ABC):
             best_solution=best_solution
         )
 
-        # result.plot_results(best_fitness_values, avg_fitness_values, std_fitness_values, self.num_of_epochs,
-        #                     method_name=self.name)
+        result.plot_results(best_fitness_values, avg_fitness_values, std_fitness_values, self.num_of_epochs,
+                            method_name=self.name)
 
         return result
 
