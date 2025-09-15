@@ -2,6 +2,25 @@ from detpy.DETAlgs.population_reduction.population_size_reduction_strategy impor
 
 
 class LinearPopulationSizeReduction(PopulationSizeReductionStrategy):
+    def _calculate_total_evaluations(self, total_epochs: int, start_pop_size: int, min_pop_size: int) -> int:
+        # Difference between the initial and minimum population sizes
+        delta = start_pop_size - min_pop_size
+
+        # Compute the total number of evaluations
+        # This is required since we work with the number of epochs, not evaluations
+        # and original LSHADE and related SHADE algorithms define the reduction strategy
+        # based on the number of evaluations
+        return sum(
+            int(start_pop_size - (gen / total_epochs) * delta)
+            for gen in range(total_epochs)
+        )
+
+    def get_total_number_of_evaluations(self,
+                                        total_epochs: int,
+                                        start_pop_size: int,
+                                        min_pop_size: int) -> int:
+        return self._calculate_total_evaluations(total_epochs, start_pop_size, min_pop_size)
+
     def get_new_population_size(
             self,
             current_epoch: int,
@@ -13,13 +32,7 @@ class LinearPopulationSizeReduction(PopulationSizeReductionStrategy):
         delta = start_pop_size - min_pop_size
 
         # Compute the total number of evaluations
-        # This is required since we work with the number of epochs, not evaluations
-        # and original LSHADE and related SHADE algorithms define the reduction strategy
-        # based on the number of evaluations
-        total_evaluations = sum(
-            int(start_pop_size - (gen / total_epochs) * delta)
-            for gen in range(total_epochs)
-        )
+        total_evaluations = self._calculate_total_evaluations(total_epochs, start_pop_size, min_pop_size)
 
         # Compute the number of evaluations completed up to the current epoch
         current_eval = sum(

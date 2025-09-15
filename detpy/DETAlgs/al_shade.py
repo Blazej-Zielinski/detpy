@@ -12,12 +12,23 @@ from detpy.models.population import Population
 
 
 class ALSHADE(BaseAlg):
+    """
+        ALSHADE: A novel adaptive L-SHADE algorithm and its application in UAV swarm resource configuration problem
+
+        References:
+        Yintong Li, Tong Han, Huan Zhou, Shangqin Tang, Hui Zhao Information Sciences, vol. 606, pp. 350–367, 2022.
+    """
+
     def __init__(self, params: ALSHADEData, db_conn=None, db_auto_write=False):
         super().__init__(ALSHADE.__name__, params, db_conn, db_auto_write)
 
         self.H = params.memory_size
         self.memory_F = np.full(self.H, 0.5)
         self.memory_Cr = np.full(self.H, 0.5)
+
+        self.memory_Cr[0] = 0.9
+        self.memory_F[0] = 0.9
+        self.index_update_f_and_cr = 1
 
         self.successCr = []
         self.successF = []
@@ -27,8 +38,7 @@ class ALSHADE(BaseAlg):
         self.P = params.init_probability_mutation_strategy
 
         self.archive = []
-        rarc = 2.6
-        self.archive_size = round(rarc * self.population_size)
+        self.archive_size = params.archive_size
 
         self.archive.append(copy.deepcopy(self._pop.get_best_members(1)[0]))
 
@@ -38,25 +48,33 @@ class ALSHADE(BaseAlg):
         self._mutation_memory = []
 
         self.population_size_reduction_strategy = params.population_size_reduction_strategy
-        self.nfe_max = self.calculate_max_evaluations_lpsr(self.start_population_size)
 
-    def calculate_max_evaluations_lpsr(self, start_pop_size):
-        total_evaluations = 0
-        for generation in range(self.num_of_epochs):
-            current_population_size = int(
-                start_pop_size - (generation / self.num_of_epochs) * (start_pop_size - self.min_pop_size)
-            )
-            total_evaluations += current_population_size
-        return total_evaluations
+        self.nfe_max = self.population_size_reduction_strategy.get_total_number_of_evaluations(self.num_of_epochs,
+                                                                                               self.start_population_size,
+                                                                                               self.min_pop_size)
 
     def update_population_size(self, epoch: int, total_epochs: int, start_pop_size: int, min_pop_size: int):
+        """
+        Update the population size based on the current epoch using the specified population size reduction strategy.
+
+        Parameters:
+        - epoch (int): The current epoch number.
+        - total_epochs (int): The total number of epochs.
+        - start_pop_size (int): The initial population size.
+        - min_pop_size (int): The minimum population size.
+
+        """
         new_size = self.population_size_reduction_strategy.get_new_population_size(
             epoch, total_epochs, start_pop_size, min_pop_size
         )
         self._pop.resize(new_size)
         self.archive_size = new_size
 
-    def compute_weighted_archive_mean(self):
+    def _compute_weighted_archive_mean(self):
+        """
+        Compute the weighted mean from the archive.
+
+        """
         m = round(self.e * len(self.archive))
         if m == 0:
             return np.mean([[chrom.real_value for chrom in ind.chromosomes] for ind in self.archive], axis=0)
@@ -74,7 +92,18 @@ class ALSHADE(BaseAlg):
         ], axis=0)
 
     def mutate(self, population: Population, the_best_to_select_table: List[int], f_table: List[float]) -> Population:
+        """
+        The mutation method of the ALSHADE algorithm.
+
+        Parameters:
+        - population (Population): The current population.
+        - the_best_to_select_table (List[int]): A list where each element specifies the number of best members to select for the mutation process for the corresponding individual in the population.
+        - f_table (List[float]): A list of scaling factors (F) for each individual in the population.
+
+        """
         new_members = []
+
+        # Contains 1 if "current-to-pbest/1" was used, 3 if "current to xamean" was used
         memory = []
 
         pa = np.concatenate((population.members, self.archive))
@@ -95,9 +124,10 @@ class ALSHADE(BaseAlg):
                     r2=pa[r2],
                     f=f_table[i]
                 )
+                # current-to-pbest/1
                 memory.append(1)
             else:
-                xamean = self.compute_weighted_archive_mean()
+                xamean = self._compute_weighted_archive_mean()
 
                 mutant = current_to_xamean(
                     base_member=population.members[i],
@@ -106,6 +136,7 @@ class ALSHADE(BaseAlg):
                     r2=pa[r2],
                     f=f_table[i]
                 )
+                # current to xamean
                 memory.append(3)
             new_members.append(mutant)
 
@@ -118,7 +149,17 @@ class ALSHADE(BaseAlg):
         self._mutation_memory = memory
         return new_population
 
-    def selection(self, origin, modified, ftable, cr_table):
+    def selection(self, origin: Population, modified: Population, ftable: List[float], cr_table: List[float]):
+        """
+        The selection method of the ALSHADE algorithm.
+
+        Parameters:
+        - population (Population): The current population.
+        - modified (Population): The population after mutation and crossover.
+        - f_table (List[float]): A list of scaling factors (F) for each individual in the population.
+        - cr_table (List[float]): A list of crossover rates (CR) for each individual in the population.
+
+        """
         new_members = []
         memory_flags = self._mutation_memory
         for i in range(origin.size):
@@ -151,7 +192,16 @@ class ALSHADE(BaseAlg):
         new_population.members = np.array(new_members)
         return new_population
 
-    def update_memory(self, success_f, success_cr, df):
+    def update_memory(self, success_f: List[float], success_cr: List[float], df):
+        """
+        The method to update the memory of scaling factors (F) and crossover rates (CR) in the ALSHADE algorithm.
+
+        Parameters:
+        - success_f (List[float]): A list of successful scaling factors F that resulted in better fitness function values from the current epoch.
+        - success_cr (List[float]): A list of successful scaling factors CR that resulted in better fitness function values from the current epoch.
+        - df (List[float]): A list of differences between old and new value fitness function
+
+        """
         if not success_f:
             return
         total = sum(df)
@@ -160,13 +210,22 @@ class ALSHADE(BaseAlg):
         cr_new = np.sum(weights * success_cr)
         f_new = np.clip(f_new, 0, 1)
         cr_new = np.clip(cr_new, 0, 1)
-        self.memory_F = np.append(self.memory_F[1:], f_new)
-        self.memory_Cr = np.append(self.memory_Cr[1:], cr_new)
+
+        self.memory_F[self.index_update_f_and_cr] = f_new
+        self.memory_Cr[self.index_update_f_and_cr] = cr_new
+        self.index_update_f_and_cr += 1
+        if self.index_update_f_and_cr >= len(self.memory_F):
+            self.index_update_f_and_cr = 1
+
         self.successF = []
         self.successCr = []
         self.difference_fitness_success = []
 
     def initialize_parameters_for_epoch(self):
+        """
+        Method to create f_table, cr_table and bests_to_select for the epoch.
+
+        """
         f_table = []
         cr_table = []
         bests_to_select = []
@@ -185,6 +244,7 @@ class ALSHADE(BaseAlg):
 
     def next_epoch(self):
         f_table, cr_table, bests_to_select = self.initialize_parameters_for_epoch()
+
         mutant = self.mutate(self._pop, bests_to_select, f_table)
 
         trial = crossing(self._pop, mutant, cr_table)
