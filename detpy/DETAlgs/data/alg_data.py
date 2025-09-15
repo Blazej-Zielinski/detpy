@@ -196,6 +196,7 @@ class SPSLShadeEIGDATA(BaseData):
 class ALSHADEData(BaseData):
     minimum_population_size: int = 4
     memory_size: int = 6
+    archive_size: int = 100
     elite_factor: float = 0.5
     init_probability_mutation_strategy: float = 0.5
     population_size_reduction_strategy: PopulationSizeReductionStrategy = LinearPopulationSizeReduction()

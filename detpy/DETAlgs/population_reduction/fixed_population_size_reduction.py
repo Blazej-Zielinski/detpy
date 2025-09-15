@@ -2,6 +2,10 @@ from detpy.DETAlgs.population_reduction.population_size_reduction_strategy impor
 
 
 class FixedPopulationSizeStrategy(PopulationSizeReductionStrategy):
+    def get_total_number_of_evaluations(self, total_epochs: int, start_pop_size: int,
+                                        min_pop_size: int):
+        return start_pop_size * total_epochs
+
     def get_new_population_size(
             self,
             current_epoch: int,
