@@ -8,7 +8,7 @@ class PopulationSizeReductionStrategy(ABC):
     def get_total_number_of_evaluations(self,
                                         total_epochs: int,
                                         start_pop_size: int,
-                                        min_pop_size: int):
+                                        min_pop_size: int) -> int:
         """
         Implement this method to calculate the total number of evaluations based on the reduction strategy.
 

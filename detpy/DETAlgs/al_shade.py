@@ -199,7 +199,6 @@ class ALSHADE(BaseAlg):
         Parameters:
         - success_f (List[float]): A list of successful scaling factors F that resulted in better fitness function values from the current epoch.
         - success_cr (List[float]): A list of successful scaling factors CR that resulted in better fitness function values from the current epoch.
-        - f_table (List[float]): A list of scaling factors (F) for each individual in the population.
         - df (List[float]): A list of differences between old and new value fitness function
 
         """
