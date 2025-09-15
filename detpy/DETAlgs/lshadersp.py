@@ -36,8 +36,8 @@ class LSHADERSP(BaseAlg):
         self.memory_Cr[self.H - 1] = 0.9  # One cell of the memory for Cr must be set to 0.9
 
         self.F = np.random.standard_cauchy() * 0.1 + np.random.choice(self.memory_F)
+        self.population_size_reduction_strategy = params.population_reduction_strategy
 
-        self.nfe = 0  # Number of function evaluations
         self.min_pop_size = params.minimum_population_size  # Minimal population size
 
         self.start_population_size = self.population_size
@@ -247,7 +247,7 @@ class LSHADERSP(BaseAlg):
         new_population.members = np.array(new_members)
         return new_population
 
-    def update_population_size(self, start_pop_size: int, epoch: int, total_epochs: int, min_size: int):
+    def update_population_size(self, epoch: int, total_epochs: int, start_pop_size: int, min_pop_size: int):
         """
         Calculate new population size using Linear Population Size Reduction (LPSR).
 
@@ -255,9 +255,12 @@ class LSHADERSP(BaseAlg):
         - start_pop_size (int): The initial population size.
         - epoch (int): The current epoch.
         - total_epochs (int): The total number of epochs.
-        - min_size (int): The minimum population size.
+        - min_pop_size (int): The minimum population size.
         """
-        new_size = int(start_pop_size - (epoch / total_epochs) * (start_pop_size - min_size))
+        new_size = self.population_size_reduction_strategy.get_new_population_size(
+            epoch, total_epochs, start_pop_size, min_pop_size
+        )
+
         self._pop.resize(new_size)
 
         # Update archive size proportionally
@@ -332,8 +335,7 @@ class LSHADERSP(BaseAlg):
         self._pop = new_pop
 
         self.adapt_parameters(self.difference_fitness_success)
-        self.update_population_size(self.start_population_size, self._epoch_number, self.num_of_epochs,
+        self.update_population_size(self._epoch_number, self.num_of_epochs, self.start_population_size,
                                     self.min_pop_size)
-        self.nfe += self.population_size
 
         self._epoch_number += 1

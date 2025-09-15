@@ -37,23 +37,18 @@ class LShadeEpsin(BaseAlg):
         self.archive_size = self.population_size
 
         self.archive.extend(copy.deepcopy(self._pop.members))
-        self.nfe = 0
+
         self.min_pop_size = params.minimum_population_size
         self.start_population_size = self.population_size
 
         self.freg = params.freg
 
-    def calculate_max_evaluations_lpsr(self, start_pop_size):
-        total_evaluations = 0
-        for generation in range(self.num_of_epochs):
-            current_population_size = int(
-                start_pop_size - (generation / self.num_of_epochs) * (start_pop_size - self.min_pop_size)
-            )
-            total_evaluations += current_population_size
-        return total_evaluations
+        self.population_size_reduction_strategy = params.population_reduction_strategy
 
-    def update_population_size(self, start_pop_size, epoch, total_epochs, min_size):
-        new_size = int(start_pop_size - (epoch / total_epochs) * (start_pop_size - min_size))
+    def update_population_size(self, epoch: int, total_epochs: int, start_pop_size: int, min_pop_size: int):
+        new_size = self.population_size_reduction_strategy.get_new_population_size(
+            epoch, total_epochs, start_pop_size, min_pop_size
+        )
         self._pop.resize(new_size)
         self.archive_size = new_size
 
@@ -121,7 +116,6 @@ class LShadeEpsin(BaseAlg):
         self.success_cr = []
         self.difference_fitness_success = []
         self.difference_fitness_success_freg = []
-
 
     def update_memory(self, success_f, success_cr, df, df_freg):
         if not success_f:
@@ -252,12 +246,12 @@ class LShadeEpsin(BaseAlg):
         trial = crossing(self._pop, mutant, cr_table)
         fix_boundary_constraints_with_parent(self._pop, trial, self.boundary_constraints_fun)
         trial.update_fitness_values(self._function.eval, self.parallel_processing)
-        self.nfe += self._pop.size
+
         self._pop = self.selection(self._pop, trial, f_table, cr_table, freg_values)
         self.archive = archive_reduction(self.archive, self.archive_size, self.population_size)
         self.update_memory(self.success_f, self.success_cr, self.difference_fitness_success,
                            self.difference_fitness_success_freg)
-        self.update_population_size(self.start_population_size, self._epoch_number, self.num_of_epochs,
+        self.update_population_size(self._epoch_number, self.num_of_epochs, self.start_population_size,
                                     self.min_pop_size)
 
         if self._pop.size <= 20 and not hasattr(self, "_local_search_done"):
