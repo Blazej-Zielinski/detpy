@@ -149,7 +149,6 @@ class FiADEData(BaseData):
 class ImprovedDEData(BaseData):
     mutation_factor: float = 0.1
     crossover_rate: float = 0.5
-    crossing_type: CrossingType = CrossingType.BINOMIAL
 
 
 @dataclass

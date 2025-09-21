@@ -7,7 +7,6 @@ from detpy.DETAlgs.methods.methods_eps_deag import calculate_init_epsilon_level,
 from detpy.DETAlgs.methods.methods_eps_rde import mutation, crossing, create_ranks, calculate_mutation_factors, calculate_crossover_rates
 from detpy.models.enums.basevectorschema import BaseVectorSchema
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
-from detpy.models.enums.crossingtype import CrossingType
 
 
 class EPSRDE(BaseAlg):
@@ -57,7 +56,7 @@ class EPSRDE(BaseAlg):
         fix_boundary_constraints(v_pop, self.boundary_constraints_fun)
 
         # New population after crossing
-        u_pop = crossing(self._pop, v_pop, cr=crossover_rates, crossing_type=CrossingType.EXPOTENTIAL)
+        u_pop = crossing(self._pop, v_pop, cr=crossover_rates, crossing_type=self.crossing_type)
 
         # Update values before selection
         u_pop.update_fitness_values(self._function.eval, self.parallel_processing)
