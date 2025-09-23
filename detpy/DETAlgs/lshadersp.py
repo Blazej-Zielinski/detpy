@@ -7,7 +7,8 @@ from detpy.DETAlgs.data.alg_data import LSHADERSPData
 
 from random import randint
 
-from detpy.DETAlgs.methods.methods_lshadersp import mutation_internal, crossing, archive_reduction, rank_selection
+from detpy.DETAlgs.methods.methods_lshadersp import crossing, archive_reduction, rank_selection
+from detpy.DETAlgs.mutation_methods.current_to_pbest_r import MutationCurrentToPBestR
 from detpy.math_functions.lehmer_mean import LehmerMean
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 from detpy.models.enums.optimization import OptimizationType
@@ -41,8 +42,9 @@ class LSHADERSP(BaseAlg):
         self.min_pop_size = params.minimum_population_size  # Minimal population size
 
         self.start_population_size = self.population_size
-        self.nfe_max = self.calculate_max_evaluations_lpsr(self.population_size)  # Max number of function evaluations
-
+        self.nfe_max = self.population_size_reduction_strategy.get_total_number_of_evaluations(self.num_of_epochs,
+                                                                                               self.population_size,
+                                                                                               self.min_pop_size)
         self.archive_size = self.population_size  # Size of the archive
         self.archive = []  # Archive for storing the members from old populations
 
@@ -57,25 +59,7 @@ class LSHADERSP(BaseAlg):
 
         self.difference_fitness_success = []
 
-    def calculate_max_evaluations_lpsr(self, start_pop_size: int):
-        """
-        Calculate the maximum number of function evaluations for the Linear Population Size Reduction (LPSR) method.
-
-        Parameters:
-        - start_pop_size (int): The initial population size at the beginning of the evolution process.
-
-        Returns: sum of the total number of evaluations for each generation.
-        """
-        total_evaluations = 0
-        for generation in range(self.num_of_epochs):
-            current_population_size = int(
-                start_pop_size - (generation / self.num_of_epochs) * (start_pop_size - self.min_pop_size)
-            )
-            total_evaluations += current_population_size
-        NFEmax = total_evaluations
-        return NFEmax
-
-    def adapt_parameters(self, fitness_improvement: List[float]):
+    def _adapt_parameters(self, fitness_improvement: List[float]):
         """
         Update the memory for F and Cr based on the fitness improvement of the crossover and mutation steps.
 
@@ -88,10 +72,15 @@ class LSHADERSP(BaseAlg):
             total_improvement = np.sum(fitness_improvement)
             weights = fitness_improvement / total_improvement
 
+            # Randomly select a memory index to update
+            r = np.random.randint(0, self.H)
+
             # Compute new F value as the Lehmer mean of successful F values
             if len(self.success_f) > 0:
                 new_f = self.lehmer_mean_func.evaluate(self.success_f, weights)
                 new_f = np.clip(new_f, 0, 1)  # Clip to [0, 1]
+                # Update memory_F
+                self.memory_F[r] = (self.memory_F[r] + new_f) / 2  # Mean of old and new F
             else:
                 new_f = np.random.uniform(0, 1)  # Fallback if no successful F values
 
@@ -99,6 +88,8 @@ class LSHADERSP(BaseAlg):
             if len(self.success_cr) > 0:
                 new_cr = np.sum(weights * self.success_cr)
                 new_cr = np.clip(new_cr, 0, 1)  # Clip to [0, 1]
+                # Update memory_Cr
+                self.memory_Cr[r] = (self.memory_Cr[r] + new_cr) / 2  # Mean of old and new Cr
             else:
                 new_cr = np.random.uniform(0, 1)  # Fallback if no successful Cr values
 
@@ -110,15 +101,15 @@ class LSHADERSP(BaseAlg):
             self.memory_Cr[r] = (self.memory_Cr[r] + new_cr) / 2  # Mean of old and new Cr
 
             # Ensure one cell in the memory always holds the fixed value 0.9
-            self.memory_F[0] = 0.9
-            self.memory_Cr[0] = 0.9
+            self.memory_F[self.H - 1] = 0.9
+            self.memory_Cr[self.H - 1] = 0.9
 
         # Clear the lists of successful F and Cr values for the next generation
         self.difference_fitness_success = []
         self.success_cr = []
         self.success_f = []
 
-    def get_best_members(self, best_members: List[Member], archive: List[Member]) -> List[Member]:
+    def _get_best_members(self, best_members: List[Member], archive: List[Member]) -> List[Member]:
         """
         Combine and sort the best members from the current population and the archive,
         then return the top members.
@@ -143,15 +134,15 @@ class LSHADERSP(BaseAlg):
 
         return combined[:size_best_members_to_select]
 
-    def mutate(self,
-               population: Population,
-               nfe: int,
-               nfe_max: int,
-               pop_size: int,
-               f_table: List[float],
-               fw_table: List[float]
+    def _mutate(self,
+                population: Population,
+                nfe: int,
+                nfe_max: int,
+                pop_size: int,
+                f_table: List[float],
+                fw_table: List[float]
 
-               ) -> Population:
+                ) -> Population:
         """
         Perform mutation step for the population.
 
@@ -170,22 +161,25 @@ class LSHADERSP(BaseAlg):
         for i in range(population.size):
             members = np.append(population.members, self.archive)
 
-            r1, r2 = rank_selection(members, self.k)
+            r1, r2 = rank_selection(members, self.k, self.optimization_type)
+
             p = 0.085 + (0.085 * nfe) / nfe_max
             how_many_best_to_select = p * pop_size
             how_many_best_to_select = max(1, how_many_best_to_select)  # at least one best member also for pbest it
             # is require minimum 4 members for selection: current, best, r1, r2
 
             best_members = population.get_best_members(int(how_many_best_to_select))
-            all_best_members = self.get_best_members(best_members,
-                                                     self.archive)  # get best members from the population and archive
+            all_best_members = self._get_best_members(best_members,
+                                                      self.archive)  # get best members from the population and archive
 
             rand_index = randint(0, len(all_best_members) - 1)
 
             # First member in argument is the actual member, second is from the best member from the population and archive,
             # third and fourth are random members from the population and archive using the rank selection
-            new_member = mutation_internal(population.members[i], all_best_members[rand_index], members[r1],
-                                           members[r2], f_table[i], fw_table[i])
+            new_member = MutationCurrentToPBestR.mutate(population.members[i], all_best_members[rand_index],
+                                                        members[r1],
+                                                        members[r2], f_table[i], fw_table[i])
+
             new_members.append(new_member)
 
         new_population = Population(
@@ -198,8 +192,8 @@ class LSHADERSP(BaseAlg):
         new_population.members = np.array(new_members)
         return new_population
 
-    def selection(self, origin_population: Population, modified_population: Population, cr_table: List[float],
-                  f_table: List[float]):
+    def _selection(self, origin_population: Population, modified_population: Population, cr_table: List[float],
+                   f_table: List[float]):
         """
         Perform selection operation for the population.
 
@@ -247,7 +241,7 @@ class LSHADERSP(BaseAlg):
         new_population.members = np.array(new_members)
         return new_population
 
-    def update_population_size(self, epoch: int, total_epochs: int, start_pop_size: int, min_pop_size: int):
+    def _update_population_size(self, epoch: int, total_epochs: int, start_pop_size: int, min_pop_size: int):
         """
         Calculate new population size using Linear Population Size Reduction (LPSR).
 
@@ -266,7 +260,7 @@ class LSHADERSP(BaseAlg):
         # Update archive size proportionally
         self.archive_size = new_size
 
-    def calculate_factors_for_epoch(self, pop_size):
+    def _calculate_factors_for_epoch(self, pop_size):
         """
         Calculate the mutation parameters (F, Cr, Fw) for the current epoch based on the LSHADE-RSP algorithm.
 
@@ -317,9 +311,9 @@ class LSHADERSP(BaseAlg):
         Perform the next epoch of the L-SHADE-RSP algorithm.
         """
 
-        f_table, cr_table, fw_table = self.calculate_factors_for_epoch(self._pop.size)
+        f_table, cr_table, fw_table = self._calculate_factors_for_epoch(self._pop.size)
 
-        mutant = self.mutate(self._pop, self.nfe, self.nfe_max, self._pop.size, f_table, fw_table)
+        mutant = self._mutate(self._pop, self.nfe, self.nfe_max, self._pop.size, f_table, fw_table)
 
         fix_boundary_constraints(mutant, self.boundary_constraints_fun)
 
@@ -327,15 +321,15 @@ class LSHADERSP(BaseAlg):
 
         trial.update_fitness_values(self._function.eval, self.parallel_processing)
 
-        new_pop = self.selection(self._pop, trial, cr_table, f_table)
+        new_pop = self._selection(self._pop, trial, cr_table, f_table)
 
-        archive_reduction(self.archive, self.archive_size)
+        archive_reduction(self.archive, self.archive_size, self.optimization_type)
 
         # Override the entire population with the new population
         self._pop = new_pop
 
-        self.adapt_parameters(self.difference_fitness_success)
-        self.update_population_size(self._epoch_number, self.num_of_epochs, self.start_population_size,
-                                    self.min_pop_size)
+        self._adapt_parameters(self.difference_fitness_success)
+        self._update_population_size(self._epoch_number, self.num_of_epochs, self.start_population_size,
+                                     self.min_pop_size)
 
         self._epoch_number += 1
