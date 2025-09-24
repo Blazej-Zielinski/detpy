@@ -3,48 +3,33 @@ from typing import List
 
 import numpy as np
 
+from detpy.models.enums.optimization import OptimizationType
 from detpy.models.member import Member
 from detpy.models.population import Population
 
 
-def archive_reduction(archive: list[Member], archive_size: int):
+def archive_reduction(archive: list[Member], archive_size: int,
+                      optimization: OptimizationType = OptimizationType.MINIMIZATION):
     """
     Reduce the size of the archive to the specified size by removing the worst members.
 
     Parameters:
     - archive (list[Member]): The archive to reduce.
     - archive_size (int): The desired size of the archive.
+    - optimization (OptimizationType): The optimization type (MINIMIZATION or MAXIMIZATION).
     """
     if archive_size == 0:
         archive.clear()
         return
 
     if len(archive) > archive_size:
-        # Sort archive by fitness (worst first)
-        archive.sort(key=lambda member: member.fitness_value, reverse=True)
+        # Sort archive by fitness based on the optimization type
+        archive.sort(
+            key=lambda member: member.fitness_value,
+            reverse=(optimization == OptimizationType.MAXIMIZATION)  # Reverse for maximization problems
+        )
         # Remove the worst members
         del archive[archive_size:]
-
-
-def mutation_internal(base_member: Member, best_member: Member, r1: Member, r2: Member, f: float, fw: float):
-    """
-    Formula: bm + Fw * (bm_best - bm) + F * (r1 - r2)
-
-    Parameters:
-    - base_member (Member): The base member used for the mutation operation.
-    - best_member (Member): The best member, typically the one with the best fitness value, used in the mutation formula.
-    - r1 (Member): A randomly selected member from the population, used for mutation. (rank selection)
-    - r2 (Member): Another randomly selected member, used for mutation. (rank selection)
-    - f (float): A scaling factor that controls the magnitude of the mutation between random members of the population.
-    - fw (float): A scaling factor that controls the magnitude of the mutation between the best member and the base member.
-
-    Returns: A new member with the mutated chromosomes.
-    """
-    new_member = copy.deepcopy(base_member)
-    new_member.chromosomes = base_member.chromosomes + (
-            fw * (best_member.chromosomes - base_member.chromosomes)) + (
-                                     f * (r1.chromosomes - r2.chromosomes))
-    return new_member
 
 
 def crossing_internal(org_member: Member, mut_member: Member, cr: float):
@@ -105,16 +90,26 @@ def crossing(origin_population: Population, mutated_population: Population, cr_t
     return new_population
 
 
-def rank_selection(members: List[Member], k: float = 1.0) -> (int, int):
+def rank_selection(members: List[Member], k: float = 1.0,
+                   optimization: OptimizationType = OptimizationType.MINIMIZATION) -> (int, int):
     """
     Choose two random members from the population using rank selection.
+
     Parameters:
     - members (Population): The population from which to select the members.
     - k (float): Scaling factor for rank selection.
+    - optimization (OptimizationType): The optimization type (MINIMIZATION or MAXIMIZATION).
 
     Returns: The indexes of the selected members.
     """
-    sorted_population_member_indexes = np.argsort([member.fitness_value for member in members])
+    # Sort members based on fitness value (ascending for minimization, descending for maximization)
+    sorted_population_member_indexes = np.argsort(
+        [member.fitness_value for member in members]
+    )
+    if optimization == OptimizationType.MAXIMIZATION:
+        sorted_population_member_indexes = sorted_population_member_indexes[::-1]
+
+    # Assign ranks and calculate probabilities
     values = list(range(len(members), 0, -1))
     ranks = k * np.array(values)
     probabilities = ranks / ranks.sum()
