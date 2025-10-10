@@ -27,7 +27,7 @@ class COMDE(BaseAlg):
 
     def next_epoch(self):
         # Calculate not constant cr depend on generation number
-        cr = calculate_cr(self._epoch_number, self.num_of_epochs)
+        cr = calculate_cr(self.nfe, self.nfe_max)
 
         # New population after mutation
         v_pop = comde_mutation(self._pop)
@@ -46,5 +46,3 @@ class COMDE(BaseAlg):
 
         # Override data
         self._pop = new_pop
-
-        self._epoch_number += 1

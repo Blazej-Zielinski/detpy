@@ -42,9 +42,7 @@ class LSHADERSP(BaseAlg):
         self.min_pop_size = params.minimum_population_size  # Minimal population size
 
         self.start_population_size = self.population_size
-        self.nfe_max = self.population_size_reduction_strategy.get_total_number_of_evaluations(self.num_of_epochs,
-                                                                                               self.population_size,
-                                                                                               self.min_pop_size)
+
         self.archive_size = self.population_size  # Size of the archive
         self.archive = []  # Archive for storing the members from old populations
 
@@ -241,18 +239,18 @@ class LSHADERSP(BaseAlg):
         new_population.members = np.array(new_members)
         return new_population
 
-    def _update_population_size(self, epoch: int, total_epochs: int, start_pop_size: int, min_pop_size: int):
+    def _update_population_size(self, nfe: int, total_nfe: int, start_pop_size: int, min_pop_size: int):
         """
         Calculate new population size using Linear Population Size Reduction (LPSR).
 
         Parameters:
         - start_pop_size (int): The initial population size.
-        - epoch (int): The current epoch.
-        - total_epochs (int): The total number of epochs.
+        - nfe (int): The current nfe.
+        - total_nfe (int): The total number of nfe.
         - min_pop_size (int): The minimum population size.
         """
         new_size = self.population_size_reduction_strategy.get_new_population_size(
-            epoch, total_epochs, start_pop_size, min_pop_size
+            nfe, total_nfe, start_pop_size, min_pop_size
         )
 
         self._pop.resize(new_size)
@@ -329,7 +327,6 @@ class LSHADERSP(BaseAlg):
         self._pop = new_pop
 
         self._adapt_parameters(self.difference_fitness_success)
-        self._update_population_size(self._epoch_number, self.num_of_epochs, self.start_population_size,
+        self._update_population_size(self.nfe, self.nfe_max, self.start_population_size,
                                      self.min_pop_size)
 
-        self._epoch_number += 1

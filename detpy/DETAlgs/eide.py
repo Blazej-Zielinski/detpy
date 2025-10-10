@@ -48,10 +48,8 @@ class EIDE(BaseAlg):
         new_pop = selection(self._pop, u_pop)
 
         self.mutation_factor, self.crossover_rate = eide_adopt_parameters(self.crossover_rate_min,
-                                                                          self.crossover_rate_max, self._epoch_number,
-                                                                          self.num_of_epochs)
+                                                                          self.crossover_rate_max, self.nfe,
+                                                                          self.nfe_max)
 
         # Override data
         self._pop = new_pop
-
-        self._epoch_number += 1

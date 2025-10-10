@@ -46,4 +46,3 @@ class FiADE(BaseAlg):
 
         # Override population with the newly selected population
         self._pop = new_pop
-        self._epoch_number += 1

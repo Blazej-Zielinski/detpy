@@ -10,7 +10,7 @@ ackley_function = function_loader.get_function(function_name="ackley", n_dimensi
 fitness_fun = BenchmarkFitnessFunction(ackley_function)
 
 params = SADEData(
-    epoch=100,
+    max_nfe=10000,
     population_size=100,
     dimension=2,
     lb=[-32.768, -32.768],

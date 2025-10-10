@@ -12,7 +12,7 @@ if __name__ == "__main__":
     )
 
     params = MGDEData(
-        epoch=10,
+        max_nfe=1000,
         population_size=10,
         dimension=10,
         lb=[-5, -100, -100, -100, -100, -100, -100, -100, -100, -100],

@@ -52,4 +52,3 @@ class SADE(BaseAlg):
         self.prob_f = prob_f
         self.prob_cr = prob_cr
 
-        self._epoch_number += 1

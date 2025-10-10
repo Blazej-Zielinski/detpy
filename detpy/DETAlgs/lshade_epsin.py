@@ -6,8 +6,8 @@ from typing import List
 
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import LShadeEpsinData
-from detpy.DETAlgs.methods.methods_alshade import mutation_internal
-from detpy.DETAlgs.methods.methods_lshade import calculate_best_member_count, crossing, archive_reduction
+from detpy.DETAlgs.methods.methods_lshade_epsin import calculate_best_member_count, crossing, archive_reduction
+from detpy.DETAlgs.mutation_methods.current_to_pbest_1 import MutationCurrentToPBest1
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints_with_parent
 from detpy.models.enums.optimization import OptimizationType
 from detpy.models.population import Population
@@ -27,7 +27,6 @@ class LShadeEpsin(BaseAlg):
         self.difference_fitness_success = []
         self.difference_fitness_success_freg = []
 
-        self.e = params.elite_factor
         self.P = params.init_probability_mutation_strategy
 
         self.freq_memory = np.full(self.H, 0.5)
@@ -45,14 +44,15 @@ class LShadeEpsin(BaseAlg):
 
         self.population_size_reduction_strategy = params.population_reduction_strategy
 
-    def update_population_size(self, epoch: int, total_epochs: int, start_pop_size: int, min_pop_size: int):
-        new_size = self.population_size_reduction_strategy.get_new_population_size(
-            epoch, total_epochs, start_pop_size, min_pop_size
-        )
-        self._pop.resize(new_size)
-        self.archive_size = new_size
+    def _update_population_size(self, nfe: int, max_nfe: int, start_pop_size: int, min_pop_size: int):
 
-    def mutate(self, population: Population, the_best_to_select_table: List[int], f_table: List[float]) -> Population:
+        new_size = self.population_size_reduction_strategy.get_new_population_size(
+            nfe, max_nfe, start_pop_size, min_pop_size
+        )
+
+        self._pop.resize(new_size)
+
+    def _mutate(self, population: Population, the_best_to_select_table: List[int], f_table: List[float]) -> Population:
         new_members = []
 
         pa = np.concatenate((population.members, self.archive))
@@ -64,7 +64,7 @@ class LShadeEpsin(BaseAlg):
             best_members = population.get_best_members(the_best_to_select_table[i])
             best = best_members[np.random.randint(0, len(best_members))]
 
-            mutant = mutation_internal(
+            mutant = MutationCurrentToPBest1.mutate(
                 base_member=population.members[i],
                 best_member=best,
                 r1=population.members[r1],
@@ -83,7 +83,7 @@ class LShadeEpsin(BaseAlg):
 
         return new_population
 
-    def selection(self, origin, modified, ftable, cr_table, freg_values):
+    def _selection(self, origin, modified, ftable, cr_table, freg_values):
         new_members = []
 
         for i in range(origin.size):
@@ -117,31 +117,48 @@ class LShadeEpsin(BaseAlg):
         self.difference_fitness_success = []
         self.difference_fitness_success_freg = []
 
-    def update_memory(self, success_f, success_cr, df, df_freg):
+    def _update_memory(self, success_f, success_cr, df, df_freg):
         if not success_f:
             self._reset_success_metrics()
             return
+
         total = sum(df)
-        total_freg = sum(df_freg)
-        weights = np.array(df) / total
-        weights_freg = np.array(df_freg) / total_freg
-        f_new = np.sum(weights * np.square(success_f)) / np.sum(weights * np.array(success_f))
-        cr_new = np.sum(weights * np.square(success_cr)) / np.sum(weights * np.array(success_cr))
-        f_new = np.clip(f_new, 0, 1)
-        cr_new = np.clip(cr_new, 0, 1)
+        if np.isclose(total, 0.0, atol=1e-12):
+            self._reset_success_metrics()
+            return
+
+        weights = np.array(df, dtype=float) / float(total)
+
+        denom_f = np.sum(weights * np.array(success_f, dtype=float))
+        denom_cr = np.sum(weights * np.array(success_cr, dtype=float))
+
+        if np.isclose(denom_f, 0.0, atol=1e-12) or np.isclose(denom_cr, 0.0, atol=1e-12):
+            self._reset_success_metrics()
+            return
+
+        f_new = np.sum(weights * np.square(success_f)) / denom_f
+        cr_new = np.sum(weights * np.square(success_cr)) / denom_cr
+
+        f_new = float(np.clip(f_new, 0.0, 1.0))
+        cr_new = float(np.clip(cr_new, 0.0, 1.0))
+
         self.memory_F = np.append(self.memory_F[1:], f_new)
         self.memory_Cr = np.append(self.memory_Cr[1:], cr_new)
 
         if len(self.success_freg) > 0:
-            freq_new = np.sum(weights_freg * np.square(self.success_freg)) / np.sum(
-                weights_freg * np.array(self.success_freg))
-            freq_new = np.clip(freq_new, 0.01, 1.0)
-            self.freq_memory = np.append(self.freq_memory[1:], freq_new)
+            total_freg = sum(df_freg)
+            if not np.isclose(total_freg, 0.0, atol=1e-12):
+                weights_freg = np.array(df_freg, dtype=float) / float(total_freg)
+                denom_freq = np.sum(weights_freg * np.array(self.success_freg, dtype=float))
+                if not np.isclose(denom_freq, 0.0, atol=1e-12):
+                    freq_new = np.sum(weights_freg * np.square(self.success_freg)) / denom_freq
+                    freq_new = float(np.clip(freq_new, 0.01, 1.0))
+                    self.freq_memory = np.append(self.freq_memory[1:], freq_new)
             self.success_freg = []
 
         self._reset_success_metrics()
 
-    def initialize_parameters_for_epoch(self):
+    def _initialize_parameters_for_epoch(self):
         f_table = []
         cr_table = []
         bests_to_select = []
@@ -150,13 +167,13 @@ class LShadeEpsin(BaseAlg):
             ri = np.random.randint(0, self.H)
             cr = np.clip(np.random.normal(self.memory_Cr[ri], 0.1), 0.0, 1.0)
 
-            is_lower_then_half_populations = self._epoch_number < self.num_of_epochs / 2
+            is_lower_then_half_populations = self.nfe < (self.nfe_max / 2)
 
             if is_lower_then_half_populations:
                 is_not_adaptive_sinusoidal_increasing = np.random.rand() < 0.5
                 if is_not_adaptive_sinusoidal_increasing:
-                    f = 0.5 * (math.sin(2 * math.pi * self.freg * self._epoch_number + math.pi) * (
-                            self.num_of_epochs - self._epoch_number) / self.num_of_epochs + 1.0)
+                    f = 0.5 * (math.sin(2 * math.pi * self.freg * self.nfe + math.pi) * (
+                            self.nfe_max - self.nfe) / self.nfe_max + 1.0)
                 else:
 
                     ri = np.random.randint(0, self.H)
@@ -165,8 +182,8 @@ class LShadeEpsin(BaseAlg):
                     elem_cauchy = np.random.standard_cauchy() * 0.1 + elem_freg_external_memory
                     elem_cauchy = np.clip(elem_cauchy, 0.01, 1.0)  # nwm czy to potrzebne
                     freg_values[idx] = elem_cauchy
-                    f = 0.5 * math.sin(2 * math.pi * elem_cauchy * self._epoch_number) * (
-                            self._epoch_number / self.num_of_epochs) + 1
+                    f = 0.5 * math.sin(2 * math.pi * elem_cauchy * self.nfe) * (
+                            self.nfe / self.nfe_max) + 1
             else:
                 while True:
                     f = np.random.standard_cauchy() * 0.1 + self.memory_F[ri]
@@ -181,7 +198,7 @@ class LShadeEpsin(BaseAlg):
             bests_to_select.append(calculate_best_member_count(self.population_size))
         return f_table, cr_table, bests_to_select, freg_values
 
-    def perform_local_search(self):
+    def _perform_local_search(self):
         num_candidates = 10
         G_ls = 250
 
@@ -213,9 +230,9 @@ class LShadeEpsin(BaseAlg):
                 x_new = np.clip(x_new, self._pop.lb, self._pop.ub)
 
                 new_candidate = copy.deepcopy(candidate)
-                for i, value in enumerate(x_new):
-                    new_candidate.chromosomes[i].real_value = value
-                    new_candidates.append(new_candidate)
+                for j, value in enumerate(x_new):
+                    new_candidate.chromosomes[j].real_value = float(value)
+                new_candidates.append(new_candidate)
 
             candidates.update_fitness_values(self._function.eval, self.parallel_processing)
 
@@ -240,22 +257,22 @@ class LShadeEpsin(BaseAlg):
                 self._pop.members[idx] = candidates.members[i]
 
     def next_epoch(self):
-        f_table, cr_table, bests_to_select, freg_values = self.initialize_parameters_for_epoch()
-        mutant = self.mutate(self._pop, bests_to_select, f_table)
+        f_table, cr_table, bests_to_select, freg_values = self._initialize_parameters_for_epoch()
+        mutant = self._mutate(self._pop, bests_to_select, f_table)
 
         trial = crossing(self._pop, mutant, cr_table)
         fix_boundary_constraints_with_parent(self._pop, trial, self.boundary_constraints_fun)
         trial.update_fitness_values(self._function.eval, self.parallel_processing)
 
-        self._pop = self.selection(self._pop, trial, f_table, cr_table, freg_values)
+        self._pop = self._selection(self._pop, trial, f_table, cr_table, freg_values)
         self.archive = archive_reduction(self.archive, self.archive_size, self.population_size)
-        self.update_memory(self.success_f, self.success_cr, self.difference_fitness_success,
-                           self.difference_fitness_success_freg)
-        self.update_population_size(self._epoch_number, self.num_of_epochs, self.start_population_size,
-                                    self.min_pop_size)
+        self._update_memory(self.success_f, self.success_cr, self.difference_fitness_success,
+                            self.difference_fitness_success_freg)
+
+        self._update_population_size(self.nfe, self.nfe_max, self.start_population_size,
+                                     self.min_pop_size)
 
         if self._pop.size <= 20 and not hasattr(self, "_local_search_done"):
             self._local_search_done = True
-            self.perform_local_search()
+            self._perform_local_search()
 
-        self._epoch_number += 1

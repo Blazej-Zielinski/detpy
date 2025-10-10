@@ -4,8 +4,9 @@ from typing import List
 
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import ALSHADEData
-from detpy.DETAlgs.methods.methods_alshade import mutation_internal, current_to_xamean
+from detpy.DETAlgs.methods.methods_alshade import current_to_xamean
 from detpy.DETAlgs.methods.methods_lshade import calculate_best_member_count, crossing, archive_reduction
+from detpy.DETAlgs.mutation_methods.current_to_pbest_1 import MutationCurrentToPBest1
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints_with_parent
 from detpy.models.enums.optimization import OptimizationType
 from detpy.models.population import Population
@@ -49,23 +50,21 @@ class ALSHADE(BaseAlg):
 
         self.population_size_reduction_strategy = params.population_size_reduction_strategy
 
-        self.nfe_max = self.population_size_reduction_strategy.get_total_number_of_evaluations(self.num_of_epochs,
-                                                                                               self.start_population_size,
-                                                                                               self.min_pop_size)
+        self.nfe_max = self.nfe_max
 
-    def update_population_size(self, epoch: int, total_epochs: int, start_pop_size: int, min_pop_size: int):
+    def update_population_size(self, nfe: int, total_nfe: int, start_pop_size: int, min_pop_size: int):
         """
         Update the population size based on the current epoch using the specified population size reduction strategy.
 
         Parameters:
-        - epoch (int): The current epoch number.
-        - total_epochs (int): The total number of epochs.
+        - nfe (int): The current nfe number.
+        - total_nfe (int): The total number of function evaluations.
         - start_pop_size (int): The initial population size.
         - min_pop_size (int): The minimum population size.
 
         """
         new_size = self.population_size_reduction_strategy.get_new_population_size(
-            epoch, total_epochs, start_pop_size, min_pop_size
+           nfe, total_nfe, start_pop_size, min_pop_size
         )
         self._pop.resize(new_size)
         self.archive_size = new_size
@@ -117,14 +116,14 @@ class ALSHADE(BaseAlg):
                 best_members = population.get_best_members(the_best_to_select_table[i])
                 best = best_members[np.random.randint(0, len(best_members))]
 
-                mutant = mutation_internal(
+                mutant = MutationCurrentToPBest1.mutate(
                     base_member=population.members[i],
                     best_member=best,
                     r1=population.members[r1],
                     r2=pa[r2],
                     f=f_table[i]
                 )
-                # current-to-pbest/1
+
                 memory.append(1)
             else:
                 xamean = self._compute_weighted_archive_mean()
@@ -254,6 +253,5 @@ class ALSHADE(BaseAlg):
         self._pop = self.selection(self._pop, trial, f_table, cr_table)
         self.archive = archive_reduction(self.archive, self.archive_size, self.population_size)
         self.update_memory(self.successF, self.successCr, self.difference_fitness_success)
-        self.update_population_size(self._epoch_number, self.num_of_epochs, self.start_population_size,
+        self.update_population_size(self.nfe, self.nfe_max, self.start_population_size,
                                     self.min_pop_size)
-        self._epoch_number += 1

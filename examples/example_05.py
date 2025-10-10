@@ -30,7 +30,7 @@ if __name__ == "__main__":
     fitness_function = MyFitnessFunctionWrapper("Function name")
 
     params = EIDEData(
-        epoch=10,
+        max_nfe=1000,
         population_size=10,
         dimension=len(a),
         lb=a,

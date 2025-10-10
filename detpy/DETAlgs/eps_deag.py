@@ -80,7 +80,7 @@ class EPSDEAG(BaseAlg):
         mutation_factory = self.init_mutation_factor
         crossover_rate = self.init_crossover_rate
 
-        if self._epoch_number > (self.control_generations * 0.95) and self._epoch_number < self.control_generations:
+        if self.nfe > (self.control_generations * 0.95) and self.nfe < self.control_generations:
             mutation_factory = 0.3 * self.init_crossover_rate + 0.7
             self.epsilon_scaling_factor = 0.3 * self.epsilon_scaling_factor + 0.7 * self.min_epsilon_scaling_factory
 
@@ -91,7 +91,7 @@ class EPSDEAG(BaseAlg):
 
         new_pop = self._pop
         selected_child = set()
-        gradient_mutation_flag = self._epoch_number % self.gradient_mutation_interval == 0
+        gradient_mutation_flag = self.nfe % self.gradient_mutation_interval == 0
         for i in range(self.number_of_repeating_de_operations):
             # New population after mutation
 
@@ -117,10 +117,8 @@ class EPSDEAG(BaseAlg):
             if len(selected_child) == 0:
                 break
 
-        self.epsilon_level = calculate_epsilon_level(self.init_epsilon_level, self._epoch_number, self.control_generations, self.epsilon_scaling_factor)
+        self.epsilon_level = calculate_epsilon_level(self.init_epsilon_level, self.nfe, self.control_generations, self.epsilon_scaling_factor)
         self.epsilon_constrained = calculate_epsilon_constrained(new_pop, self.g_funcs, self.h_funcs, self.penalty_power)
 
         # Override data
         self._pop = new_pop
-
-        self._epoch_number += 1

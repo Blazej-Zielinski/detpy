@@ -9,13 +9,16 @@ from detpy.models.enums.derivative_method import DerivativeMethod
 from detpy.models.fitness_function import FitnessFunctionBase
 from detpy.models.enums.boundary_constrain import BoundaryFixing
 from detpy.models.enums.optimization import OptimizationType
+from detpy.models.stop_condition.never_stop_condition import NeverStopCondition
+from detpy.models.stop_condition.stop_condition import StopCondition
 
 
 @dataclass
 class BaseData:
-    epoch: int = 100
     population_size: int = 100
+    max_nfe: int = 10_000
     dimension: int = 10
+    additional_stop_criteria: StopCondition = NeverStopCondition()
     lb: list = field(default_factory=lambda: [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100])
     ub: list = field(default_factory=lambda: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100])
     optimization_type: OptimizationType = OptimizationType.MINIMIZATION
@@ -23,6 +26,7 @@ class BaseData:
     function: FitnessFunctionBase = None
     log_population: bool = False
     parallel_processing: Optional[list] = None
+    show_plots: bool = True
 
 
 @dataclass
@@ -215,7 +219,6 @@ class DEACRData(BaseData):
 class LShadeEpsinData(BaseData):
     minimum_population_size: int = 5
     memory_size: int = 5
-    elite_factor: float = 0.5
     init_probability_mutation_strategy: float = 0.5
     freg: float = 0.1
     population_reduction_strategy: PopulationSizeReductionStrategy = LinearPopulationSizeReduction()

@@ -48,13 +48,13 @@ def plot_fitness_convergence(fitness_results, algorithm_names, num_of_epochs):
 
 
 if __name__ == "__main__":
-    num_of_epochs = 50
+    num_of_nfe = 5000
     function_loader = FunctionLoader()
     ackley_function = function_loader.get_function(function_name="ackley", n_dimensions=2)
     fitness_fun = BenchmarkFitnessFunction(ackley_function)
 
     params_common = {
-        'epoch': num_of_epochs,
+        'max_nfe': num_of_nfe,
         'population_size': 50,
         'dimension': 2,
         'lb': [-32.768, -32.768],
@@ -107,4 +107,4 @@ if __name__ == "__main__":
     algorithm_names = ['AADE', 'COMDE', 'DE', 'DEGL', 'DELB', 'DERL', 'EIDE', 'EMDE', 'FiADE', 'IDE', 'ImprovedDE',
                        'JADE', 'MGDE', 'NMDE', 'OppBasedDE', 'SADE']
 
-    plot_fitness_convergence(fitness_results, algorithm_names, num_of_epochs)
+    plot_fitness_convergence(fitness_results, algorithm_names, num_of_nfe)

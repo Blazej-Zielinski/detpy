@@ -81,4 +81,3 @@ class NMDE(BaseAlg):
         self._f_set = set()
         self._cr_set = set()
 
-        self._epoch_number += 1

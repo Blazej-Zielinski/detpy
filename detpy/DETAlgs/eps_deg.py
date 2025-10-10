@@ -74,10 +74,8 @@ class EPSDEG(BaseAlg):
         # Select new population
         new_pop = selection(self._pop, gradient_mutation_pop, self.epsilon_constrained, u_gradient_epsilon_constrained, self.epsilon_level)
 
-        self.epsilon_level = calculate_epsilon_level(self.init_epsilon_level, self._epoch_number, self.control_generations, self.epsilon_scaling_factor)
+        self.epsilon_level = calculate_epsilon_level(self.init_epsilon_level, self.nfe, self.control_generations, self.epsilon_scaling_factor)
         self.epsilon_constrained = calculate_epsilon_constrained(new_pop, self.g_funcs, self.h_funcs, self.penalty_power)
 
         # Override data
         self._pop = new_pop
-
-        self._epoch_number += 1
