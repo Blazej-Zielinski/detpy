@@ -16,7 +16,7 @@ from detpy.models.stop_condition.stop_condition import StopCondition
 @dataclass
 class BaseData:
     population_size: int = 100
-    max_nfe: int = 10_000
+    max_nfe: int = 100_000
     dimension: int = 10
     additional_stop_criteria: StopCondition = NeverStopCondition()
     lb: list = field(default_factory=lambda: [-100, -100, -100, -100, -100, -100, -100, -100, -100, -100])
