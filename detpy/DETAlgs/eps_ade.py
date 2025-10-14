@@ -135,7 +135,7 @@ class EPSADE(BaseAlg):
 
         self.update_adaptive_parameters()
 
-        self.epsilon_level = calculate_epsilon_level(self.init_epsilon_level, self._epoch_number,
+        self.epsilon_level = calculate_epsilon_level(self.init_epsilon_level, self.nfe,
                                                      self.control_generations, self.epsilon_scaling_factor)
         self.epsilon_constrained = calculate_epsilon_constrained(new_pop, self.g_funcs, self.h_funcs,
                                                                  self.penalty_power)
@@ -144,5 +144,3 @@ class EPSADE(BaseAlg):
 
         # Override data
         self._pop = new_pop
-
-        self._epoch_number += 1

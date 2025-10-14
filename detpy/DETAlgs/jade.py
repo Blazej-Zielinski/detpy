@@ -78,4 +78,3 @@ class JADE(BaseAlg):
         # Override data
         self._pop = new_pop
 
-        self._epoch_number += 1

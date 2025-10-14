@@ -25,7 +25,7 @@ class IDE(BaseAlg):
 
     def next_epoch(self):
         # Calculate F and CR
-        f = ide_get_f(self._epoch_number, self.num_of_epochs)
+        f = ide_get_f(self.nfe, self.nfe_max)
         cr_arr = ide_get_cr(self._pop)
 
         # New population after mutation
@@ -47,4 +47,3 @@ class IDE(BaseAlg):
         # Override data
         self._pop = new_pop
 
-        self._epoch_number += 1

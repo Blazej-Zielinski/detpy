@@ -235,4 +235,3 @@ class SHADE(BaseAlg):
         # Update the memory for CR and F
         self.update_memory(self.successF, self.successCr, self.difference_fitness_success)
 
-        self._epoch_number += 1

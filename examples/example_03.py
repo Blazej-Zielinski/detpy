@@ -30,7 +30,7 @@ def plot_fitness_convergence(fitness_results, algorithm_names, num_of_epochs, fu
 
 
 if __name__ == "__main__":
-    num_of_epochs = 100
+    num_of_nfe = 10000
     function_loader = FunctionLoader()
 
     test_functions = [
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     ]
 
     params_common = {
-        'epoch': num_of_epochs,
+        'nfe_max': num_of_nfe,
         'population_size': 100,
         'dimension': 2,
         'lb': [-32.768, -32.768],
@@ -65,4 +65,4 @@ if __name__ == "__main__":
             fitness_values = run_algorithm(algorithm_class, params)
             fitness_results.append(fitness_values)
 
-        plot_fitness_convergence(fitness_results, algorithm_names, num_of_epochs, function_name)
+        plot_fitness_convergence(fitness_results, algorithm_names, num_of_nfe, function_name)

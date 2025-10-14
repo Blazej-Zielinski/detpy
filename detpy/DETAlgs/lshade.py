@@ -4,8 +4,9 @@ from typing import List
 import numpy as np
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import LShadeData
-from detpy.DETAlgs.methods.methods_lshade import mutation_internal, calculate_best_member_count, crossing, \
+from detpy.DETAlgs.methods.methods_lshade import calculate_best_member_count, crossing, \
     archive_reduction
+from detpy.DETAlgs.mutation_methods.current_to_pbest_1 import MutationCurrentToPBest1
 
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 from detpy.models.enums.optimization import OptimizationType
@@ -43,23 +44,21 @@ class LSHADE(BaseAlg):
 
         self.population_size_reduction_strategy = params.population_reduction_strategy
 
-    def update_population_size(self, epoch: int, total_epochs: int, start_pop_size: int, min_pop_size: int):
+    def update_population_size(self, nfe: int, total_nfe: int, start_pop_size: int, min_pop_size: int):
         """
         Calculate new population size using Linear Population Size Reduction (LPSR).
 
         Parameters:
         - start_pop_size (int): The initial population size.
-        - epoch (int): The current epoch.
-        - total_epochs (int): The total number of epochs.
+        - nfe (int): The current function evaluations.
+        - total_nfe (int): The total number of function evaluations.
         - min_pop_size (int): The minimum population size.
         """
         new_size = self.population_size_reduction_strategy.get_new_population_size(
-            epoch, total_epochs, start_pop_size, min_pop_size
+            nfe, total_nfe, start_pop_size, min_pop_size
         )
         self._pop.resize(new_size)
 
-        # Update archive size proportionally
-        self.archive_size = new_size
 
     def mutate(self,
                population: Population,
@@ -93,7 +92,7 @@ class LSHADE(BaseAlg):
             selected_best_member = best_members[np.random.randint(0, len(best_members))]
 
             # Apply the mutation formula (current-to-pbest strategy)
-            mutated_member = mutation_internal(
+            mutated_member = MutationCurrentToPBest1.mutate(
                 base_member=population.members[i],
                 best_member=selected_best_member,
                 r1=population.members[r1],
@@ -259,7 +258,6 @@ class LSHADE(BaseAlg):
         # Update the memory for CR and F
         self.update_memory(self.successF, self.successCr, self.difference_fitness_success)
 
-        self.update_population_size(self._epoch_number, self.num_of_epochs, self.start_population_size,
+        self.update_population_size(self.nfe, self.nfe_max, self.start_population_size,
                                     self.min_pop_size)
 
-        self._epoch_number += 1

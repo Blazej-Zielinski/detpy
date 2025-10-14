@@ -47,7 +47,6 @@ class SPS_LSHADE_EIG(BaseAlg):
         self.recently_consecutive_unsuccessful_updates_table = [0] * self.population_size
 
         self.start_population_size = self.population_size
-        self.nfe_max = self.calculate_max_evaluations_lpsr(self.population_size)
 
         self.cov_matrix = np.eye(self._pop.arg_num)
         self.learning_rate = self.learning_rate_init
@@ -197,27 +196,9 @@ class SPS_LSHADE_EIG(BaseAlg):
         new_population.members = np.array(new_members)
         return new_population
 
-    def calculate_max_evaluations_lpsr(self, start_pop_size: int):
-        """
-        Calculate the maximum number of function evaluations for the Linear Population Size Reduction (LPSR) method.
-
-        Parameters:
-        - start_pop_size (int): The initial population size at the beginning of the evolution process.
-
-        Returns: sum of the total number of evaluations for each generation.
-        """
-        total_evaluations = 0
-        for generation in range(self.num_of_epochs):
-            current_population_size = int(
-                start_pop_size - (generation / self.num_of_epochs) * (start_pop_size - self.min_pop_size)
-            )
-            total_evaluations += current_population_size
-        NFEmax = total_evaluations
-        return NFEmax
-
-    def update_population_size(self, epoch: int, total_epochs: int, start_pop_size: int, min_pop_size: int):
+    def update_population_size(self, nfe: int, total_nfe: int, start_pop_size: int, min_pop_size: int):
         new_size = self.population_size_reduction_strategy.get_new_population_size(
-            epoch, total_epochs, start_pop_size, min_pop_size
+            nfe, total_nfe, start_pop_size, min_pop_size
         )
 
         self._pop.resize(new_size)
@@ -260,8 +241,7 @@ class SPS_LSHADE_EIG(BaseAlg):
         self.archive = archive_reduction(self.archive, self.population_size, self.w_ext)
         self.update_covariance_matrix()
 
-        self.update_population_size(self._epoch_number, self.num_of_epochs, self.start_population_size,
+        self.update_population_size(self.nfe, self.nfe_max, self.start_population_size,
                                     self.min_pop_size)
 
-        self._epoch_number += 1
         self.update_success_history()

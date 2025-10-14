@@ -56,4 +56,4 @@ class ImprovedDE(BaseAlg):
 
         # Increment iteration count
         self.iteration += 1
-        self._epoch_number += 1
+

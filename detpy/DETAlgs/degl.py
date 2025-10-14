@@ -44,9 +44,8 @@ class DEGL(BaseAlg):
         # Select new population
         new_pop = selection(self._pop, u_pop)
 
-        self.weight = degl_adapt_weight(self._epoch_number, self.num_of_epochs)
+        self.weight = degl_adapt_weight(self.nfe, self.nfe_max)
 
         # Override data
         self._pop = new_pop
 
-        self._epoch_number += 1

@@ -30,7 +30,7 @@ class MGDE(BaseAlg):
 
     def next_epoch(self):
         # New population after mutation
-        v_pop = mgde_mutation(self._pop, self.generation, self.num_of_epochs, self.mutation_factor_f,
+        v_pop = mgde_mutation(self._pop, self.nfe, self.nfe_max, self.mutation_factor_f,
                               self.mutation_factor_k)
 
         # Apply boundary constrains on population in place
@@ -50,4 +50,3 @@ class MGDE(BaseAlg):
         # Override data
         self._pop = new_pop
 
-        self._epoch_number += 1
