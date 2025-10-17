@@ -234,8 +234,8 @@ class ALSHADE(BaseAlg):
         total = sum(df)
         weights = np.array(df) / total
 
-        f_new = self._lehmer_mean.evaluate(success_f, weights.tolist(), p=1)
-        cr_new = self._lehmer_mean.evaluate(success_cr, weights.tolist(), p=1)
+        f_new = self._lehmer_mean.evaluate(success_f, weights.tolist(), p=2)
+        cr_new = self._lehmer_mean.evaluate(success_cr, weights.tolist(), p=2)
 
         f_new = np.clip(f_new, 0, 1)
         cr_new = np.clip(cr_new, 0, 1)
