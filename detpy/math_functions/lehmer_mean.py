@@ -7,17 +7,22 @@ class LehmerMean(MathFunction):
     def __init__(self):
         super().__init__("Lehmer Mean")
 
-    def evaluate(self, mut_factors: list[float], p: int = 2) -> float:
+    def evaluate(self, values: list[float], weights: list[float], p: int = 2) -> float:
         """
-        Calculate the Lehmer mean of a list of values.
+        Calculate the weighted Lehmer mean.
 
         Parameters:
-        - mut_factors (list[float]): The list of values.
+        - values (list[float]): The list of values.
+        - weights (list[float]): The weights corresponding to the values.
         - p (int): The power parameter for the Lehmer mean.
 
-        Returns: The Lehmer mean of the values in mut_factors.
+        Returns:
+        - float: The weighted Lehmer mean.
         """
-        numbers_array = np.array(mut_factors)
-        numerator = np.sum(numbers_array ** p)
-        denominator = np.sum(numbers_array ** (p - 1))
-        return numerator / denominator
+        values_array = np.array(values)
+        weights_array = np.array(weights)
+
+        numerator = np.sum(weights_array * (values_array ** p))
+        denominator = np.sum(weights_array * (values_array ** (p - 1)))
+
+        return numerator / denominator if denominator != 0 else 0.0
