@@ -187,15 +187,24 @@ class ALSHADE(BaseAlg):
         a1_all = sum(1 for m in memory_flags if m == 1)
         a2_all = sum(1 for m in memory_flags if m == 3)
 
-        a1_better = sum(
-            1 for m, i in zip(memory_flags, range(origin.size))
-            if m == 1 and modified.members[i] < origin.members[i]
-        )
-
-        a2_better = sum(
-            1 for m, i in zip(memory_flags, range(origin.size))
-            if m == 3 and modified.members[i] < origin.members[i]
-        )
+        if origin.optimization == OptimizationType.MINIMIZATION:
+            a1_better = sum(
+                1 for m, i in zip(memory_flags, range(origin.size))
+                if m == 1 and modified.members[i] < origin.members[i]
+            )
+            a2_better = sum(
+                1 for m, i in zip(memory_flags, range(origin.size))
+                if m == 3 and modified.members[i] < origin.members[i]
+            )
+        else:  # Maximization
+            a1_better = sum(
+                1 for m, i in zip(memory_flags, range(origin.size))
+                if m == 1 and modified.members[i] > origin.members[i]
+            )
+            a2_better = sum(
+                1 for m, i in zip(memory_flags, range(origin.size))
+                if m == 3 and modified.members[i] > origin.members[i]
+            )
 
         if a1_all > 0 and a2_all > 0:
             p_a1 = a1_better / a1_all
@@ -225,8 +234,8 @@ class ALSHADE(BaseAlg):
         total = sum(df)
         weights = np.array(df) / total
 
-        f_new = self._lehmer_mean.evaluate(success_f, weights.tolist(), p=2)
-        cr_new = self._lehmer_mean.evaluate(success_cr, weights.tolist(), p=2)
+        f_new = self._lehmer_mean.evaluate(success_f, weights.tolist(), p=1)
+        cr_new = self._lehmer_mean.evaluate(success_cr, weights.tolist(), p=1)
 
         f_new = np.clip(f_new, 0, 1)
         cr_new = np.clip(cr_new, 0, 1)
