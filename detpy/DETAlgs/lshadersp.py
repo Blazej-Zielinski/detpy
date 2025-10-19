@@ -75,7 +75,7 @@ class LSHADERSP(BaseAlg):
 
             # Compute new F value as the Lehmer mean of successful F values
             if len(self.success_f) > 0:
-                new_f = self.lehmer_mean_func.evaluate(self.success_f, weights)
+                new_f = self.lehmer_mean_func.evaluate(self.success_f, weights,2)
                 new_f = np.clip(new_f, 0, 1)  # Clip to [0, 1]
                 # Update memory_F
                 self.memory_F[r] = (self.memory_F[r] + new_f) / 2  # Mean of old and new F
