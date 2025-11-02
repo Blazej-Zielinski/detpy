@@ -7,24 +7,17 @@ from detpy.models.member import Member
 from detpy.models.population import Population
 
 
-def calculate_best_member_count(population_size: int):
+def calculate_best_member_count(population_size: int, p: float = 0.2) -> int:
     """
-    Calculate the number of the best members to select based on a percentage of the population size.
-    The percentage is randomly chosen between a minimum value (2/population_size) and a maximum value (20% of the population).
+    Calculate the number of best members to select based on the population size and a given proportion p.
+    Args:
+        population_size (int):  The size of the population.
+        p (float):  The proportion of the population to select as best members (default is 0.2).
 
-    Parameters:
-    - population_size (int): The size of the population.
+    Returns: The number of best members to select.
 
-    Returns:
-    - int: The number of the best members to select.
     """
-
-    min_percentage = 2 / population_size
-    max_percentage = 0.2
-
-    random_percentage = np.random.uniform(min_percentage, max_percentage)
-
-    return int(random_percentage * population_size)
+    return int(p * population_size)
 
 
 def archive_reduction(archive: list[Member], archive_size: int, pop_size: int):
