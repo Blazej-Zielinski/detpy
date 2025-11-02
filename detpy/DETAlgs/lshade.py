@@ -257,10 +257,10 @@ class LSHADE(BaseAlg):
 
         mutant = self.mutate(self._pop, the_bests_to_select, f_table)
 
-        fix_boundary_constraints_with_parent(mutant, self._pop, self.boundary_constraints_fun)
-
         # Crossover step
         trial = crossing(self._pop, mutant, cr_table)
+
+        fix_boundary_constraints_with_parent(mutant, self._pop, self.boundary_constraints_fun)
 
         # Evaluate fitness values for the trial population
         trial.update_fitness_values(self._function.eval, self.parallel_processing)
