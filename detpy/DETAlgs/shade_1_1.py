@@ -3,7 +3,7 @@ from typing import List
 
 import numpy as np
 from detpy.DETAlgs.base import BaseAlg
-from detpy.DETAlgs.data.alg_data import LShadeData
+from detpy.DETAlgs.data.alg_data import  Shade_1_1_Data
 from detpy.DETAlgs.methods.methods_shade_1_1 import calculate_best_member_count, crossing, \
     archive_reduction
 from detpy.DETAlgs.mutation_methods.current_to_pbest_1 import MutationCurrentToPBest1
@@ -22,13 +22,13 @@ class SHADE_1_1(BaseAlg):
         Ryoji Tanabe and Alex Fukunaga Graduate School of Arts and Sciences The University of Tokyo
     """
 
-    def __init__(self, params: LShadeData, db_conn=None, db_auto_write=False):
+    def __init__(self, params: Shade_1_1_Data , db_conn=None, db_auto_write=False):
         super().__init__(SHADE_1_1.__name__, params, db_conn, db_auto_write)
 
         self._H = params.memory_size  # Memory size for f and cr adaptation
         self._memory_F = np.full(self._H, 0.5)  # Initial memory for F
         self._memory_Cr = np.full(self._H, 0.5)  # Initial memory for Cr
-        self._p = 0.2
+        self._p = params.best_member_percentage
         self._k_index = 0
 
         self._successCr = []
