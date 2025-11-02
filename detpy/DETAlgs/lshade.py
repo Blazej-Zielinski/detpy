@@ -170,24 +170,24 @@ class LSHADE(BaseAlg):
         new_population.members = np.array(new_members)
         return new_population
 
-    def update_memory(self, success_f: List[float], success_cf: List[float], difference_fitness_success: List[float]):
+    def update_memory(self, success_f: List[float], success_cr: List[float], difference_fitness_success: List[float]):
         """
         Update the memory for the crossover rates and scaling factors based on the success of the trial vectors.
 
         Parameters:
         - success_f (List[float]): List of scaling factors that led to better trial vectors.
-        - success_cf (List[float]): List of crossover rates that led to better trial vectors.
+        - success_cr (List[float]): List of crossover rates that led to better trial vectors.
         - difference_fitness_success (List[float]): List of differences in objective function values (|f(u_k, G) - f(x_k, G)|).
         """
-        if len(success_f) > 0:
+        if len(success_f) > 0 and len(success_cr) > 0:
             total = np.sum(difference_fitness_success)
             weights = difference_fitness_success / total
 
-            if np.isclose(total, 0.0, atol=0.00001):
+            if np.isclose(total, 0.0, atol=self._EPSILON):
                 self._memory_Cr[self._k_index] = self._TERMINAL
 
             else:
-                cr_new = np.sum(weights * success_cf * success_cf) / np.sum(weights * success_cf)
+                cr_new = np.sum(weights * success_cr * success_cr) / np.sum(weights * success_cr)
                 cr_new = np.clip(cr_new, 0, 1)
                 self._memory_Cr[self._k_index] = cr_new
 
