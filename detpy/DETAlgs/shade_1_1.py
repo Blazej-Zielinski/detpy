@@ -3,7 +3,7 @@ from typing import List
 
 import numpy as np
 from detpy.DETAlgs.base import BaseAlg
-from detpy.DETAlgs.data.alg_data import  Shade_1_1_Data
+from detpy.DETAlgs.data.alg_data import Shade_1_1_Data
 from detpy.DETAlgs.methods.methods_shade_1_1 import calculate_best_member_count, crossing, \
     archive_reduction
 from detpy.DETAlgs.mutation_methods.current_to_pbest_1 import MutationCurrentToPBest1
@@ -22,7 +22,7 @@ class SHADE_1_1(BaseAlg):
         Ryoji Tanabe and Alex Fukunaga Graduate School of Arts and Sciences The University of Tokyo
     """
 
-    def __init__(self, params: Shade_1_1_Data , db_conn=None, db_auto_write=False):
+    def __init__(self, params: Shade_1_1_Data, db_conn=None, db_auto_write=False):
         super().__init__(SHADE_1_1.__name__, params, db_conn, db_auto_write)
 
         self._H = params.memory_size  # Memory size for f and cr adaptation
@@ -45,21 +45,6 @@ class SHADE_1_1(BaseAlg):
 
         # We need this value for checking close to zero in update_memory
         self._EPSILON = 0.00001
-
-    def update_population_size(self, nfe: int, total_nfe: int, start_pop_size: int, min_pop_size: int):
-        """
-        Calculate new population size using Linear Population Size Reduction (LPSR).
-
-        Parameters:
-        - nfe (int): The current function evaluations.
-        - total_nfe (int): The total number of function evaluations.
-        - start_pop_size (int): The initial population size.
-        - min_pop_size (int): The minimum population size.
-        """
-        new_size = self._population_size_reduction_strategy.get_new_population_size(
-            nfe, total_nfe, start_pop_size, min_pop_size
-        )
-        self._pop.resize(new_size)
 
     def mutate(self,
                population: Population,
@@ -184,7 +169,6 @@ class SHADE_1_1(BaseAlg):
                 cr_new = np.sum(weights * success_cr * success_cr) / np.sum(weights * success_cr)
                 cr_new = np.clip(cr_new, 0, 1)
                 self._memory_Cr[self._k_index] = cr_new
-
 
             f_new = np.sum(weights * success_f * success_f) / np.sum(weights * success_f)
             f_new = np.clip(f_new, 0, 1)
