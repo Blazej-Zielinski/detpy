@@ -139,16 +139,16 @@ class SHADE(BaseAlg):
         new_population.members = np.array(new_members)
         return new_population
 
-    def _update_memory(self, success_f: List[float], success_cf: List[float], difference_fitness_success: List[float]):
+    def _update_memory(self, success_f: List[float], success_cr: List[float], difference_fitness_success: List[float]):
         """
         Update the memory for the crossover rates and scaling factors based on the success of the trial vectors.
 
         Parameters:
         - success_f (List[float]): List of scaling factors that led to better trial vectors.
-        - success_cf (List[float]): List of crossover rates that led to better trial vectors.
+        - success_cr (List[float]): List of crossover rates that led to better trial vectors.
         - difference_fitness_success (List[float]): List of differences in objective function values (|f(u_k, G) - f(x_k, G)|).
         """
-        if len(success_f) > 0:
+        if len(success_f) > 0 and len(success_cr) > 0:
             total = np.sum(difference_fitness_success)
             if total == 0:
                 return
@@ -156,7 +156,7 @@ class SHADE(BaseAlg):
             weights = difference_fitness_success / total
             f_new = np.sum(weights * success_f * success_f) / np.sum(weights * success_f)
             f_new = np.clip(f_new, 0, 1)
-            cr_new = np.sum(weights * success_cf)
+            cr_new = np.sum(weights * success_cr)
             cr_new = np.clip(cr_new, 0, 1)
 
             # self.memory_F = np.append(self.memory_F[1:], f_new)
