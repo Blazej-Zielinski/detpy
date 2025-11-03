@@ -56,6 +56,12 @@ class ALSHADE(BaseAlg):
 
         self.nfe_max = self.nfe_max
 
+        # Define a terminal value for memory_Cr. It indicates that no successful Cr was found in the epoch.
+        self._TERMINAL = np.nan
+
+        # We need this value for checking close to zero in update_memory
+        self._EPSILON = 0.00001
+
     def _update_population_size(self, nfe: int, total_nfe: int, start_pop_size: int, min_pop_size: int):
         """
         Update the population size based on the current nfe using the specified population size reduction strategy.
@@ -229,26 +235,28 @@ class ALSHADE(BaseAlg):
         - success_cr (List[float]): A list of successful scaling factors CR that resulted in better fitness function values from the current epoch.
         - df (List[float]): A list of differences between old and new value fitness function
         """
-        if not success_f:
-            return
-        total = sum(df)
-        weights = np.array(df) / total
+        if len(success_f) > 0 and len(success_cr) > 0:
+            total = np.sum(df)
+            weights = np.array(df) / total
+            if np.isclose(total, 0.0, atol=self._EPSILON):
+                cr_new = self._TERMINAL
 
-        f_new = self._lehmer_mean.evaluate(success_f, weights.tolist(), p=2)
-        cr_new = self._lehmer_mean.evaluate(success_cr, weights.tolist(), p=2)
+            else:
+                cr_new = self._lehmer_mean.evaluate(success_cr, weights.tolist(), p=2)
 
-        f_new = np.clip(f_new, 0, 1)
-        cr_new = np.clip(cr_new, 0, 1)
+            f_new = self._lehmer_mean.evaluate(success_f, weights.tolist(), p=2)
 
-        self._memory_F[self._index_update_f_and_cr] = f_new
-        self._memory_Cr[self._index_update_f_and_cr] = cr_new
-        self._index_update_f_and_cr += 1
-        if self._index_update_f_and_cr >= len(self._memory_F):
-            self._index_update_f_and_cr = 1
+            f_new = np.clip(f_new, 0, 1)
 
-        self._successF = []
-        self._successCr = []
-        self._difference_fitness_success = []
+            self._memory_F[self._index_update_f_and_cr] = f_new
+            self._memory_Cr[self._index_update_f_and_cr] = cr_new
+            self._index_update_f_and_cr += 1
+            if self._index_update_f_and_cr >= len(self._memory_F):
+                self._index_update_f_and_cr = 1
+
+            self._successF = []
+            self._successCr = []
+            self._difference_fitness_success = []
 
     def _initialize_parameters_for_epoch(self):
         """
@@ -260,7 +268,14 @@ class ALSHADE(BaseAlg):
         bests_to_select = []
         for _ in range(self._pop.size):
             ri = np.random.randint(0, self._H)
-            cr = np.clip(np.random.normal(self._memory_Cr[ri], 0.1), 0.0, 1.0)
+
+            # We check here if we have TERMINAL value in memory_Cr
+            if np.isnan(self._memory_Cr[ri]):
+                cr = 0.0
+            else:
+                cr = np.random.normal(self._memory_Cr[ri], 0.1)
+                cr = np.clip(cr, 0.0, 1.0)
+
             while True:
                 f = np.random.standard_cauchy() * 0.1 + self._memory_F[ri]
                 if f > 0:
