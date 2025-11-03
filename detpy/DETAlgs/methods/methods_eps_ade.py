@@ -25,5 +25,5 @@ def adaptive_de_operation(origin_population: Population, origin_member : Member,
     mutation_member = mutation_ind(diff_members[0], diff_members[1:], mutation_factor)
     boundary_clipping(mutation_member)
     new_member = binomial_crossing_ind(origin_member, mutation_member, crossover_rate)
-    Population.calculate_fitness(new_member, fitness_function_base.eval)
+    new_member.fitness_value = Population.calculate_fitness(new_member, fitness_function_base.eval)
     return new_member

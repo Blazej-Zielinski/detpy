@@ -9,6 +9,7 @@ import autograd.numpy as anp
 
 from detpy.DETAlgs.methods.methods_de import mutation_ind
 from detpy.DETAlgs.methods.methods_eps_de import epsilon_level_comparisons, epsilon_constrained_method
+from detpy.models.enums.boundary_constrain import get_boundary_constraints_fun, BoundaryFixing
 from detpy.models.enums.derivative_method import DerivativeMethod
 from detpy.models.enums.optimization import OptimizationType
 from detpy.models.member import Member
@@ -88,9 +89,9 @@ def selection(origin_population: Population, modified_population: Population,
     new_population.members = np.array(new_members)
     return new_population
 
-def epsilon_constrained_comparator(first_member : Member, second_member : Member, g_funcs : list, h_funcs : list, penalty_power: int, epsilon_level : int, optimization : OptimizationType):
-    epsilon_constrained_for_first_member = epsilon_constrained_method(first_member.get_chromosomes(), g_funcs, h_funcs, penalty_power)
-    epsilon_constrained_for_second_member = epsilon_constrained_method(second_member.get_chromosomes(), g_funcs, h_funcs, penalty_power)
+def epsilon_constrained_comparator(first_member : Member, second_member : Member, g_funcs : list, h_funcs : list, penalty_power: int, epsilon_level : int, optimization : OptimizationType, tolerance_h: float):
+    epsilon_constrained_for_first_member = epsilon_constrained_method(first_member.get_chromosomes(), g_funcs, h_funcs, penalty_power, tolerance_h)
+    epsilon_constrained_for_second_member = epsilon_constrained_method(second_member.get_chromosomes(), g_funcs, h_funcs, penalty_power, tolerance_h)
     if epsilon_level_comparisons(first_member, second_member,
                                  epsilon_constrained_for_first_member, epsilon_constrained_for_second_member,
                                  epsilon_level, optimization):
@@ -105,11 +106,10 @@ def calculate_init_epsilon_level(epsilon_constrained : list, theta : float):
     if theta > 1:
         return theta * np.max(epsilon_constrained)
     else:
-        sorted_epsilon_constrained = sorted(epsilon_constrained, reverse=True)
+        sorted_epsilon_constrained = sorted(epsilon_constrained)
         epsilon_constrained_length = len(sorted_epsilon_constrained)
-        last_index = epsilon_constrained_length - 1
-        index_theta = min(int(np.floor(theta * last_index)), last_index)
-        return sorted_epsilon_constrained[index_theta]
+        index = int(epsilon_constrained_length * theta)
+        return sorted_epsilon_constrained[index]
 
 def calculate_epsilon_level(init_epsilon_level : float, epoch_number : int, control_generations : int, epsilon_scaling_factor : int):
     if epoch_number >= control_generations:
@@ -174,21 +174,23 @@ def calculate_delta_x(chromosomes : list[float], derivative_method : DerivativeM
 
     return -np.dot(-inv_gradient_constraint, epsilon_constrain)
 
-def gradient_mutation(pop_population: Population, number_of_repeating_mutation : int, gradient_base_mutation_rate : float, derivative_method : DerivativeMethod, g_funcs : list, h_funcs : list, penalty_power : int, gradient_mutation_flag : bool):
+def gradient_mutation(pop_population: Population, number_of_repeating_mutation : int, gradient_base_mutation_rate : float, derivative_method : DerivativeMethod, g_funcs : list, h_funcs : list, penalty_power : int, gradient_mutation_flag : bool, boundary_constraints_fun: BoundaryFixing, tolerance_h: float):
     new_members = []
     if gradient_mutation_flag:
+        boundary_constraints_fun = get_boundary_constraints_fun(boundary_constraints_fun)
         for i in range(pop_population.size):
             member = copy.deepcopy(pop_population.members[i])
             if random.uniform(0, 1) < gradient_base_mutation_rate:
                 h = 0
-                epsilon_constrain = epsilon_constrained_method(member.get_chromosomes(), g_funcs, h_funcs, penalty_power)
+                epsilon_constrain = epsilon_constrained_method(member.get_chromosomes(), g_funcs, h_funcs, penalty_power, tolerance_h)
                 while h < number_of_repeating_mutation and epsilon_constrain > 0:
                     delta_x = calculate_delta_x(member.get_chromosomes(), derivative_method, g_funcs, h_funcs, epsilon_constrain)
 
                     for j in range(member.args_num):
                         member.chromosomes[j].real_value = member.chromosomes[j].real_value + delta_x.item(j)
 
-                    epsilon_constrain = epsilon_constrained_method(member.get_chromosomes(), g_funcs, h_funcs, penalty_power)
+                    boundary_constraints_fun(member)
+                    epsilon_constrain = epsilon_constrained_method(member.get_chromosomes(), g_funcs, h_funcs, penalty_power, tolerance_h)
                     h += 1
 
             new_members.append(member)

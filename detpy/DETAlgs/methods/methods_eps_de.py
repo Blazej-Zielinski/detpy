@@ -7,16 +7,22 @@ from detpy.models.enums.optimization import OptimizationType
 from detpy.models.member import Member
 from detpy.models.population import Population
 
-def calculate_epsilon_constrained(population : Population, g_funcs: list, h_funcs: list, penalty_power: int) -> list:
-    return list(epsilon_constrained_method(member.get_chromosomes(), g_funcs, h_funcs, penalty_power) for member in population.members)
+def calculate_epsilon_constrained(population : Population, g_funcs: list, h_funcs: list, penalty_power: int, tolerance_h : float) -> list:
+    return list(epsilon_constrained_method(member.get_chromosomes(), g_funcs, h_funcs, penalty_power, tolerance_h) for member in population.members)
 
-def epsilon_constrained_method(chromosomes: ndarray, g_funcs: list, h_funcs: list, penalty_power: int) -> float:
+def epsilon_constrained_method(chromosomes: ndarray, g_funcs: list, h_funcs: list, penalty_power: int, tolerance_h : float) -> float:
     """
           Formula: sum(max(0, g_j(x))^p) + sum(h_j(x)^p)
     """
-    g_constraint_violation = sum((max(0, pow(g(chromosomes), penalty_power))  for g in g_funcs))
-    h_constraint_violation = sum((pow(h(chromosomes), penalty_power)  for h in h_funcs))
-    return g_constraint_violation + h_constraint_violation
+    g_constraint_violation = sum(abs(max(0, g(chromosomes)))** penalty_power  for g in g_funcs)
+    h_constraint_violation = []
+    for h in h_funcs:
+        h_result = abs(h(chromosomes))
+        if h_result < tolerance_h:
+            h_constraint_violation.append(0)
+        else:
+            h_constraint_violation.append(h_result ** penalty_power)
+    return g_constraint_violation + sum(h_constraint_violation)
 
 def epsilon_level_comparisons(reference_member: Member, comparison_member: Member,
                               origin_epsilon_constrained : float, modified_epsilon_constrained : float,
@@ -41,7 +47,7 @@ def epsilon_level_comparisons(reference_member: Member, comparison_member: Membe
 
 def selection(origin_population: Population, modified_population: Population,
               origin_epsilon_constrained : list[float], modified_epsilon_constrained : list[float],
-              epsilon_level : int) -> Population:
+              epsilon_level : int) -> Population | None:
     """
        Perform selection operation for the population.
        Parameters:
