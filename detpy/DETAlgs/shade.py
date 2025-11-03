@@ -159,9 +159,6 @@ class SHADE(BaseAlg):
             cr_new = np.sum(weights * success_cr)
             cr_new = np.clip(cr_new, 0, 1)
 
-            # self.memory_F = np.append(self.memory_F[1:], f_new)
-            # self.memory_Cr = np.append(self.memory_Cr[1:], cr_new)
-
             self._memory_F[self._k_index] = f_new
             self._memory_Cr[self._k_index] = cr_new
 
