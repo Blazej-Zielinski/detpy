@@ -8,7 +8,7 @@ from detpy.DETAlgs.methods.methods_lshade import calculate_best_member_count, cr
     archive_reduction
 from detpy.DETAlgs.mutation_methods.current_to_pbest_1 import MutationCurrentToPBest1
 
-from detpy.models.enums.boundary_constrain import fix_boundary_constraints
+from detpy.models.enums.boundary_constrain import fix_boundary_constraints_with_parent
 from detpy.models.enums.optimization import OptimizationType
 
 from detpy.models.population import Population
@@ -25,40 +25,47 @@ class LSHADE(BaseAlg):
     def __init__(self, params: LShadeData, db_conn=None, db_auto_write=False):
         super().__init__(LSHADE.__name__, params, db_conn, db_auto_write)
 
-        self.H = params.memory_size  # Memory size for f and cr adaptation
-        self.memory_F = np.full(self.H, 0.5)  # Initial memory for F
-        self.memory_Cr = np.full(self.H, 0.5)  # Initial memory for Cr
+        self._H = params.memory_size  # Memory size for f and cr adaptation
+        self._memory_F = np.full(self._H, 0.5)  # Initial memory for F
+        self._memory_Cr = np.full(self._H, 0.5)  # Initial memory for Cr
+        self._p = params.best_member_percentage
+        self._k_index = 0
 
-        self.successCr = []
-        self.successF = []
-        self.difference_fitness_success = []
+        self._successCr = []
+        self._successF = []
+        self._difference_fitness_success = []
 
-        self.min_the_best_percentage = 2 / self.population_size  # Minimal percentage of the best members to consider
+        self._min_the_best_percentage = 2 / self.population_size  # Minimal percentage of the best members to consider
 
-        self.archive_size = self.population_size  # Size of the archive
-        self.archive = []  # Archive for storing the members from old populations
+        self._archive_size = self.population_size  # Size of the archive
+        self._archive = []  # Archive for storing the members from old populations
 
-        self.min_pop_size = params.minimum_population_size  # Minimal population size
+        self._min_pop_size = params.minimum_population_size  # Minimal population size
 
-        self.start_population_size = self.population_size
+        self._start_population_size = self.population_size
 
-        self.population_size_reduction_strategy = params.population_reduction_strategy
+        self._population_size_reduction_strategy = params.population_reduction_strategy
+
+        # Define a terminal value for memory_Cr. It indicates that no successful Cr was found in the epoch.
+        self._TERMINAL = np.nan
+
+        # We need this value for checking close to zero in update_memory
+        self._EPSILON = 0.00001
 
     def update_population_size(self, nfe: int, total_nfe: int, start_pop_size: int, min_pop_size: int):
         """
         Calculate new population size using Linear Population Size Reduction (LPSR).
 
         Parameters:
-        - start_pop_size (int): The initial population size.
         - nfe (int): The current function evaluations.
         - total_nfe (int): The total number of function evaluations.
+        - start_pop_size (int): The initial population size.
         - min_pop_size (int): The minimum population size.
         """
-        new_size = self.population_size_reduction_strategy.get_new_population_size(
+        new_size = self._population_size_reduction_strategy.get_new_population_size(
             nfe, total_nfe, start_pop_size, min_pop_size
         )
         self._pop.resize(new_size)
-
 
     def mutate(self,
                population: Population,
@@ -77,13 +84,16 @@ class LSHADE(BaseAlg):
         """
         new_members = []
 
-        sum_archive_and_population = np.concatenate((population.members, self.archive))
+        sum_archive_and_population = np.concatenate((population.members, self._archive))
 
         for i in range(population.size):
-            r1 = np.random.choice(len(population.members), 1, replace=False)[0]
+            # Exclude the current index `i` for r1
+            r1_candidates = [idx for idx in range(len(population.members)) if idx != i]
+            r1 = np.random.choice(r1_candidates, 1, replace=False)[0]
 
-            # Archive is included population and archive members
-            r2 = np.random.choice(len(sum_archive_and_population), 1, replace=False)[0]
+            # Exclude `i` and `r1` for r2
+            r2_candidates = [idx for idx in range(len(sum_archive_and_population)) if idx != i and idx != r1]
+            r2 = np.random.choice(r2_candidates, 1, replace=False)[0]
 
             # Select top p-best members from the population
             best_members = population.get_best_members(the_best_to_select_table[i])
@@ -133,20 +143,20 @@ class LSHADE(BaseAlg):
                 if origin_population.members[i] <= modified_population.members[i]:
                     new_members.append(copy.deepcopy(origin_population.members[i]))
                 else:
-                    self.archive.append(copy.deepcopy(origin_population.members[i]))
-                    self.successF.append(ftable[i])
-                    self.successCr.append(cr_table[i])
-                    self.difference_fitness_success.append(
+                    self._archive.append(copy.deepcopy(origin_population.members[i]))
+                    self._successF.append(ftable[i])
+                    self._successCr.append(cr_table[i])
+                    self._difference_fitness_success.append(
                         origin_population.members[i].fitness_value - modified_population.members[i].fitness_value)
                     new_members.append(copy.deepcopy(modified_population.members[i]))
             elif optimization == OptimizationType.MAXIMIZATION:
                 if origin_population.members[i] >= modified_population.members[i]:
                     new_members.append(copy.deepcopy(origin_population.members[i]))
                 else:
-                    self.archive.append(copy.deepcopy(origin_population.members[i]))
-                    self.successF.append(ftable[i])
-                    self.successCr.append(cr_table[i])
-                    self.difference_fitness_success.append(
+                    self._archive.append(copy.deepcopy(origin_population.members[i]))
+                    self._successF.append(ftable[i])
+                    self._successCr.append(cr_table[i])
+                    self._difference_fitness_success.append(
                         modified_population.members[i].fitness_value - origin_population.members[i].fitness_value)
                     new_members.append(copy.deepcopy(modified_population.members[i]))
 
@@ -160,33 +170,38 @@ class LSHADE(BaseAlg):
         new_population.members = np.array(new_members)
         return new_population
 
-    def update_memory(self, success_f: List[float], success_cf: List[float], difference_fitness_success: List[float]):
+    def update_memory(self, success_f: List[float], success_cr: List[float], difference_fitness_success: List[float]):
         """
         Update the memory for the crossover rates and scaling factors based on the success of the trial vectors.
 
         Parameters:
         - success_f (List[float]): List of scaling factors that led to better trial vectors.
-        - success_cf (List[float]): List of crossover rates that led to better trial vectors.
+        - success_cr (List[float]): List of crossover rates that led to better trial vectors.
         - difference_fitness_success (List[float]): List of differences in objective function values (|f(u_k, G) - f(x_k, G)|).
         """
-        if len(success_f) > 0:
+        if len(success_f) > 0 and len(success_cr) > 0:
             total = np.sum(difference_fitness_success)
-            if total == 0:
-                return
-
             weights = difference_fitness_success / total
+
+            if np.isclose(total, 0.0, atol=self._EPSILON):
+                self._memory_Cr[self._k_index] = self._TERMINAL
+
+            else:
+                cr_new = np.sum(weights * success_cr * success_cr) / np.sum(weights * success_cr)
+                cr_new = np.clip(cr_new, 0, 1)
+                self._memory_Cr[self._k_index] = cr_new
+
+
             f_new = np.sum(weights * success_f * success_f) / np.sum(weights * success_f)
             f_new = np.clip(f_new, 0, 1)
-            cr_new = np.sum(weights * success_cf)
-            cr_new = np.clip(cr_new, 0, 1)
 
-            self.memory_F = np.append(self.memory_F[1:], f_new)
-            self.memory_Cr = np.append(self.memory_Cr[1:], cr_new)
+            self._memory_F[self._k_index] = f_new
 
             # Reset the lists for the next generation
-            self.successF = []
-            self.successCr = []
-            self.difference_fitness_success = []
+            self._successF = []
+            self._successCr = []
+            self._difference_fitness_success = []
+            self._k_index = (self._k_index + 1) % self._H
 
     def initialize_parameters_for_epoch(self):
         """
@@ -206,12 +221,16 @@ class LSHADE(BaseAlg):
         the_bests_to_select = []
 
         for i in range(self._pop.size):
-            ri = np.random.randint(0, self.H)
-            mean_f = self.memory_F[ri]
-            mean_cr = self.memory_Cr[ri]
+            ri = np.random.randint(0, self._H)
 
-            cr = np.random.normal(mean_cr, 0.1)
-            cr = np.clip(cr, 0.0, 1.0)
+            # We check here if we have TERMINAL value in memory_Cr
+            if np.isnan(self._memory_Cr[ri]):
+                cr = 0.0
+            else:
+                cr = np.random.normal(self._memory_Cr[ri], 0.1)
+                cr = np.clip(cr, 0.0, 1.0)
+
+            mean_f = self._memory_F[ri]
 
             while True:
                 f = np.random.standard_cauchy() * 0.1 + mean_f
@@ -224,7 +243,7 @@ class LSHADE(BaseAlg):
             cr_table.append(cr)
 
             the_best_to_possible_select = calculate_best_member_count(
-                self.population_size)
+                self.population_size, self._p)
 
             the_bests_to_select.append(the_best_to_possible_select)
 
@@ -238,10 +257,10 @@ class LSHADE(BaseAlg):
 
         mutant = self.mutate(self._pop, the_bests_to_select, f_table)
 
-        fix_boundary_constraints(mutant, self.boundary_constraints_fun)
-
         # Crossover step
         trial = crossing(self._pop, mutant, cr_table)
+
+        fix_boundary_constraints_with_parent(self._pop, trial, self.boundary_constraints_fun)
 
         # Evaluate fitness values for the trial population
         trial.update_fitness_values(self._function.eval, self.parallel_processing)
@@ -250,14 +269,14 @@ class LSHADE(BaseAlg):
         new_pop = self.selection(self._pop, trial, f_table, cr_table)
 
         # Archive management
-        self.archive = archive_reduction(self.archive, self.archive_size, self.population_size)
+        self._archive_size = self.population_size
+        self._archive = archive_reduction(self._archive, self._archive_size, self.population_size)
 
         # Update the population
         self._pop = new_pop
 
         # Update the memory for CR and F
-        self.update_memory(self.successF, self.successCr, self.difference_fitness_success)
+        self.update_memory(self._successF, self._successCr, self._difference_fitness_success)
 
-        self.update_population_size(self.nfe, self.nfe_max, self.start_population_size,
-                                    self.min_pop_size)
-
+        self.update_population_size(self.nfe, self.nfe_max, self._start_population_size,
+                                    self._min_pop_size)

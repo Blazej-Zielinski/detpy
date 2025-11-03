@@ -174,6 +174,7 @@ class LShadeData(BaseData):
     population_reduction_strategy: PopulationSizeReductionStrategy = LinearPopulationSizeReduction()
     minimum_population_size: int = 5
     memory_size: int = 5
+    best_member_percentage: float = 0.2
 
 
 @dataclass
