@@ -35,7 +35,8 @@ The following variants have been implemented:
 | 26  | EPSDEG (Epsilon Constrained Differential Evolution with Gradient-Based Mutation) [25]                                           | 2009 |
 | 27  | EPSADE (Epsilon Constrained adaptive Differential Evolution) [26]                                                               | 2010 |
 | 28  | EPSRDE (Epsilon Constrained Rank-Based Differential Evolution) [27]                                                             | 2012 |
-| 28  | EPSDEwDC (Epsilon Constrained Differential Evolution with Dynamic ε-Level Control) [28]                                         | 2012 |
+| 29  | SHADE 1.1 (Success-History Based Parameter Adaptation for Differential Evolution) [16]                                          | 2014 |
+| 30  | EPSDEwDC (Epsilon Constrained Differential Evolution with Dynamic ε-Level Control) [28]                                         | 2012 |
 # Installation
 ```
 pip install detpy

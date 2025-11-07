@@ -1,5 +1,5 @@
 import copy
-from random import randrange
+from random import  sample
 
 import numpy as np
 
@@ -10,36 +10,34 @@ from detpy.models.population import Population
 def calculate_best_member_count(population_size: int, p: float = 0.2) -> int:
     """
     Calculate the number of best members to select based on the population size and a given proportion p.
+    Ensures that the result is at least 1.
+
     Args:
-        population_size (int):  The size of the population.
-        p (float):  The proportion of the population to select as best members (default is 0.2).
+        population_size (int): The size of the population.
+        p (float): The proportion of the population to select as best members (default is 0.2).
 
-    Returns: The number of best members to select.
-
+    Returns: The number of best members to select (minimum 1).
     """
-    return int(p * population_size)
+    return max(1, int(p * population_size))
 
 
-def archive_reduction(archive: list[Member], archive_size: int, pop_size: int):
+def archive_reduction(archive: list[Member], pop_size: int):
     """
-    Reduce the size of the archive to the specified size.
+    Reduce the size of the archive to the size of the population.
 
     Parameters:
     - archive (list[Member]): The archive of members from previous populations.
-    - archive_size (int): The desired size of the archive.
     - pop_size (int): The size of the population.
 
     Returns: The reduced archive.
     """
-    if archive_size == 0:
+    if pop_size == 0:
         archive.clear()
+        return archive
 
-    max_elem = min(archive_size, pop_size)
-    reduce_num = len(archive) - max_elem
-
-    for _ in range(reduce_num):
-        idx = randrange(len(archive))
-        archive.pop(idx)
+    # Select indices to keep
+    keep_indices = sample(range(len(archive)), min(pop_size, len(archive)))
+    archive = [archive[i] for i in keep_indices]
 
     return archive
 

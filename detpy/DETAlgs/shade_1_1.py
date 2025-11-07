@@ -3,8 +3,8 @@ from typing import List
 
 import numpy as np
 from detpy.DETAlgs.base import BaseAlg
-from detpy.DETAlgs.data.alg_data import LShadeData
-from detpy.DETAlgs.methods.methods_lshade import calculate_best_member_count, crossing, \
+from detpy.DETAlgs.data.alg_data import Shade_1_1_Data
+from detpy.DETAlgs.methods.methods_shade_1_1 import calculate_best_member_count, crossing, \
     archive_reduction
 from detpy.DETAlgs.mutation_methods.current_to_pbest_1 import MutationCurrentToPBest1
 
@@ -14,16 +14,16 @@ from detpy.models.enums.optimization import OptimizationType
 from detpy.models.population import Population
 
 
-class LSHADE(BaseAlg):
+class SHADE_1_1(BaseAlg):
     """
-        LSHADE: Improving the Search Performance of SHADE Using Linear Population Size Reduction
+        SHADE 1.1: Success-History based Adaptive Differential Evolution
 
         References:
         Ryoji Tanabe and Alex Fukunaga Graduate School of Arts and Sciences The University of Tokyo
     """
 
-    def __init__(self, params: LShadeData, db_conn=None, db_auto_write=False):
-        super().__init__(LSHADE.__name__, params, db_conn, db_auto_write)
+    def __init__(self, params: Shade_1_1_Data, db_conn=None, db_auto_write=False):
+        super().__init__(SHADE_1_1.__name__, params, db_conn, db_auto_write)
 
         self._H = params.memory_size  # Memory size for f and cr adaptation
         self._memory_F = np.full(self._H, 0.5)  # Initial memory for F
@@ -40,32 +40,11 @@ class LSHADE(BaseAlg):
         self._archive_size = self.population_size  # Size of the archive
         self._archive = []  # Archive for storing the members from old populations
 
-        self._min_pop_size = params.minimum_population_size  # Minimal population size
-
-        self._start_population_size = self.population_size
-
-        self._population_size_reduction_strategy = params.population_reduction_strategy
-
         # Define a terminal value for memory_Cr. It indicates that no successful Cr was found in the epoch.
         self._TERMINAL = np.nan
 
         # We need this value for checking close to zero in update_memory
         self._EPSILON = 0.00001
-
-    def update_population_size(self, nfe: int, total_nfe: int, start_pop_size: int, min_pop_size: int):
-        """
-        Calculate new population size using Linear Population Size Reduction (LPSR).
-
-        Parameters:
-        - nfe (int): The current function evaluations.
-        - total_nfe (int): The total number of function evaluations.
-        - start_pop_size (int): The initial population size.
-        - min_pop_size (int): The minimum population size.
-        """
-        new_size = self._population_size_reduction_strategy.get_new_population_size(
-            nfe, total_nfe, start_pop_size, min_pop_size
-        )
-        self._pop.resize(new_size)
 
     def mutate(self,
                population: Population,
@@ -191,7 +170,6 @@ class LSHADE(BaseAlg):
                 cr_new = np.clip(cr_new, 0, 1)
                 self._memory_Cr[self._k_index] = cr_new
 
-
             f_new = np.sum(weights * success_f * success_f) / np.sum(weights * success_f)
             f_new = np.clip(f_new, 0, 1)
 
@@ -269,14 +247,10 @@ class LSHADE(BaseAlg):
         new_pop = self.selection(self._pop, trial, f_table, cr_table)
 
         # Archive management
-        self._archive_size = self.population_size
-        self._archive = archive_reduction(self._archive, self._archive_size, self.population_size)
+        self._archive = archive_reduction(self._archive, self.population_size)
 
         # Update the population
         self._pop = new_pop
 
         # Update the memory for CR and F
         self.update_memory(self._successF, self._successCr, self._difference_fitness_success)
-
-        self.update_population_size(self.nfe, self.nfe_max, self._start_population_size,
-                                    self._min_pop_size)

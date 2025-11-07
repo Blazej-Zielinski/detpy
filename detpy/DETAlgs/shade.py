@@ -34,7 +34,7 @@ class SHADE(BaseAlg):
 
         self.min_the_best_percentage = 2 / self.population_size  # Minimal percentage of the best members to consider
 
-        self.archive_size = params.archive_size  # Size of the archive
+        self.archive_size = self.population_size  # Size of the archive is the same as population
         self.archive = []  # Archive for storing the members from old populations
 
     def mutate(self,
@@ -234,4 +234,3 @@ class SHADE(BaseAlg):
 
         # Update the memory for CR and F
         self.update_memory(self.successF, self.successCr, self.difference_fitness_success)
-

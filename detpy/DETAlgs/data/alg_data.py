@@ -158,7 +158,12 @@ class ImprovedDEData(BaseData):
 @dataclass
 class ShadeData(BaseData):
     memory_size: int = 5
-    archive_size: int = 10
+
+
+@dataclass
+class Shade_1_1_Data(BaseData):
+    memory_size: int = 5
+    best_member_percentage: float = 0.2
 
 
 @dataclass
@@ -174,6 +179,7 @@ class LShadeData(BaseData):
     population_reduction_strategy: PopulationSizeReductionStrategy = LinearPopulationSizeReduction()
     minimum_population_size: int = 5
     memory_size: int = 5
+    best_member_percentage: float = 0.2
 
 
 @dataclass
