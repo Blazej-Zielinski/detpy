@@ -36,7 +36,6 @@ class LSHADERSP(BaseAlg):
         self._memory_F[self._H - 1] = 0.9  # One cell of the memory for F must be set to 0.9
         self._memory_Cr[self._H - 1] = 0.9  # One cell of the memory for Cr must be set to 0.9
 
-        self._f = np.random.standard_cauchy() * 0.1 + np.random.choice(self._memory_F)
         self._population_size_reduction_strategy = params.population_reduction_strategy
 
         self._min_pop_size = params.minimum_population_size  # Minimal population size
@@ -73,7 +72,7 @@ class LSHADERSP(BaseAlg):
         epsilon = 1e-10  # Small value to avoid division by zero
 
         total_improvement = np.sum(fitness_improvement)
-        if sum(fitness_improvement) > epsilon:
+        if total_improvement > epsilon:
             # Compute weights based on fitness improvement
             weights = fitness_improvement / total_improvement
 
@@ -87,8 +86,6 @@ class LSHADERSP(BaseAlg):
                 new_f = np.clip(new_f, 0, 1)  # Clip to [0, 1]
                 # Update memory_F
                 self._memory_F[r] = (self._memory_F[r] + new_f) / 2  # Mean of old and new F
-            else:
-                new_f = np.random.uniform(0, 1)  # Fallback if no successful F values
 
             if np.isclose(total_improvement, 0.0, atol=self._EPSILON):
                 self._memory_Cr[r] = self._TERMINAL
@@ -98,9 +95,6 @@ class LSHADERSP(BaseAlg):
                 new_cr = np.clip(new_cr, 0, 1)  # Clip to [0, 1]
                 # Update memory_Cr
                 self._memory_Cr[r] = (self._memory_Cr[r] + new_cr) / 2  # Mean of old and new Cr
-
-            # Update memory_F and memory_Cr
-            self._memory_F[r] = (self._memory_F[r] + new_f) / 2  # Mean of old and new F
 
         # Clear the lists of successful F and Cr values for the next generation
         self._difference_fitness_success = []
