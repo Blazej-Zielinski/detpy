@@ -40,7 +40,7 @@ def fix_boundary_constraints_with_parent(population: Population, trial: Populati
         for member_trial, member_parent in zip(trial.members, population.members):
             boundary_constraints_fun(member_trial, member_parent)
     else:
-        for member in population.members:
+        for member in trial.members:
             if not member.is_member_in_interval():
                 boundary_constraints_fun(member)
 
