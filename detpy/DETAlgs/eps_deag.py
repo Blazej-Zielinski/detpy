@@ -38,6 +38,7 @@ class EPSDEAG(BaseAlg):
         self.init_crossover_rate = params.init_crossover_rate  # Cr
         self.g_funcs = params.g_funcs #Inequality constraints functions
         self.h_funcs = params.h_funcs #Equality constraints functions
+        self.tolerance_h = params.tolerance_h
         self.theta = params.theta
         self.penalty_power = params.penalty_power
         self.archive_size = params.archive_size
@@ -48,7 +49,7 @@ class EPSDEAG(BaseAlg):
         self.number_of_repeating_mutation = params.number_of_repeating_mutation
         self.min_epsilon_scaling_factory = 3
         self._initialize_population()
-        self.epsilon_constrained = calculate_epsilon_constrained(self._pop, self.g_funcs, self.h_funcs, self.penalty_power)
+        self.epsilon_constrained = calculate_epsilon_constrained(self._pop, self.g_funcs, self.h_funcs, self.penalty_power, self.tolerance_h)
         self.epsilon_level = self.init_epsilon_level
         calculate_epsilon_scaling_factory = (-5 - np.log(self.init_epsilon_level)) / np.log(0.05)
         self.epsilon_scaling_factor = calculate_epsilon_scaling_factory \
@@ -64,7 +65,7 @@ class EPSDEAG(BaseAlg):
         )
         population.generate_population()
         population.update_fitness_values(self._function.eval, self.parallel_processing)
-        epsilon_constrained = calculate_epsilon_constrained(population, self.g_funcs, self.h_funcs, self.penalty_power)
+        epsilon_constrained = calculate_epsilon_constrained(population, self.g_funcs, self.h_funcs, self.penalty_power, self.tolerance_h)
         self.init_epsilon_level = calculate_init_epsilon_level(epsilon_constrained, self.theta)
         archive_members = sorted(population.members, key=functools.cmp_to_key(
             functools.partial(
@@ -72,7 +73,8 @@ class EPSDEAG(BaseAlg):
                 g_funcs=self.g_funcs, h_funcs=self.h_funcs,
                 penalty_power=self.penalty_power,
                 epsilon_level=self.init_epsilon_level,
-                optimization=self.optimization_type)))
+                optimization=self.optimization_type,
+                tolerance_h=self.tolerance_h)))
         self._pop.members = copy.deepcopy(np.array(archive_members[:self.population_size]))
         self.archive_members = archive_members[self.population_size:]
 
@@ -80,7 +82,7 @@ class EPSDEAG(BaseAlg):
         mutation_factory = self.init_mutation_factor
         crossover_rate = self.init_crossover_rate
 
-        if self.nfe > (self.control_generations * 0.95) and self.nfe < self.control_generations:
+        if self._epoch_number > (self.control_generations * 0.95) and self._epoch_number < self.control_generations:
             mutation_factory = 0.3 * self.init_crossover_rate + 0.7
             self.epsilon_scaling_factor = 0.3 * self.epsilon_scaling_factor + 0.7 * self.min_epsilon_scaling_factory
 
@@ -91,7 +93,7 @@ class EPSDEAG(BaseAlg):
 
         new_pop = self._pop
         selected_child = set()
-        gradient_mutation_flag = self.nfe % self.gradient_mutation_interval == 0
+        gradient_mutation_flag = self._epoch_number % self.gradient_mutation_interval == 0
         for i in range(self.number_of_repeating_de_operations):
             # New population after mutation
 
@@ -104,12 +106,12 @@ class EPSDEAG(BaseAlg):
             u_pop = crossing(new_pop, v_pop, cr=crossover_rate, crossing_type=CrossingType.EXPOTENTIAL)
 
             gradient_mutation_pop = gradient_mutation(u_pop,  self.number_of_repeating_mutation, self.gradient_base_mutation_rate,
-                                                      self.derivative_method, self.g_funcs, self.h_funcs, self.penalty_power, gradient_mutation_flag)
+                                                      self.derivative_method, self.g_funcs, self.h_funcs, self.penalty_power, gradient_mutation_flag, self.boundary_constraints_fun, self.tolerance_h)
 
             # Update values before selection
             gradient_mutation_pop.update_fitness_values(self._function.eval, self.parallel_processing)
 
-            u_gradient_epsilon_constrained = calculate_epsilon_constrained(gradient_mutation_pop, self.g_funcs, self.h_funcs, self.penalty_power)
+            u_gradient_epsilon_constrained = calculate_epsilon_constrained(gradient_mutation_pop, self.g_funcs, self.h_funcs, self.penalty_power, self.tolerance_h)
 
             # Select new population
             new_pop = selection(new_pop, gradient_mutation_pop, self.epsilon_constrained, u_gradient_epsilon_constrained, self.archive_members, selected_child,  self.epsilon_level)
@@ -117,8 +119,8 @@ class EPSDEAG(BaseAlg):
             if len(selected_child) == 0:
                 break
 
-        self.epsilon_level = calculate_epsilon_level(self.init_epsilon_level, self.nfe, self.control_generations, self.epsilon_scaling_factor)
-        self.epsilon_constrained = calculate_epsilon_constrained(new_pop, self.g_funcs, self.h_funcs, self.penalty_power)
+        self.epsilon_level = calculate_epsilon_level(self.init_epsilon_level, self._epoch_number, self.control_generations, self.epsilon_scaling_factor)
+        self.epsilon_constrained = calculate_epsilon_constrained(new_pop, self.g_funcs, self.h_funcs, self.penalty_power, self.tolerance_h)
 
         # Override data
         self._pop = new_pop

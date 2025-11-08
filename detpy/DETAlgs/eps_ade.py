@@ -9,7 +9,8 @@ from detpy.DETAlgs.methods.methods_de import mutation, crossing
 from detpy.DETAlgs.methods.methods_eps_ade import control_epsilon_level, adaptive_de_operation
 from detpy.DETAlgs.methods.methods_eps_de import calculate_epsilon_constrained, epsilon_level_comparisons, \
     epsilon_constrained_method
-from detpy.DETAlgs.methods.methods_eps_deag import calculate_init_epsilon_level, calculate_epsilon_level
+from detpy.DETAlgs.methods.methods_eps_deag import calculate_epsilon_level
+from detpy.DETAlgs.methods.methods_eps_deg import calculate_init_epsilon_level
 from detpy.models.enums.basevectorschema import BaseVectorSchema
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 from detpy.models.enums.crossingtype import CrossingType
@@ -46,12 +47,13 @@ class EPSADE(BaseAlg):
         self.truncation_mechanism_factory = params.truncation_mechanism_factory #ap
         self.g_funcs = params.g_funcs #Inequality constraints functions
         self.h_funcs = params.h_funcs #Equality constraints functions
+        self.tolerance_h = params.tolerance_h
         self.control_generations = params.control_generations
         self.epsilon_scaling_factor = params.epsilon_scaling_factor
         self.penalty_power = params.penalty_power
-        self.theta = params.theta
+        self.theta = params.theta if params.theta is not None else int(0.2 * self.population_size)
         self.epsilon_constrained = calculate_epsilon_constrained(self._pop, self.g_funcs, self.h_funcs,
-                                                                 self.penalty_power)
+                                                                 self.penalty_power, self.tolerance_h)
         self.init_epsilon_level = calculate_init_epsilon_level(self.epsilon_constrained, self.theta)
         self.epsilon_level = self.init_epsilon_level
         self.penalty_power = params.penalty_power
@@ -67,7 +69,7 @@ class EPSADE(BaseAlg):
             return None
 
         optimization = self._pop.optimization
-        modified_epsilon_constrained = calculate_epsilon_constrained(modified_population, self.g_funcs, self.h_funcs, self.penalty_power)
+        modified_epsilon_constrained = calculate_epsilon_constrained(modified_population, self.g_funcs, self.h_funcs, self.penalty_power, self.tolerance_h)
         new_members = []
         for i in range(self._pop.size):
             if epsilon_level_comparisons(modified_population.members[i], self._pop.members[i],
@@ -82,7 +84,7 @@ class EPSADE(BaseAlg):
                     self.mu_crossover_rate + self.crossover_rate_perturbation_width * random.uniform(-0.5, 0.5)
                     , 0, 1)
                 new_member = adaptive_de_operation(self._pop, self._pop.members[i], mutation_factor, crossover_rate, self._function)
-                new_member_epsilon_constrained = epsilon_constrained_method(new_member.get_chromosomes(), self.g_funcs, self.h_funcs, self.penalty_power)
+                new_member_epsilon_constrained = epsilon_constrained_method(new_member.get_chromosomes(), self.g_funcs, self.h_funcs, self.penalty_power, self.tolerance_h)
 
                 if epsilon_level_comparisons(new_member, self._pop.members[i],
                                          new_member_epsilon_constrained, self.epsilon_constrained[i], self.epsilon_level,
@@ -135,10 +137,10 @@ class EPSADE(BaseAlg):
 
         self.update_adaptive_parameters()
 
-        self.epsilon_level = calculate_epsilon_level(self.init_epsilon_level, self.nfe,
+        self.epsilon_level = calculate_epsilon_level(self.init_epsilon_level, self._epoch_number,
                                                      self.control_generations, self.epsilon_scaling_factor)
         self.epsilon_constrained = calculate_epsilon_constrained(new_pop, self.g_funcs, self.h_funcs,
-                                                                 self.penalty_power)
+                                                                 self.penalty_power, self.tolerance_h)
 
         self.epsilon_level = control_epsilon_level(self.epsilon_level, self.epsilon_constrained, self.truncation_mechanism_factory, self.population_size)
 

@@ -36,6 +36,7 @@ The following variants have been implemented:
 | 27  | EPSADE (Epsilon Constrained adaptive Differential Evolution) [26]                                                               | 2010 |
 | 28  | EPSRDE (Epsilon Constrained Rank-Based Differential Evolution) [27]                                                             | 2012 |
 | 29  | SHADE 1.1 (Success-History Based Parameter Adaptation for Differential Evolution) [16]                                          | 2014 |
+| 30  | EPSDEwDC (Epsilon Constrained Differential Evolution with Dynamic ε-Level Control) [28]                                         | 2012 |
 # Installation
 ```
 pip install detpy
@@ -163,6 +164,7 @@ Test functions prepared based on https://gitlab.com/luca.baronti/python_benchmar
 25. T. Takahama and S. Sakai, *Solving difficult constrained optimization problems by the ε constrained differential evolution with gradient based mutation*, in Constraint-Handling in Evolutionary Optimization, E. Mezura-Montes, Ed. Springer-Verlag, pp. 51–72, 2009
 26. Tetsuyuki Takahama and Setsuko Sakai, *Efficient Constrained Optimization by the ε Constrained Adaptive Differential Evolution*. IEEE Congress on Evolutionary Computation, 2010
 27. Tetsuyuki Takahama and Setsuko Sakai, *Efficient Constrained Optimization by the ε Constrained Rank-Based Differential Evolution*. IEEE Congress on Evolutionary Computation, 2012
+28. Tetsuyuki Takahama and Setsuko Sakai, *Epsilon Constrained Differential Evolution with Dynamic ε-Level Control*. Chakraborty, U.K. (eds) Advances in Differential Evolution. Studies in Computational Intelligence, vol 143. Springer, Berlin, Heidelberg, 2008
 # Documentation
 Full documentation is available: https://blazej-zielinski.github.io/detpy/
 

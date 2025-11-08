@@ -5,8 +5,8 @@ from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import EPSDEGData
 from detpy.DETAlgs.methods.methods_de import crossing, mutation
 from detpy.DETAlgs.methods.methods_eps_de import calculate_epsilon_constrained, selection
-from detpy.DETAlgs.methods.methods_eps_deag import calculate_init_epsilon_level, calculate_epsilon_level
-from detpy.DETAlgs.methods.methods_eps_deg import gradient_mutation
+from detpy.DETAlgs.methods.methods_eps_deag import calculate_epsilon_level
+from detpy.DETAlgs.methods.methods_eps_deg import gradient_mutation, calculate_init_epsilon_level
 from detpy.models.enums.basevectorschema import BaseVectorSchema
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints, BoundaryFixing
 from detpy.models.enums.crossingtype import CrossingType
@@ -33,11 +33,12 @@ class EPSDEG(BaseAlg):
         self.crossover_rate = params.crossover_rate  # Cr
         self.g_funcs = params.g_funcs #Inequality constraints functions
         self.h_funcs = params.h_funcs #Equality constraints functions
+        self.tolerance_h = params.tolerance_h
         self.gradient_mutation_interval = params.gradient_mutation_interval
-        self.theta = params.theta
+        self.theta = params.theta if params.theta is not None else int(0.2 * self.population_size)
         self.penalty_power = params.penalty_power
         self.epsilon_constrained = calculate_epsilon_constrained(self._pop, self.g_funcs, self.h_funcs,
-                                                                 self.penalty_power)
+                                                                 self.penalty_power, self.tolerance_h)
         self.init_epsilon_level = calculate_init_epsilon_level(self.epsilon_constrained, self.theta)
         self.control_generations = params.control_generations
         self.gradient_base_mutation_rate = params.gradient_base_mutation_rate
@@ -64,18 +65,19 @@ class EPSDEG(BaseAlg):
         fix_boundary_constraints(v_pop, BoundaryFixing.REFLECTION_BACK)
 
         gradient_mutation_pop = gradient_mutation(u_pop, self.gradient_mutation_interval, self.gradient_base_mutation_rate,
-                                                  self.epsilon_level, self.derivative_method, self.g_funcs, self.h_funcs, self.penalty_power)
+                                                  self.epsilon_level, self.derivative_method, self.g_funcs,
+                                                  self.h_funcs, self.penalty_power, self.tolerance_h)
 
         # Update values before selection
         gradient_mutation_pop.update_fitness_values(self._function.eval, self.parallel_processing)
 
-        u_gradient_epsilon_constrained = calculate_epsilon_constrained(gradient_mutation_pop, self.g_funcs, self.h_funcs, self.penalty_power)
+        u_gradient_epsilon_constrained = calculate_epsilon_constrained(gradient_mutation_pop, self.g_funcs, self.h_funcs, self.penalty_power, self.tolerance_h)
 
         # Select new population
         new_pop = selection(self._pop, gradient_mutation_pop, self.epsilon_constrained, u_gradient_epsilon_constrained, self.epsilon_level)
 
-        self.epsilon_level = calculate_epsilon_level(self.init_epsilon_level, self.nfe, self.control_generations, self.epsilon_scaling_factor)
-        self.epsilon_constrained = calculate_epsilon_constrained(new_pop, self.g_funcs, self.h_funcs, self.penalty_power)
+        self.epsilon_level = calculate_epsilon_level(self.init_epsilon_level, self._epoch_number, self.control_generations, self.epsilon_scaling_factor)
+        self.epsilon_constrained = calculate_epsilon_constrained(new_pop, self.g_funcs, self.h_funcs, self.penalty_power, self.tolerance_h)
 
         # Override data
         self._pop = new_pop
