@@ -235,6 +235,7 @@ class EPSDEData(BaseData):
     crossover_rate: float = 0.9
     epsilon_level: int = 0
     penalty_power: int = 2
+    tolerance_h: float = 1e-3
     g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
     h_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
 
@@ -244,6 +245,7 @@ class EPSDEAGData(BaseData):
     init_mutation_factor: float = 0.5
     init_crossover_rate: float = 0.9
     theta: float = 0.9
+    tolerance_h: float = 1e-3
     penalty_power: int = 2
     control_generations: int = 150
     archive_size: int = 300
@@ -261,7 +263,8 @@ class EPSDEGData(BaseData):
     mutation_factor: float = 0.5
     crossover_rate: float = 0.9
     gradient_base_mutation_rate: float = 0.2
-    theta: float = 0.9
+    tolerance_h: float = 1e-3
+    theta: int = None
     penalty_power: int = 2
     control_generations: int = 150
     gradient_mutation_interval: int = 5
@@ -278,7 +281,8 @@ class EPSADEData(BaseData):
     crossover_rate_perturbation_width: float = 0.5
     weight_of_update: float = 0.1
     penalty_power: int = 2
-    theta: float = 0.9
+    theta: int = None
+    tolerance_h: float = 1e-3
     epsilon_scaling_factor: int = 5
     control_generations: int = 100
     truncation_mechanism_factory: float = 0.9
@@ -296,6 +300,19 @@ class EPSRDEData(BaseData):
     penalty_power: int = 2
     control_generations: int = 150
     epsilon_scaling_factor: int = 5
-    theta: float = 0.9
+    theta: int = None
+    tolerance_h: float = 1e-3
+    g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
+    h_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
+
+@dataclass
+class EPSDEwDCData(BaseData):
+    mutation_factor: float = 0.7
+    crossover_rate: float = 0.9
+    penalty_power: int = 2
+    theta = None
+    tolerance_h: float = 1e-3
+    eta = 2
+    control_generations: int = 150
     g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
     h_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)

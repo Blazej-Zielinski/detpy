@@ -29,12 +29,13 @@ class EPSDE(BaseAlg):
         self.crossover_rate = params.crossover_rate  # Cr
         self.g_funcs = params.g_funcs #Inequality constraints functions
         self.h_funcs = params.h_funcs #Equality constraints functions
+        self.tolerance_h = params.tolerance_h
         self.epsilon_level = params.epsilon_level
         self.penalty_power = params.penalty_power
 
 
     def next_epoch(self):
-        pop_epsilon_constrained = calculate_epsilon_constrained(self._pop, self.g_funcs, self.h_funcs, self.penalty_power)
+        pop_epsilon_constrained = calculate_epsilon_constrained(self._pop, self.g_funcs, self.h_funcs, self.penalty_power, self.tolerance_h)
 
         # New population after mutation
         v_pop = mutation(self._pop, base_vector_schema=BaseVectorSchema.RAND,
@@ -51,7 +52,7 @@ class EPSDE(BaseAlg):
         # Update values before selection
         u_pop.update_fitness_values(self._function.eval, self.parallel_processing)
 
-        u_pop_epsilon_constrained = calculate_epsilon_constrained(u_pop, self.g_funcs, self.h_funcs, self.penalty_power)
+        u_pop_epsilon_constrained = calculate_epsilon_constrained(u_pop, self.g_funcs, self.h_funcs, self.penalty_power, self.tolerance_h)
 
         # Select new population
         new_pop = selection(self._pop, u_pop, pop_epsilon_constrained, u_pop_epsilon_constrained, self.epsilon_level)
