@@ -24,24 +24,26 @@ class SHADE(BaseAlg):
     def __init__(self, params: ShadeData, db_conn=None, db_auto_write=False):
         super().__init__(SHADE.__name__, params, db_conn, db_auto_write)
 
-        self.H = params.memory_size  # Memory size for f and cr adaptation
-        self.memory_F = np.full(self.H, 0.5)  # Initial memory for F
-        self.memory_Cr = np.full(self.H, 0.5)  # Initial memory for Cr
+        self._H = params.memory_size  # Memory size for f and cr adaptation
+        self._memory_F = np.full(self._H, 0.5)  # Initial memory for F
+        self._memory_Cr = np.full(self._H, 0.5)  # Initial memory for Cr
 
-        self.successCr = []
-        self.successF = []
-        self.difference_fitness_success = []
+        self._successCr = []
+        self._successF = []
+        self._difference_fitness_success = []
 
-        self.min_the_best_percentage = 2 / self.population_size  # Minimal percentage of the best members to consider
+        self._min_the_best_percentage = 2 / self.population_size  # Minimal percentage of the best members to consider
 
-        self.archive_size = self.population_size  # Size of the archive is the same as population
-        self.archive = []  # Archive for storing the members from old populations
+        self._archive_size = self.population_size  # Size of the archive is the same as population
+        self._archive = []  # Archive for storing the members from old populations
 
-    def mutate(self,
-               population: Population,
-               the_best_to_select_table: List[int],
-               f_table: List[float]
-               ) -> Population:
+        self._k_index = 0
+
+    def _mutate(self,
+                population: Population,
+                the_best_to_select_table: List[int],
+                f_table: List[float]
+                ) -> Population:
         """
         Perform mutation step for the population in SHADE.
 
@@ -54,7 +56,7 @@ class SHADE(BaseAlg):
         """
         new_members = []
 
-        sum_archive_and_population = np.concatenate((population.members, self.archive))
+        sum_archive_and_population = np.concatenate((population.members, self._archive))
 
         for i in range(population.size):
             r1 = np.random.choice(len(population.members), 1, replace=False)[0]
@@ -90,8 +92,8 @@ class SHADE(BaseAlg):
         new_population.members = np.array(new_members)
         return new_population
 
-    def selection(self, origin_population: Population, modified_population: Population, ftable: List[float],
-                  cr_table: List[float]):
+    def _selection(self, origin_population: Population, modified_population: Population, ftable: List[float],
+                   cr_table: List[float]):
         """
         Perform selection operation for the population.
 
@@ -110,20 +112,20 @@ class SHADE(BaseAlg):
                 if origin_population.members[i] <= modified_population.members[i]:
                     new_members.append(copy.deepcopy(origin_population.members[i]))
                 else:
-                    self.archive.append(copy.deepcopy(origin_population.members[i]))
-                    self.successF.append(ftable[i])
-                    self.successCr.append(cr_table[i])
-                    self.difference_fitness_success.append(
+                    self._archive.append(copy.deepcopy(origin_population.members[i]))
+                    self._successF.append(ftable[i])
+                    self._successCr.append(cr_table[i])
+                    self._difference_fitness_success.append(
                         origin_population.members[i].fitness_value - modified_population.members[i].fitness_value)
                     new_members.append(copy.deepcopy(modified_population.members[i]))
             elif optimization == OptimizationType.MAXIMIZATION:
                 if origin_population.members[i] >= modified_population.members[i]:
                     new_members.append(copy.deepcopy(origin_population.members[i]))
                 else:
-                    self.archive.append(copy.deepcopy(origin_population.members[i]))
-                    self.successF.append(ftable[i])
-                    self.successCr.append(cr_table[i])
-                    self.difference_fitness_success.append(
+                    self._archive.append(copy.deepcopy(origin_population.members[i]))
+                    self._successF.append(ftable[i])
+                    self._successCr.append(cr_table[i])
+                    self._difference_fitness_success.append(
                         modified_population.members[i].fitness_value - origin_population.members[i].fitness_value)
                     new_members.append(copy.deepcopy(modified_population.members[i]))
 
@@ -137,16 +139,16 @@ class SHADE(BaseAlg):
         new_population.members = np.array(new_members)
         return new_population
 
-    def update_memory(self, success_f: List[float], success_cf: List[float], difference_fitness_success: List[float]):
+    def _update_memory(self, success_f: List[float], success_cr: List[float], difference_fitness_success: List[float]):
         """
         Update the memory for the crossover rates and scaling factors based on the success of the trial vectors.
 
         Parameters:
         - success_f (List[float]): List of scaling factors that led to better trial vectors.
-        - success_cf (List[float]): List of crossover rates that led to better trial vectors.
+        - success_cr (List[float]): List of crossover rates that led to better trial vectors.
         - difference_fitness_success (List[float]): List of differences in objective function values (|f(u_k, G) - f(x_k, G)|).
         """
-        if len(success_f) > 0:
+        if len(success_f) > 0 and len(success_cr) > 0:
             total = np.sum(difference_fitness_success)
             if total == 0:
                 return
@@ -154,18 +156,19 @@ class SHADE(BaseAlg):
             weights = difference_fitness_success / total
             f_new = np.sum(weights * success_f * success_f) / np.sum(weights * success_f)
             f_new = np.clip(f_new, 0, 1)
-            cr_new = np.sum(weights * success_cf)
+            cr_new = np.sum(weights * success_cr)
             cr_new = np.clip(cr_new, 0, 1)
 
-            self.memory_F = np.append(self.memory_F[1:], f_new)
-            self.memory_Cr = np.append(self.memory_Cr[1:], cr_new)
+            self._memory_F[self._k_index] = f_new
+            self._memory_Cr[self._k_index] = cr_new
 
             # Reset the lists for the next generation
-            self.successF = []
-            self.successCr = []
-            self.difference_fitness_success = []
+            self._successF = []
+            self._successCr = []
+            self._difference_fitness_success = []
+            self._k_index = (self._k_index + 1) % self._H
 
-    def initialize_parameters_for_epoch(self):
+    def _initialize_parameters_for_epoch(self):
         """
         Initialize the parameters for the next epoch of the SHADE algorithm.
         f_table: List of scaling factors for mutation.
@@ -183,9 +186,9 @@ class SHADE(BaseAlg):
         the_bests_to_select = []
 
         for i in range(self._pop.size):
-            ri = np.random.randint(0, self.H)
-            mean_f = self.memory_F[ri]
-            mean_cr = self.memory_Cr[ri]
+            ri = np.random.randint(0, self._H)
+            mean_f = self._memory_F[ri]
+            mean_cr = self._memory_Cr[ri]
 
             cr = np.random.normal(mean_cr, 0.1)
             cr = np.clip(cr, 0.0, 1.0)
@@ -211,9 +214,9 @@ class SHADE(BaseAlg):
         """
         Perform the next epoch of the SHADE algorithm.
         """
-        f_table, cr_table, the_bests_to_select = self.initialize_parameters_for_epoch()
+        f_table, cr_table, the_bests_to_select = self._initialize_parameters_for_epoch()
 
-        mutant = self.mutate(self._pop, the_bests_to_select, f_table)
+        mutant = self._mutate(self._pop, the_bests_to_select, f_table)
 
         fix_boundary_constraints(mutant, self.boundary_constraints_fun)
 
@@ -224,13 +227,13 @@ class SHADE(BaseAlg):
         trial.update_fitness_values(self._function.eval, self.parallel_processing)
 
         # Selection step
-        new_pop = self.selection(self._pop, trial, f_table, cr_table)
+        new_pop = self._selection(self._pop, trial, f_table, cr_table)
 
         # Archive management
-        self.archive = archive_reduction(self.archive, self.archive_size, self.population_size)
+        self._archive = archive_reduction(self._archive, self._archive_size, self.population_size)
 
         # Update the population
         self._pop = new_pop
 
         # Update the memory for CR and F
-        self.update_memory(self.successF, self.successCr, self.difference_fitness_success)
+        self._update_memory(self._successF, self._successCr, self._difference_fitness_success)
