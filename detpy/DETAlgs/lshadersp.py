@@ -10,7 +10,7 @@ from random import randint
 from detpy.DETAlgs.methods.methods_lshadersp import crossing, archive_reduction, rank_selection
 from detpy.DETAlgs.mutation_methods.current_to_pbest_r import MutationCurrentToPBestR
 from detpy.math_functions.lehmer_mean import LehmerMean
-from detpy.models.enums.boundary_constrain import fix_boundary_constraints
+from detpy.models.enums.boundary_constrain import fix_boundary_constraints_with_parent
 from detpy.models.enums.optimization import OptimizationType
 from detpy.models.member import Member
 from detpy.models.population import Population
@@ -28,34 +28,39 @@ class LSHADERSP(BaseAlg):
 
     def __init__(self, params: LSHADERSPData, db_conn=None, db_auto_write=False):
         super().__init__(LSHADERSP.__name__, params, db_conn, db_auto_write)
-        self.k = params.scaling_factor_for_rank_selection  # Scaling factor for rank selection
-        self.H = params.memory_size  # Memory size for f and cr adaptation
-        self.memory_F = np.full(self.H, 0.3)  # Initial memory for F
-        self.memory_Cr = np.full(self.H, 0.8)  # Initial memory for Cr
+        self._k = params.scaling_factor_for_rank_selection  # Scaling factor for rank selection
+        self._H = params.memory_size  # Memory size for f and cr adaptation
+        self._memory_F = np.full(self._H, 0.3)  # Initial memory for F
+        self._memory_Cr = np.full(self._H, 0.8)  # Initial memory for Cr
 
-        self.memory_F[self.H - 1] = 0.9  # One cell of the memory for F must be set to 0.9
-        self.memory_Cr[self.H - 1] = 0.9  # One cell of the memory for Cr must be set to 0.9
+        self._memory_F[self._H - 1] = 0.9  # One cell of the memory for F must be set to 0.9
+        self._memory_Cr[self._H - 1] = 0.9  # One cell of the memory for Cr must be set to 0.9
 
-        self.F = np.random.standard_cauchy() * 0.1 + np.random.choice(self.memory_F)
-        self.population_size_reduction_strategy = params.population_reduction_strategy
+        self._population_size_reduction_strategy = params.population_reduction_strategy
 
-        self.min_pop_size = params.minimum_population_size  # Minimal population size
+        self._min_pop_size = params.minimum_population_size  # Minimal population size
 
-        self.start_population_size = self.population_size
+        self._start_population_size = self.population_size
 
-        self.archive_size = self.population_size  # Size of the archive
-        self.archive = []  # Archive for storing the members from old populations
+        self._archive_size = self.population_size  # Size of the archive
+        self._archive = []  # Archive for storing the members from old populations
 
-        self.lehmer_mean_func = LehmerMean()  # Class for Lehmer mean calculation
+        self._lehmer_mean_func = LehmerMean()  # Class for Lehmer mean calculation
 
-        self.success_f = []  # List of successful F values
-        self.success_cr = []  # List of successful Cr values
+        self._success_f = []  # List of successful F values
+        self._success_cr = []  # List of successful Cr values
 
-        self.F = np.random.standard_cauchy() * 0.1 + np.random.choice(self.memory_F)
-        self.Fw = 0.7 * self.F if self.nfe < 0.2 * self.nfe_max else (
-            0.8 * self.F if self.nfe < 0.4 * self.nfe_max else 1.2 * self.F)
+        self._f = np.random.standard_cauchy() * 0.1 + np.random.choice(self._memory_F)
+        self._fw = 0.7 * self._f if self.nfe < 0.2 * self.nfe_max else (
+            0.8 * self._f if self.nfe < 0.4 * self.nfe_max else 1.2 * self._f)
 
-        self.difference_fitness_success = []
+        self._difference_fitness_success = []
+
+        # Define a terminal value for memory_Cr. It indicates that no successful Cr was found in the epoch.
+        self._TERMINAL = np.nan
+
+        # We need this value for checking close to zero in update_memory
+        self._EPSILON = 0.00001
 
     def _adapt_parameters(self, fitness_improvement: List[float]):
         """
@@ -65,47 +70,36 @@ class LSHADERSP(BaseAlg):
         - fitness_improvement: List of fitness improvement values for successful individuals.
         """
         epsilon = 1e-10  # Small value to avoid division by zero
-        if sum(fitness_improvement) > epsilon:
+
+        total_improvement = np.sum(fitness_improvement)
+        if total_improvement > epsilon:
             # Compute weights based on fitness improvement
-            total_improvement = np.sum(fitness_improvement)
             weights = fitness_improvement / total_improvement
 
             # Randomly select a memory index to update
-            r = np.random.randint(0, self.H)
+            # Ensure one cell in the memory always holds the fixed value 0.9 so we have index -1
+            r = np.random.randint(0, self._H - 1)
 
             # Compute new F value as the Lehmer mean of successful F values
-            if len(self.success_f) > 0:
-                new_f = self.lehmer_mean_func.evaluate(self.success_f, weights,2)
+            if len(self._success_f) > 0:
+                new_f = self._lehmer_mean_func.evaluate(self._success_f, weights, 2)
                 new_f = np.clip(new_f, 0, 1)  # Clip to [0, 1]
                 # Update memory_F
-                self.memory_F[r] = (self.memory_F[r] + new_f) / 2  # Mean of old and new F
-            else:
-                new_f = np.random.uniform(0, 1)  # Fallback if no successful F values
+                self._memory_F[r] = (self._memory_F[r] + new_f) / 2  # Mean of old and new F
 
-            # Compute new Cr value as the weighted arithmetic mean of successful Cr values
-            if len(self.success_cr) > 0:
-                new_cr = np.sum(weights * self.success_cr)
+            if np.isclose(total_improvement, 0.0, atol=self._EPSILON):
+                self._memory_Cr[r] = self._TERMINAL
+
+            else:
+                new_cr = np.sum(weights * self._success_cr)
                 new_cr = np.clip(new_cr, 0, 1)  # Clip to [0, 1]
                 # Update memory_Cr
-                self.memory_Cr[r] = (self.memory_Cr[r] + new_cr) / 2  # Mean of old and new Cr
-            else:
-                new_cr = np.random.uniform(0, 1)  # Fallback if no successful Cr values
-
-            # Randomly select a memory index to update
-            r = np.random.randint(0, self.H)
-
-            # Update memory_F and memory_Cr
-            self.memory_F[r] = (self.memory_F[r] + new_f) / 2  # Mean of old and new F
-            self.memory_Cr[r] = (self.memory_Cr[r] + new_cr) / 2  # Mean of old and new Cr
-
-            # Ensure one cell in the memory always holds the fixed value 0.9
-            self.memory_F[self.H - 1] = 0.9
-            self.memory_Cr[self.H - 1] = 0.9
+                self._memory_Cr[r] = (self._memory_Cr[r] + new_cr) / 2  # Mean of old and new Cr
 
         # Clear the lists of successful F and Cr values for the next generation
-        self.difference_fitness_success = []
-        self.success_cr = []
-        self.success_f = []
+        self._difference_fitness_success = []
+        self._success_cr = []
+        self._success_f = []
 
     def _get_best_members(self, best_members: List[Member], archive: List[Member]) -> List[Member]:
         """
@@ -157,9 +151,9 @@ class LSHADERSP(BaseAlg):
 
         new_members = []
         for i in range(population.size):
-            members = np.append(population.members, self.archive)
+            members = np.append(population.members, self._archive)
 
-            r1, r2 = rank_selection(members, self.k, self.optimization_type)
+            r1, r2 = rank_selection(members, self._k, self.optimization_type)
 
             p = 0.085 + (0.085 * nfe) / nfe_max
             how_many_best_to_select = p * pop_size
@@ -168,7 +162,7 @@ class LSHADERSP(BaseAlg):
 
             best_members = population.get_best_members(int(how_many_best_to_select))
             all_best_members = self._get_best_members(best_members,
-                                                      self.archive)  # get best members from the population and archive
+                                                      self._archive)  # get best members from the population and archive
 
             rand_index = randint(0, len(all_best_members) - 1)
 
@@ -211,22 +205,22 @@ class LSHADERSP(BaseAlg):
                 if origin_population.members[i] < modified_population.members[i]:
                     new_members.append(copy.deepcopy(origin_population.members[i]))
                 else:
-                    self.archive.append(copy.deepcopy(origin_population.members[i]))
+                    self._archive.append(copy.deepcopy(origin_population.members[i]))
                     new_members.append(copy.deepcopy(modified_population.members[i]))
-                    self.success_f.append(f_table[i])
-                    self.success_cr.append(cr_table[i])
+                    self._success_f.append(f_table[i])
+                    self._success_cr.append(cr_table[i])
 
-                    self.difference_fitness_success.append(
+                    self._difference_fitness_success.append(
                         origin_population.members[i].fitness_value - modified_population.members[i].fitness_value)
             elif optimization == OptimizationType.MAXIMIZATION:
                 if origin_population.members[i] > modified_population.members[i]:
                     new_members.append(copy.deepcopy(origin_population.members[i]))
                 else:
-                    self.archive.append(copy.deepcopy(origin_population.members[i]))
+                    self._archive.append(copy.deepcopy(origin_population.members[i]))
                     new_members.append(copy.deepcopy(modified_population.members[i]))
-                    self.success_f.append(f_table[i])
-                    self.success_cr.append(cr_table[i])
-                    self.difference_fitness_success.append(
+                    self._success_f.append(f_table[i])
+                    self._success_cr.append(cr_table[i])
+                    self._difference_fitness_success.append(
                         modified_population.members[i].fitness_value - origin_population.members[i].fitness_value)
 
         new_population = Population(
@@ -249,14 +243,14 @@ class LSHADERSP(BaseAlg):
         - total_nfe (int): The total number of nfe.
         - min_pop_size (int): The minimum population size.
         """
-        new_size = self.population_size_reduction_strategy.get_new_population_size(
+        new_size = self._population_size_reduction_strategy.get_new_population_size(
             nfe, total_nfe, start_pop_size, min_pop_size
         )
 
         self._pop.resize(new_size)
 
         # Update archive size proportionally
-        self.archive_size = new_size
+        self._archive_size = new_size
 
     def _calculate_factors_for_epoch(self, pop_size):
         """
@@ -270,13 +264,16 @@ class LSHADERSP(BaseAlg):
         fw_table = []
 
         for i in range(pop_size):
-            ri = np.random.randint(0, self.H)
-            mean_f = self.memory_F[ri]
-            mean_cr = self.memory_Cr[ri]
+            ri = np.random.randint(0, self._H)
+            mean_f = self._memory_F[ri]
+            mean_cr = self._memory_Cr[ri]
 
-            # Generate Cr from normal distribution
-            cr = np.random.normal(mean_cr, 0.1)
-            cr = np.clip(cr, 0.0, 1.0)  # Clip to [0, 1]
+            if np.isnan(self._memory_Cr[ri]):
+                cr = 0.0
+            else:
+                # Generate Cr from normal distribution
+                cr = np.random.normal(mean_cr, 0.1)
+                cr = np.clip(cr, 0.0, 1.0)  # Clip to [0, 1]
 
             # Generate F from Cauchy distribution (ensure F > 0)
             while True:
@@ -313,20 +310,19 @@ class LSHADERSP(BaseAlg):
 
         mutant = self._mutate(self._pop, self.nfe, self.nfe_max, self._pop.size, f_table, fw_table)
 
-        fix_boundary_constraints(mutant, self.boundary_constraints_fun)
-
         trial = crossing(self._pop, mutant, cr_table)
+
+        fix_boundary_constraints_with_parent(self._pop, trial, self.boundary_constraints_fun)
 
         trial.update_fitness_values(self._function.eval, self.parallel_processing)
 
         new_pop = self._selection(self._pop, trial, cr_table, f_table)
 
-        archive_reduction(self.archive, self.archive_size, self.optimization_type)
+        archive_reduction(self._archive, self._archive_size, self.optimization_type)
 
         # Override the entire population with the new population
         self._pop = new_pop
 
-        self._adapt_parameters(self.difference_fitness_success)
-        self._update_population_size(self.nfe, self.nfe_max, self.start_population_size,
-                                     self.min_pop_size)
-
+        self._adapt_parameters(self._difference_fitness_success)
+        self._update_population_size(self.nfe, self.nfe_max, self._start_population_size,
+                                     self._min_pop_size)
