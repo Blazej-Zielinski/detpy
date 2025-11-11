@@ -173,9 +173,9 @@ class LShadeEpsin(BaseAlg):
         - df_freg (List[float]): List of differences in objective function values for freg (second part of evaluations) (|f(u_k, G) - f(x_k, G)|).
         """
 
-        is_generation_lower_then_half_population = self.nfe < (self.nfe_max / 2)
+        is_generation_lower_than_half_population = self.nfe < (self.nfe_max / 2)
 
-        if is_generation_lower_then_half_population:
+        if is_generation_lower_than_half_population:
             # frequency update only in the first half of the generations
             if len(success_freg) > 0:
                 total = np.sum(df_freg)
