@@ -221,7 +221,7 @@ class LShadeEpsin(BaseAlg):
 
     def _initialize_parameters_for_epoch(self):
         """
-         Initialize the parameters for the next epoch of the LSHADE-EpSin algorithm.
+        Initialize the parameters for the next epoch of the LSHADE-EpSin algorithm.
          Parameters:
          f_table: List of scaling factors for mutation.
          cr_table: List of crossover rates.
