@@ -173,9 +173,9 @@ class LShadeEpsin(BaseAlg):
         - df_freg (List[float]): List of differences in objective function values for freg (second part of evaluations) (|f(u_k, G) - f(x_k, G)|).
         """
 
-        is_generation_lower_then_half_population = self.nfe < (self.nfe_max / 2)
+        is_generation_lower_than_half_population = self.nfe < (self.nfe_max / 2)
 
-        if is_generation_lower_then_half_population:
+        if is_generation_lower_than_half_population:
             # frequency update only in the first half of the generations
             if len(success_freg) > 0:
                 total = np.sum(df_freg)
@@ -221,7 +221,7 @@ class LShadeEpsin(BaseAlg):
 
     def _initialize_parameters_for_epoch(self):
         """
-         Initialize the parameters for the next epoch of the LSHADE-EpSin algorithm.
+        Initialize the parameters for the next epoch of the LSHADE-EpSin algorithm.
          Parameters:
          f_table: List of scaling factors for mutation.
          cr_table: List of crossover rates.

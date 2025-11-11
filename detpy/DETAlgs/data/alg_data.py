@@ -226,8 +226,7 @@ class LShadeEpsinData(BaseData):
     memory_size: int = 5
     best_member_percentage: float = 0.2
 
-    """Base frequency of the sinusoidal oscillation controlling the scaling factor F during the early exploration phase."""
-    f_sin_freq: float = 0.1
+    f_sin_freq: float = 0.1  # Base frequency of the sinusoidal oscillation controlling the scaling factor F during the early exploration phase.
     population_reduction_strategy: PopulationSizeReductionStrategy = LinearPopulationSizeReduction()
 
 
