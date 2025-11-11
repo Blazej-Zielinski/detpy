@@ -261,7 +261,7 @@ class LShadeEpsin(BaseAlg):
                     elem_freg_external_memory = self._freq_memory[ri]
 
                     elem_cauchy = np.random.standard_cauchy() * 0.1 + elem_freg_external_memory
-                    elem_cauchy = np.clip(elem_cauchy, 0.0, 1.0)  # nwm czy to potrzebne
+                    elem_cauchy = np.clip(elem_cauchy, 0.0, 1.0)
 
                     f = 0.5 * math.sin(2 * math.pi * elem_cauchy * self.nfe) * (
                             self.nfe / self.nfe_max) + 1
