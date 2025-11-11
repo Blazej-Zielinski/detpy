@@ -224,8 +224,10 @@ class DEACRData(BaseData):
 class LShadeEpsinData(BaseData):
     minimum_population_size: int = 5
     memory_size: int = 5
-    init_probability_mutation_strategy: float = 0.5
-    freg: float = 0.1
+    best_member_percentage: float = 0.2
+
+    """Base frequency of the sinusoidal oscillation controlling the scaling factor F during the early exploration phase."""
+    f_sin_freq: float = 0.1
     population_reduction_strategy: PopulationSizeReductionStrategy = LinearPopulationSizeReduction()
 
 
