@@ -184,11 +184,6 @@ class SPS_LSHADE_EIG(BaseAlg):
     def _initialize_parameters_for_epoch(self):
         """
         Initialize the parameters for the next epoch of the SPS-L-SHADE-EIG algorithm.
-        f_table: List of scaling factors for mutation.
-        cr_table: List of crossover rates.
-        er_table: List of eigenvector crossover probabilities (Er).
-        the_bests_to_select: List of the number of the best members to select because in crossover we need to select
-        the best members from the population for one factor.
 
         Returns:
         - f_table (List[float]): List of scaling factors for mutation.
