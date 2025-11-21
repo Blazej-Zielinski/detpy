@@ -92,7 +92,7 @@ def binomial_crossover_internal(x: Member, v: Member, cr: float):
     of inheriting a gene from the donor vector `v`.
 
     Returns: A new member (child) created by combining genes from `x` and `v`
-    based on the crossover rate `CR`. The child is an instance of the `Member` class.
+    based on the crossover rate `cr`. The child is an instance of the `Member` class.
     """
     dim = len(x.chromosomes)
     new_member = copy.deepcopy(x)
