@@ -236,7 +236,7 @@ class SPS_LSHADE_EIG(BaseAlg):
 
         Returns:
         - Member: A new member (child) created by combining genes from `x` and `v`
-                  based on the crossover rate `CR` and the eigenvector transformation.
+                  based on the crossover rate `cr` and the eigenvector transformation.
                   The child is an instance of the `Member` class.
         """
         x_values = np.array([chromosome.real_value for chromosome in x.chromosomes])
