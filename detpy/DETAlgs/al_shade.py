@@ -7,6 +7,7 @@ from detpy.DETAlgs.data.alg_data import ALSHADEData
 from detpy.DETAlgs.methods.methods_alshade import calculate_best_member_count, archive_reduction, crossing
 from detpy.DETAlgs.mutation_methods.current_to_pbest_1 import MutationCurrentToPBest1
 from detpy.DETAlgs.mutation_methods.current_to_xamean import MutationCurrentToXamean
+from detpy.DETAlgs.random.index_generator import IndexGenerator
 from detpy.math_functions.lehmer_mean import LehmerMean
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints_with_parent
 from detpy.models.enums.optimization import OptimizationType
@@ -61,6 +62,7 @@ class ALSHADE(BaseAlg):
 
         # We need this value for checking close to zero in update_memory
         self._EPSILON = 0.00001
+        self._index_gen = IndexGenerator()
 
     def _update_population_size(self, nfe: int, total_nfe: int, start_pop_size: int, min_pop_size: int):
         """
@@ -117,15 +119,20 @@ class ALSHADE(BaseAlg):
         pa = np.concatenate((population.members, self._archive))
 
         for i in range(population.size):
-            while True:
-                r1 = np.random.choice(len(population.members))
-                if r1 != i:
-                    break
+            # while True:
+            #     r1 = np.random.choice(len(population.members))
+            #     if r1 != i:
+            #         break
+            #
+            # while True:
+            #     r2 = np.random.choice(len(pa))
+            #     if r2 != i and r2 != r1:
+            #         break
 
-            while True:
-                r2 = np.random.choice(len(pa))
-                if r2 != i and r2 != r1:
-                    break
+            r1 = self._index_gen.generate_unique(len(population.members), [i])
+
+            # Archive is included population and archive members
+            r2 = self._index_gen.generate_unique(len(pa), [i, r1])
 
             p = np.random.rand()
 
@@ -156,14 +163,15 @@ class ALSHADE(BaseAlg):
                 memory.append(3)
             new_members.append(mutant)
 
-        new_population = Population(
-            lb=population.lb, ub=population.ub,
-            arg_num=population.arg_num, size=population.size,
-            optimization=population.optimization
-        )
-        new_population.members = np.array(new_members)
-        self._mutation_memory = memory
-        return new_population
+        # new_population = Population(
+        #     lb=population.lb, ub=population.ub,
+        #     arg_num=population.arg_num, size=population.size,
+        #     optimization=population.optimization
+        # )
+        # new_population.members = np.array(new_members)
+        # self._mutation_memory = memory
+        return Population.with_new_members(population, new_members)
+        # return new_population
 
     def _selection(self, origin: Population, modified: Population, ftable: List[float], cr_table: List[float]):
         """
@@ -218,13 +226,13 @@ class ALSHADE(BaseAlg):
             self._P += (0.05 * (1 - self._P) * (p_a1 - p_a2) * self.nfe) / self.nfe_max
             self._P = min(0.9, max(0.1, self._P))
 
-        new_population = Population(
-            lb=origin.lb, ub=origin.ub,
-            arg_num=origin.arg_num, size=origin.size,
-            optimization=origin.optimization
-        )
-        new_population.members = np.array(new_members)
-        return new_population
+        # new_population = Population(
+        #     lb=origin.lb, ub=origin.ub,
+        #     arg_num=origin.arg_num, size=origin.size,
+        #     optimization=origin.optimization
+        # )
+        # new_population.members = np.array(new_members)
+        return Population.with_new_members(origin, new_members)
 
     def _update_memory(self, success_f: List[float], success_cr: List[float], df: List[float]):
         """

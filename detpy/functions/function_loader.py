@@ -2,6 +2,7 @@ import os
 import json
 import math
 import numpy as np
+from opfunu.cec_based import F12014, F212014, F12013
 from scipy.stats import multivariate_normal
 
 class Ackley:
@@ -148,6 +149,56 @@ class PitsAndHoles:
             v += multivariate_normal.pdf(x, mean=self.mu[i], cov=self._get_covariance_matrix(i)) * self.v[i]
         return -v
 
+class CEC2014F1_Opfunu:
+    def __init__(self, n_dimensions):
+        self.n_dimensions = n_dimensions
+        self.name = "CEC2014F1"
+        self.function = F12014(ndim=n_dimensions)
+
+    def evaluate_func(self, x):
+        if len(x) != self.n_dimensions:
+            raise ValueError(f"CEC2014 F1 function requires {self.n_dimensions} variables, but {len(x)} were given.")
+        return self.function.evaluate(x)
+
+
+class CEC2013F1_Opfunu:
+    def __init__(self, n_dimensions):
+        self.n_dimensions = n_dimensions
+        self.name = "CEC2013F1"
+        self.function = F12013(ndim=n_dimensions)
+
+    def evaluate_func(self, x):
+        if len(x) != self.n_dimensions:
+            raise ValueError(f"CEC2013 F1 function requires {self.n_dimensions} variables, but {len(x)} were given.")
+        return self.function.evaluate(x)
+
+class CEC2013F1_OpfunuMAX:
+    def __init__(self, n_dimensions):
+        self.n_dimensions = n_dimensions
+        self.name = "CEC2013F1_Maximization"
+        self.function = F12013(ndim=n_dimensions)
+        self.f_bias = self.function.f_bias        # -1400
+        self.f_max_target = -100                  # docelowe globalne maksimum
+
+    def evaluate_func(self, x):
+        val_min = self.function.evaluate(x)
+        # val_max = -(val_min - self.f_bias) + self.f_max_target
+        return -val_min
+
+
+class CEC2014F21_Opfunu:
+    def __init__(self, n_dimensions):
+        self.n_dimensions = n_dimensions
+        self.name = "CEC2014F21"
+        self.function = F212014(ndim=n_dimensions)
+
+    def evaluate_func(self, x):
+        if len(x) != self.n_dimensions:
+            raise ValueError(f"CEC2014 F21 function requires {self.n_dimensions} variables, but {len(x)} were given.")
+        return self.function.evaluate(x)
+
+
+
 class Hypersphere:
     def __init__(self, n_dimensions):
         self.n_dimensions = n_dimensions
@@ -188,6 +239,39 @@ class StyblinskiTang:
             raise ValueError(f"Styblinski-Tang function requires {self.n_dimensions} variables, but {len(x)} were given.")
         return sum([xi ** 4 - 16 * xi ** 2 + 5 * xi for xi in x]) / 2
 
+from opfunu.cec_based import F12014
+
+class ReversedCEC2014F1:
+    def __init__(self, n_dimensions=10):
+        self.n_dimensions = n_dimensions
+        self.name = "ReversedCEC2014F1"
+        self.function = F12014(ndim=n_dimensions)  # prawdziwa CEC2014 F1
+
+    def evaluate_func(self, x):
+        if len(x) != self.n_dimensions:
+            raise ValueError(
+                f"ReversedCEC2014F1 function requires {self.n_dimensions} variables, "
+                f"but {len(x)} were given."
+            )
+
+        # Oryginalna wartość CEC2014 F1 (minimum = 100)
+        original_value = self.function.evaluate(x)
+
+        # Odwrócenie — teraz maksimum = -100
+        return -original_value
+
+
+class MaximizationExample:
+    def __init__(self, n_dimensions=10):
+        self.n_dimensions = n_dimensions
+        self.name = "MaximizationExample"
+
+    def evaluate_func(self, x):
+        if len(x) != self.n_dimensions:
+            raise ValueError(f"MaximizationExample function requires {self.n_dimensions} variables, but {len(x)} were given.")
+        # Funkcja osiąga maksimum 10, gdy wszystkie wartości x są równe 1
+        return 10 - sum([(xi - 1) ** 2 for xi in x])
+
 class GoldsteinAndPrice:
     def __init__(self):
         self.n_dimensions = 2
@@ -211,10 +295,16 @@ class FunctionLoader:
             "sphere": Sphere,
             "griewank": Griewank,
             "schwefel": Schwefel,
+            "max": MaximizationExample,
             "michalewicz": Michalewicz,
+            "reverse_cec2014_f1": ReversedCEC2014F1,
             "easom": Easom,
             "himmelblau": Himmelblau,
             "keane": Keane,
+            "cec2014_f1_opfunu": CEC2014F1_Opfunu,
+            "cec2013_f1_opfunu": CEC2013F1_Opfunu,
+            "cec2013_f1_opfunu_max": CEC2013F1_OpfunuMAX,
+            "cec2014_f21_opfunu": CEC2014F21_Opfunu,
             "rana": Rana,
             "pits_and_holes": PitsAndHoles,
             "hypersphere": Hypersphere,
