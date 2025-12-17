@@ -5,12 +5,14 @@ from opfunu.cec_based import F12014
 
 from detpy.DETAlgs.aade import AADE
 from detpy.DETAlgs.al_shade import ALSHADE
+from detpy.DETAlgs.comde import COMDE
 from detpy.DETAlgs.data.alg_data import COMDEData, DEData, SADEData, FiADEData, ImprovedDEData, AADEData, DEGLData, \
     DELBData, DERLData, EIDEData, EMDEData, IDEData, JADEData, MGDEData, NMDEData, OppBasedData, \
     LSHADERSPData, ShadeData, LShadeData, ALSHADEData, SPSLShadeEIGDATA, LShadeEpsinData, Shade_1_1_Data
 from detpy.DETAlgs.de import DE
 from detpy.DETAlgs.degl import DEGL
 from detpy.DETAlgs.delb import DELB
+from detpy.DETAlgs.derl import DERL
 from detpy.DETAlgs.eide import EIDE
 from detpy.DETAlgs.emde import EMDE
 from detpy.DETAlgs.fiade import FiADE
@@ -21,10 +23,13 @@ from detpy.DETAlgs.lshade import LSHADE
 from detpy.DETAlgs.lshade_epsin import LShadeEpsin
 from detpy.DETAlgs.lshadersp import LSHADERSP
 from detpy.DETAlgs.mgde import MGDE
+from detpy.DETAlgs.nmde import NMDE
 from detpy.DETAlgs.opposition_based import OppBasedDE
+from detpy.DETAlgs.sade import SADE
 from detpy.DETAlgs.shade import SHADE
 from detpy.DETAlgs.shade_1_1 import SHADE_1_1
 from detpy.DETAlgs.sps_lshade_eig import SPS_LSHADE_EIG
+
 
 from detpy.functions import FunctionLoader
 from detpy.models.fitness_function import BenchmarkFitnessFunction, FitnessFunctionOpfunu
@@ -91,7 +96,7 @@ class InlineStopCondition(StopCondition):
 
 if __name__ == "__main__":
     num_of_epochs = 100
-    num_of_nfe = 2500
+    num_of_nfe = 1200
     function_loader = FunctionLoader()
     ackley_function = function_loader.get_function(function_name="cec2014_f1_opfunu", n_dimensions=10)
     fitness_fun = BenchmarkFitnessFunction(ackley_function)
@@ -139,6 +144,10 @@ if __name__ == "__main__":
     params_alshade = ALSHADEData(**params_common)
 
     algorithms = {
+        "SADE": SADE,
+        "COMDE": COMDE,
+        'DERL': DERL,
+        'NMDE': NMDE,
         "ALSHADE": ALSHADE,
         'SHADE1.1': SHADE_1_1,
         'SHADE': SHADE,
@@ -161,8 +170,12 @@ if __name__ == "__main__":
     }
 
     algorithms_params = {
+        'NMDE': params_nmde,
+        'DERL': params_derl,
+        'COMDE': params_comde,
         'LSHADE': params_lshade,
         'AADE': params_aade,
+        'SADE': params_sade,
         'DE': params_de,
         'DEGL': params_degl,
         'DELB': params_delb,
