@@ -6,16 +6,30 @@ from detpy.models.population import Population
 
 class BinomialCrossover:
     """
-    Binomial crossover operator for your Member & Population classes.
-    Assumes:
-        member.chromosomes[i].real_value exists
-        member.args_num gives dimension
+    Binomial crossover operator for Member & Population classes.
     """
 
     def __init__(self, ensure_at_least_one=True):
+        """
+        Initialize the BinomialCrossover operator.
+
+        Parameters:
+        - ensure_at_least_one (bool): If True, ensures at least one gene is crossed over.
+        """
         self.ensure_at_least_one = ensure_at_least_one
 
     def crossover_members(self, target_member, mutant_member, cr: float):
+        """
+        Perform crossover between a target member and a mutant member.
+
+        Parameters:
+        - target_member (Member): The target member from the original population.
+        - mutant_member (Member): The mutant member generated during mutation.
+        - cr (float): The crossover rate, determining the probability of gene exchange.
+
+        Returns:
+        - Member: A new member created by combining genes from the target and mutant members.
+        """
         new_member = copy.deepcopy(target_member)
         D = new_member.args_num
 
@@ -34,6 +48,17 @@ class BinomialCrossover:
         return new_member
 
     def crossover_population(self, origin_population, mutated_population, cr_table):
+        """
+        Perform crossover operation for the entire population.
+
+        Parameters:
+        - origin_population (Population): The original population before crossover.
+        - mutated_population (Population): The population after mutation.
+        - cr_table (List[float]): List of crossover rates for each individual.
+
+        Returns:
+        - Population: A new population created by applying crossover to the original and mutated populations.
+        """
         new_members = [
             self.crossover_members(origin_population.members[i],
                                    mutated_population.members[i],
