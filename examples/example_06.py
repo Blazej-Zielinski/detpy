@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import time
 import pandas as pd
+from opfunu.cec_based import F12014
+
 from detpy.DETAlgs.aade import AADE
 from detpy.DETAlgs.al_shade import ALSHADE
 from detpy.DETAlgs.data.alg_data import COMDEData, DEData, SADEData, FiADEData, ImprovedDEData, AADEData, DEGLData, \
@@ -25,29 +27,31 @@ from detpy.DETAlgs.shade_1_1 import SHADE_1_1
 from detpy.DETAlgs.sps_lshade_eig import SPS_LSHADE_EIG
 
 from detpy.functions import FunctionLoader
-from detpy.models.fitness_function import BenchmarkFitnessFunction
+from detpy.models.fitness_function import BenchmarkFitnessFunction, FitnessFunctionOpfunu
 from detpy.models.enums import optimization, boundary_constrain
 from detpy.models.stop_condition.lambda_stop_condition import LambdaStopCondition
 from detpy.models.stop_condition.never_stop_condition import NeverStopCondition
 from detpy.models.stop_condition.stop_condition import StopCondition
 
 pd.set_option('display.float_format', lambda x: '%.6f' % x)
+
+
 def extract_best_fitness(epoch_metrics):
     return [epoch.best_individual.fitness_value for epoch in epoch_metrics]
 
 
-def run_algorithm(algorithm_class, params, db_conn="Differential_evxolution.db", db_auto_write=False):
-    start_time = time.time()  # Start measuring time
+def run_algorithm(algorithm_class, params, db_conn="Differential_evolution.db", db_auto_write=False):
+    start_time = time.time()
     algorithm = algorithm_class(params, db_conn=db_conn, db_auto_write=db_auto_write)
     results = algorithm.run()
-    elapsed_time = time.time() - start_time  # Measure elapsed time
+    elapsed_time = time.time() - start_time
     fitness_values = [epoch.best_individual.fitness_value for epoch in results.epoch_metrics]
     best_fitness_value = min(fitness_values)
-    avg_fitness = sum(fitness_values) / len(fitness_values)  # Calculate average fitness
+    avg_fitness = sum(fitness_values) / len(fitness_values)
     return avg_fitness, elapsed_time, best_fitness_value
 
 
-def run_multiple_times(algorithm_class, params, runs=10): #10
+def run_multiple_times(algorithm_class, params, runs=10):
     all_fitness = []
     all_times = []
     all_best_fitness = []
@@ -58,7 +62,6 @@ def run_multiple_times(algorithm_class, params, runs=10): #10
         all_times.append(elapsed_time)
         all_best_fitness.append(best_fitness_value)
 
-    # Calculate average fitness and average time
     avg_fitness = sum(all_fitness) / len(all_fitness)
     avg_time = sum(all_times) / len(all_times)
     avg_best_fitness = sum(all_best_fitness) / len(all_best_fitness)
@@ -90,47 +93,28 @@ if __name__ == "__main__":
     num_of_epochs = 100
     num_of_nfe = 2500
     function_loader = FunctionLoader()
-    ackley_function = function_loader.get_function(function_name="cec2013_f1_opfunu", n_dimensions=10)
+    ackley_function = function_loader.get_function(function_name="cec2014_f1_opfunu", n_dimensions=10)
     fitness_fun = BenchmarkFitnessFunction(ackley_function)
+    fitness_fun_opf = FitnessFunctionOpfunu(
+        func_type=F12014,
+        ndim=10
+    )
 
     params_common = {
         'max_nfe': num_of_nfe,
         'population_size': 100,
         'dimension': 10,
-        'lb': [-100]*10,
-        'ub': [100]*10,
+        'lb': [-100] * 10,
+        'ub': [100] * 10,
         'show_plots': False,
         # 'additional_stop_criteria':  LambdaStopCondition(lambda nfe, epoch, best: epoch >= 10),
-        'optimization_type': optimization.OptimizationType.MINIMIZATION ,
+        'optimization_type': optimization.OptimizationType.MINIMIZATION,
         'boundary_constraints_fun': boundary_constrain.BoundaryFixing.RANDOM,
         'function': fitness_fun,
         'log_population': True,
         'parallel_processing': ['thread', 1]
     }
 
-    params_alshade = {
-        'max_nfe': num_of_nfe,
-        'population_size': 100,
-        'dimension': 10,
-        'show_plots': False,
-        'lb': [-100] * 10,
-        'ub': [100] * 10,
-        'additional_stop_criteria': NeverStopCondition(),  # LambdaStopCondition(lambda nfe, epoch, best: epoch >= 10),
-        'optimization_type': optimization.OptimizationType.MINIMIZATION,
-        'function': fitness_fun,
-        'log_population': True,
-        'parallel_processing': ['thread', 1],
-        'boundary_constraints_fun': boundary_constrain.BoundaryFixing.WITH_PARENT,
-
-
-    }
-
-
-
-
-
-    # Prepare algorithm parameters by creating instances of the algorithm data classes
-    params_lshade = LShadeData(**params_alshade)
     params_aade = AADEData(**params_common)
     params_comde = COMDEData(**params_common)
     params_de = DEData(**params_common)
@@ -148,43 +132,36 @@ if __name__ == "__main__":
     params_opposition_based = OppBasedData(**params_common)
     params_sade = SADEData(**params_common)
     params_shade = ShadeData(**params_common)
-    params_lshadersp = LSHADERSPData(**params_alshade)
-    params_lshadeepsin = LShadeEpsinData(**params_alshade)
-    params_shade11 = Shade_1_1_Data(**params_alshade)
-
-    params_als_hade = ALSHADEData(**params_alshade)
+    params_shade11 = Shade_1_1_Data(**params_common)
+    params_lshade = LShadeData(**params_common)
+    params_lshadersp = LSHADERSPData(**params_common)
+    params_lshadeepsin = LShadeEpsinData(**params_common)
+    params_alshade = ALSHADEData(**params_common)
 
     algorithms = {
-         "ALSHADE": ALSHADE,
-    #
-    'SHADE1.1' : SHADE_1_1,
+        "ALSHADE": ALSHADE,
+        'SHADE1.1': SHADE_1_1,
         'SHADE': SHADE,
-
-        # 'LSHADEEPSIN':LShadeEpsin,
-            'LSHADE': LSHADE,
-    #     'AADE': AADE,
-    #     'DE': DE,
-    #     'DEGL': DEGL,
-    #     'DELB': DELB,
-    #     'EIDE': EIDE,
-    #     'EMDE': EMDE,
-    #     'JADE': JADE,
-    #     'MGDE': MGDE,
-    #
-    #     'OppBased': OppBasedDE,
-    #
-    #     'FiADE': FiADE,
-    #     'IDE': IDE,
-    #     'ImprovedDE': ImprovedDE,
-
-        # 'LSHADERSP': LSHADERSP,
-        # 'SPS_LSHADE_EIG': SPS_LSHADE_EIG,
-
+        'LSHADEEPSIN': LShadeEpsin,
+        'LSHADE': LSHADE,
+        'AADE': AADE,
+        'DE': DE,
+        'DEGL': DEGL,
+        'DELB': DELB,
+        'EIDE': EIDE,
+        'EMDE': EMDE,
+        'JADE': JADE,
+        'MGDE': MGDE,
+        'OppBased': OppBasedDE,
+        'FiADE': FiADE,
+        'IDE': IDE,
+        'ImprovedDE': ImprovedDE,
+        'LSHADERSP': LSHADERSP,
+        'SPS_LSHADE_EIG': SPS_LSHADE_EIG,
     }
 
-    # Map the algorithm names to their parameters
     algorithms_params = {
-        'LSHADE' : params_lshade,
+        'LSHADE': params_lshade,
         'AADE': params_aade,
         'DE': params_de,
         'DEGL': params_degl,
@@ -200,9 +177,9 @@ if __name__ == "__main__":
         'LSHADEEPSIN': params_lshadeepsin,
         'SHADE': params_shade,
         'LSHADERSP': params_lshadersp,
-        'ALSHADE': params_als_hade,
+        'ALSHADE': params_alshade,
         'SPS_LSHADE_EIG': SPSLShadeEIGDATA(**params_common),
-        'SHADE1.1':params_shade11
+        'SHADE1.1': params_shade11
     }
 
     avg_fitness_results = []
@@ -210,7 +187,6 @@ if __name__ == "__main__":
     algorithm_names = []
     avg_best_fitness_results = []
 
-    # Run algorithms multiple times
     for name, algorithm_class in algorithms.items():
         avg_fitness, avg_time, avg_best_fitness = run_multiple_times(algorithm_class, algorithms_params[name])
         avg_fitness_results.append(avg_fitness)
@@ -218,18 +194,16 @@ if __name__ == "__main__":
         algorithm_names.append(name)
         avg_best_fitness_results.append(avg_best_fitness)
 
-    # Sort results by average fitness, then by average time
-    sorted_results = sorted(zip(algorithm_names, avg_fitness_results, avg_times, avg_best_fitness_results), key=lambda x: (x[1], x[2], x[3]))
+    sorted_results = sorted(zip(algorithm_names, avg_fitness_results, avg_times, avg_best_fitness_results),
+                            key=lambda x: (x[1], x[2], x[3]))
 
-    # Create a DataFrame for the sorted results
-    df_sorted = pd.DataFrame(sorted_results, columns=["Algorithm", "Average Fitness", "Average Time (s)", "Average Best Fitness"])
+    df_sorted = pd.DataFrame(sorted_results,
+                             columns=["Algorithm", "Average Fitness", "Average Time (s)", "Average Best Fitness"])
 
-    # Create separate DataFrames for fitness and time
     df_fitness_sorted = df_sorted[["Algorithm", "Average Fitness"]].sort_values(by="Average Fitness")
     df_time_sorted = df_sorted[["Algorithm", "Average Time (s)"]].sort_values(by="Average Time (s)")
     df_best_fitness_sorted = df_sorted[["Algorithm", "Average Best Fitness"]].sort_values(by="Average Best Fitness")
 
-    # Display the DataFrames in a nicely formatted table
     print("\nAverage Fitness (sorted by Fitness):")
     print(df_fitness_sorted)
 
@@ -238,7 +212,3 @@ if __name__ == "__main__":
 
     print("\nAverage Best Fitness (sorted by Best Fitness):")
     print(df_best_fitness_sorted)
-
-    # Plot the convergence graph for sorted algorithms
-    #sorted_avg_fitness = [fitness for _, fitness, _ in sorted_results]
-    #(sorted_avg_fitness, [algo for algo, _, _ in sorted_results], num_of_epochs)

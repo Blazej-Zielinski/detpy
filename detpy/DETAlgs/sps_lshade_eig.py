@@ -3,10 +3,15 @@ import random
 from typing import List
 
 import numpy as np
+
+from detpy.DETAlgs.archive_reduction.archive_reduction import ArchiveReduction
 from detpy.DETAlgs.base import BaseAlg
+from detpy.DETAlgs.crossover_methods.binomial_crossover import BinomialCrossover
 from detpy.DETAlgs.data.alg_data import SPSLShadeEIGDATA
-from detpy.DETAlgs.methods.methods_sps_lshade_eig import archive_reduction, calculate_best_member_count, \
-    mutation_internal, binomial_crossover_internal
+from detpy.DETAlgs.methods.methods_sps_lshade_eig import calculate_best_member_count, \
+    mutation_internal
+from detpy.DETAlgs.random.index_generator import IndexGenerator
+from detpy.DETAlgs.random.random_value_generator import RandomValueGenerator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints_with_parent
 
 from detpy.models.enums.optimization import OptimizationType
@@ -56,6 +61,11 @@ class SPS_LSHADE_EIG(BaseAlg):
         self._w_f = params.w_f
         self._w_cr = params.w_cr
 
+        self._binomial_crossing = BinomialCrossover()
+        self._random_value_gen = RandomValueGenerator()
+        self._archive_reduction = ArchiveReduction()
+        self._index_gen = IndexGenerator()
+
     def _update_covariance_matrix(self):
         """Update the covariance matrix based on the current population."""
         population_matrix = np.array([
@@ -79,16 +89,13 @@ class SPS_LSHADE_EIG(BaseAlg):
         Returns: A new Population with mutated members.
         """
         new_members = []
+        # Archive is included population and archive members
         sum_archive_and_population = np.concatenate((population.members, self._archive))
 
         for i in range(population.size):
-            # Exclude the current index `i` for r1
-            r1_candidates = [idx for idx in range(len(population.members)) if idx != i]
-            r1 = np.random.choice(r1_candidates, 1, replace=False)[0]
+            r1 = self._index_gen.generate_unique(len(population.members), [i])
 
-            # Exclude `i` and `r1` for r2
-            r2_candidates = [idx for idx in range(len(sum_archive_and_population)) if idx != i and idx != r1]
-            r2 = np.random.choice(r2_candidates, 1, replace=False)[0]
+            r2 = self._index_gen.generate_unique(len(sum_archive_and_population), [i, r1])
 
             best_members = population.get_best_members(the_best_to_select_table[i])
             selected_best_member = random.choice(best_members)
@@ -101,9 +108,7 @@ class SPS_LSHADE_EIG(BaseAlg):
             )
             new_members.append(mutated_member)
 
-        new_population = copy.deepcopy(population)
-        new_population.members = np.array(new_members)
-        return new_population
+        return Population.with_new_members(population, new_members)
 
     def _add_to_sps_archive(self, member: Member):
         """
@@ -272,12 +277,10 @@ class SPS_LSHADE_EIG(BaseAlg):
                 member = self._eig_crossover_internal(origin_population.members[i], mutated_population.members[i],
                                                       cr_table[i])
             else:
-                member = binomial_crossover_internal(origin_population.members[i], mutated_population.members[i],
-                                                     cr_table[i])
+                member = self._binomial_crossing.crossover_members(origin_population.members[i],
+                                                                   mutated_population.members[i], cr_table[i])
             new_members.append(member)
-        new_population = copy.deepcopy(origin_population)
-        new_population.members = np.array(new_members)
-        return new_population
+        return Population.with_new_members(origin_population, new_members)
 
     def _update_population_size(self, nfe: int, total_nfe: int, start_pop_size: int, min_pop_size: int):
         """
@@ -338,7 +341,8 @@ class SPS_LSHADE_EIG(BaseAlg):
 
         self._pop = self._selection(self._pop, trial, f_table, cr_table, er_table)
 
-        self._archive = archive_reduction(self._archive, self.population_size, self._w_ext)
+        self._archive = self._archive_reduction.reduce_archive(self._archive, self.population_size,
+                                                               self.population_size)
         self._update_covariance_matrix()
 
         self._update_population_size(self.nfe, self.nfe_max, self._start_population_size,

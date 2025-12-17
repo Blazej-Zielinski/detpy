@@ -2,7 +2,7 @@ import copy
 
 import numpy as np
 
-from detpy.DETAlgs.methods.methods_alshade import wrap_as_chromosomes
+from detpy.models.chromosome import Chromosome
 from detpy.models.member import Member
 
 
@@ -12,6 +12,15 @@ class MutationCurrentToXamean:
 
     Formula:    v_i = x_i + F * (x_Amean - x_i) + F * (x_r1 - x_r2)
     """
+
+    @staticmethod
+    def wrap_as_chromosomes(float_array: np.ndarray, template_chromosomes: list) -> list:
+        chromosomes = []
+        for val, template in zip(float_array, template_chromosomes):
+            c = Chromosome(template.lb, template.ub)
+            c.real_value = val
+            chromosomes.append(c)
+        return chromosomes
 
     @staticmethod
     def mutate(base_member: Member, xamean: np.ndarray, r1: Member, r2: Member, f: float) -> Member:
@@ -25,7 +34,7 @@ class MutationCurrentToXamean:
 
         Returns: A new member with the mutated chromosomes.
         """
-        xamean_chromosomes = wrap_as_chromosomes(xamean, base_member.chromosomes)
+        xamean_chromosomes = MutationCurrentToXamean.wrap_as_chromosomes(xamean, base_member.chromosomes)
         xamean_as_member = copy.deepcopy(base_member)
         xamean_as_member.chromosomes = xamean_chromosomes
 

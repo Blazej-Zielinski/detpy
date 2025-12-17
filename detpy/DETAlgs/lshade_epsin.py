@@ -4,10 +4,13 @@ import math
 import numpy as np
 from typing import List
 
+from detpy.DETAlgs.archive_reduction.archive_reduction import ArchiveReduction
 from detpy.DETAlgs.base import BaseAlg
+from detpy.DETAlgs.crossover_methods.binomial_crossover import BinomialCrossover
 from detpy.DETAlgs.data.alg_data import LShadeEpsinData
-from detpy.DETAlgs.methods.methods_lshade_epsin import calculate_best_member_count, crossing, archive_reduction
 from detpy.DETAlgs.mutation_methods.current_to_pbest_1 import MutationCurrentToPBest1
+from detpy.DETAlgs.random.index_generator import IndexGenerator
+from detpy.DETAlgs.random.random_value_generator import RandomValueGenerator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints_with_parent
 from detpy.models.enums.optimization import OptimizationType
 from detpy.models.population import Population
@@ -50,6 +53,12 @@ class LShadeEpsin(BaseAlg):
         self._EPSILON = 0.00001
 
         self._k_index = 0
+        self._index_gen = IndexGenerator()
+        self._random_value_gen = RandomValueGenerator()
+        self._binomial_crossing = BinomialCrossover()
+        self._archive_reduction = ArchiveReduction()
+
+        self._local_search_done = False
 
     def _update_population_size(self, nfe: int, max_nfe: int, start_pop_size: int, min_pop_size: int):
         """
@@ -83,13 +92,9 @@ class LShadeEpsin(BaseAlg):
         pa = np.concatenate((population.members, self._archive))
 
         for i in range(population.size):
-            # Exclude the current index `i` for r1
-            r1_candidates = [idx for idx in range(len(population.members)) if idx != i]
-            r1 = np.random.choice(r1_candidates, 1, replace=False)[0]
-
-            # Exclude `i` and `r1` for r2
-            r2_candidates = [idx for idx in range(len(pa)) if idx != i and idx != r1]
-            r2 = np.random.choice(r2_candidates, 1, replace=False)[0]
+            r1 = self._index_gen.generate_unique(len(population.members), [i])
+            # Archive is included population and archive members
+            r2 = self._index_gen.generate_unique(len(pa), [i, r1])
 
             best_members = population.get_best_members(the_best_to_select_table[i])
             best = best_members[np.random.randint(0, len(best_members))]
@@ -103,15 +108,7 @@ class LShadeEpsin(BaseAlg):
             )
 
             new_members.append(mutant)
-
-        new_population = Population(
-            lb=population.lb, ub=population.ub,
-            arg_num=population.arg_num, size=population.size,
-            optimization=population.optimization
-        )
-        new_population.members = np.array(new_members)
-
-        return new_population
+        return Population.with_new_members(population, new_members)
 
     def _selection(self, origin, modified, ftable, cr_table, freg_values):
         """
@@ -144,14 +141,7 @@ class LShadeEpsin(BaseAlg):
                     self._success_freg.append(ftable[i])
 
                 new_members.append(copy.deepcopy(modified.members[i]))
-
-        new_population = Population(
-            lb=origin.lb, ub=origin.ub,
-            arg_num=origin.arg_num, size=origin.size,
-            optimization=origin.optimization
-        )
-        new_population.members = np.array(new_members)
-        return new_population
+        return Population.with_new_members(origin, new_members)
 
     def _reset_success_metrics(self):
         """Reset success metrics after memory update."""
@@ -240,13 +230,12 @@ class LShadeEpsin(BaseAlg):
         bests_to_select = []
         freg_values = {}
         for idx in range(self._pop.size):
-            ri = np.random.randint(0, self._H)
+            ri = self._index_gen.generate(0, self._H)
 
             if np.isnan(self._memory_Cr[ri]):
                 cr = 0.0
             else:
-                cr = np.random.normal(self._memory_Cr[ri], 0.1)
-                cr = np.clip(cr, 0.0, 1.0)
+                cr = self._random_value_gen.generate_normal(self._memory_Cr[ri], 0.1, 0.0, 1.0)
 
             is_lower_then_half_populations = self.nfe < (self.nfe_max / 2)
 
@@ -268,17 +257,12 @@ class LShadeEpsin(BaseAlg):
 
                     freg_values[idx] = f
             else:
-                while True:
-                    f = np.random.standard_cauchy() * 0.1 + self._memory_F[ri]
-                    if f > 0:
-                        break
-
-                if (f > 1):
-                    f = 0.0
+                f = self._random_value_gen.generate_cauchy_greater_than_zero(self._memory_F[ri], 0.1, 0.0, 1.0)
 
             f_table.append(f)
             cr_table.append(cr)
-            bests_to_select.append(calculate_best_member_count(self.population_size, self._p))
+            best_member_count = int(self._p * self.population_size)
+            bests_to_select.append(best_member_count)
 
         return f_table, cr_table, bests_to_select, freg_values
 
@@ -359,18 +343,18 @@ class LShadeEpsin(BaseAlg):
         f_table, cr_table, bests_to_select, freg_values = self._initialize_parameters_for_epoch()
         mutant = self._mutate(self._pop, bests_to_select, f_table)
 
-        trial = crossing(self._pop, mutant, cr_table)
+        trial = self._binomial_crossing.crossover_population(self._pop, mutant, cr_table)
         fix_boundary_constraints_with_parent(self._pop, trial, self.boundary_constraints_fun)
         trial.update_fitness_values(self._function.eval, self.parallel_processing)
 
         self._pop = self._selection(self._pop, trial, f_table, cr_table, freg_values)
-        self._archive = archive_reduction(self._archive, self._archive_size, self.population_size)
+        self._archive = self._archive_reduction.reduce_archive(self._archive, self._archive_size, self.population_size)
         self._update_memory(self._success_f, self._success_cr, self._success_freg, self._difference_fitness_success,
                             self._difference_fitness_success_freg)
 
         self._update_population_size(self.nfe, self.nfe_max, self._start_population_size,
                                      self._min_pop_size)
 
-        if self._pop.size <= 20 and not hasattr(self, "_local_search_done"):
+        if self._pop.size <= 20 and not self._local_search_done:
             self._local_search_done = True
             self._perform_local_search()

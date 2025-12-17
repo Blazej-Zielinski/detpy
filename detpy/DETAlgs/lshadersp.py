@@ -3,12 +3,14 @@ from typing import List
 
 import numpy as np
 from detpy.DETAlgs.base import BaseAlg
+from detpy.DETAlgs.crossover_methods.binomial_crossover import BinomialCrossover
 from detpy.DETAlgs.data.alg_data import LSHADERSPData
 
 from random import randint
 
-from detpy.DETAlgs.methods.methods_lshadersp import crossing, archive_reduction, rank_selection
+from detpy.DETAlgs.methods.methods_lshadersp import  archive_reduction, rank_selection
 from detpy.DETAlgs.mutation_methods.current_to_pbest_r import MutationCurrentToPBestR
+from detpy.DETAlgs.random.random_value_generator import RandomValueGenerator
 from detpy.math_functions.lehmer_mean import LehmerMean
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints_with_parent
 from detpy.models.enums.optimization import OptimizationType
@@ -61,6 +63,9 @@ class LSHADERSP(BaseAlg):
 
         # We need this value for checking close to zero in update_memory
         self._EPSILON = 0.00001
+
+        self._binomial_crossing = BinomialCrossover()
+        self._random_value_gen = RandomValueGenerator()
 
     def _adapt_parameters(self, fitness_improvement: List[float]):
         """
@@ -173,16 +178,7 @@ class LSHADERSP(BaseAlg):
                                                         members[r2], f_table[i], fw_table[i])
 
             new_members.append(new_member)
-
-        new_population = Population(
-            lb=population.lb,
-            ub=population.ub,
-            arg_num=population.arg_num,
-            size=population.size,
-            optimization=population.optimization
-        )
-        new_population.members = np.array(new_members)
-        return new_population
+        return Population.with_new_members(population, new_members)
 
     def _selection(self, origin_population: Population, modified_population: Population, cr_table: List[float],
                    f_table: List[float]):
@@ -222,16 +218,7 @@ class LSHADERSP(BaseAlg):
                     self._success_cr.append(cr_table[i])
                     self._difference_fitness_success.append(
                         modified_population.members[i].fitness_value - origin_population.members[i].fitness_value)
-
-        new_population = Population(
-            lb=origin_population.lb,
-            ub=origin_population.ub,
-            arg_num=origin_population.arg_num,
-            size=origin_population.size,
-            optimization=origin_population.optimization
-        )
-        new_population.members = np.array(new_members)
-        return new_population
+        return Population.with_new_members(origin_population, new_members)
 
     def _update_population_size(self, nfe: int, total_nfe: int, start_pop_size: int, min_pop_size: int):
         """
@@ -272,14 +259,10 @@ class LSHADERSP(BaseAlg):
                 cr = 0.0
             else:
                 # Generate Cr from normal distribution
-                cr = np.random.normal(mean_cr, 0.1)
-                cr = np.clip(cr, 0.0, 1.0)  # Clip to [0, 1]
+                cr = self._random_value_gen.generate_normal(mean_cr, 0.1, 0.0, 1.0)
 
             # Generate F from Cauchy distribution (ensure F > 0)
-            while True:
-                f = np.random.standard_cauchy() * 0.1 + mean_f
-                if f > 0:
-                    break
+            f = self._random_value_gen.generate_cauchy_greater_than_zero(mean_f, 0.1, 0.0, 1.0)
 
             # Constrain F based on NFE
             if self.nfe < 0.6 * self.nfe_max:
@@ -310,7 +293,7 @@ class LSHADERSP(BaseAlg):
 
         mutant = self._mutate(self._pop, self.nfe, self.nfe_max, self._pop.size, f_table, fw_table)
 
-        trial = crossing(self._pop, mutant, cr_table)
+        trial = self._binomial_crossing.crossover_population(self._pop, mutant, cr_table)
 
         fix_boundary_constraints_with_parent(self._pop, trial, self.boundary_constraints_fun)
 
