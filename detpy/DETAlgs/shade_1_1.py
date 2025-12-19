@@ -2,11 +2,14 @@ import copy
 from typing import List
 
 import numpy as np
+
+from detpy.DETAlgs.archive_reduction.archive_reduction import ArchiveReduction
 from detpy.DETAlgs.base import BaseAlg
+from detpy.DETAlgs.crossover_methods.binomial_crossover import BinomialCrossover
 from detpy.DETAlgs.data.alg_data import Shade_1_1_Data
-from detpy.DETAlgs.methods.methods_shade_1_1 import calculate_best_member_count, crossing, \
-    archive_reduction
 from detpy.DETAlgs.mutation_methods.current_to_pbest_1 import MutationCurrentToPBest1
+from detpy.DETAlgs.random.index_generator import IndexGenerator
+from detpy.DETAlgs.random.random_value_generator import RandomValueGenerator
 
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints_with_parent
 from detpy.models.enums.optimization import OptimizationType
@@ -46,6 +49,11 @@ class SHADE_1_1(BaseAlg):
         # We need this value for checking close to zero in update_memory
         self._EPSILON = 0.00001
 
+        self._index_gen = IndexGenerator()
+        self._random_value_gen = RandomValueGenerator()
+        self._binomial_crossing = BinomialCrossover()
+        self._archive_reduction = ArchiveReduction()
+
     def mutate(self,
                population: Population,
                the_best_to_select_table: List[int],
@@ -66,13 +74,10 @@ class SHADE_1_1(BaseAlg):
         sum_archive_and_population = np.concatenate((population.members, self._archive))
 
         for i in range(population.size):
-            # Exclude the current index `i` for r1
-            r1_candidates = [idx for idx in range(len(population.members)) if idx != i]
-            r1 = np.random.choice(r1_candidates, 1, replace=False)[0]
+            r1 = self._index_gen.generate_unique(len(population.members), [i])
 
-            # Exclude `i` and `r1` for r2
-            r2_candidates = [idx for idx in range(len(sum_archive_and_population)) if idx != i and idx != r1]
-            r2 = np.random.choice(r2_candidates, 1, replace=False)[0]
+            # Archive is included population and archive members
+            r2 = self._index_gen.generate_unique(len(sum_archive_and_population), [i, r1])
 
             # Select top p-best members from the population
             best_members = population.get_best_members(the_best_to_select_table[i])
@@ -92,14 +97,7 @@ class SHADE_1_1(BaseAlg):
             new_members.append(mutated_member)
 
         # Create a new population with the mutated members
-        new_population = Population(
-            lb=population.lb,
-            ub=population.ub,
-            arg_num=population.arg_num,
-            size=population.size,
-            optimization=population.optimization
-        )
-        new_population.members = np.array(new_members)
+        new_population = Population.with_new_members(population, new_members)
         return new_population
 
     def selection(self, origin_population: Population, modified_population: Population, ftable: List[float],
@@ -139,14 +137,7 @@ class SHADE_1_1(BaseAlg):
                         modified_population.members[i].fitness_value - origin_population.members[i].fitness_value)
                     new_members.append(copy.deepcopy(modified_population.members[i]))
 
-        new_population = Population(
-            lb=origin_population.lb,
-            ub=origin_population.ub,
-            arg_num=origin_population.arg_num,
-            size=origin_population.size,
-            optimization=origin_population.optimization
-        )
-        new_population.members = np.array(new_members)
+        new_population = Population.with_new_members(origin_population, new_members)
         return new_population
 
     def update_memory(self, success_f: List[float], success_cr: List[float], difference_fitness_success: List[float]):
@@ -205,23 +196,19 @@ class SHADE_1_1(BaseAlg):
             if np.isnan(self._memory_Cr[ri]):
                 cr = 0.0
             else:
-                cr = np.random.normal(self._memory_Cr[ri], 0.1)
-                cr = np.clip(cr, 0.0, 1.0)
+                cr = self._random_value_gen.generate_normal(self._memory_Cr[ri], 0.1, 0.0, 1.0)
 
-            mean_f = self._memory_F[ri]
 
-            while True:
-                f = np.random.standard_cauchy() * 0.1 + mean_f
-                if f > 0:
-                    break
-
-            f = min(f, 1.0)
+            f = self._random_value_gen.generate_cauchy_greater_than_zero(self._memory_F[ri], 0.1, 0.0, 1.0)
 
             f_table.append(f)
             cr_table.append(cr)
+            min_percentage = 2 / self.population_size
+            max_percentage = 0.2
 
-            the_best_to_possible_select = calculate_best_member_count(
-                self.population_size, self._p)
+            the_best_to_possible_select = self._random_value_gen.generate_count_from_percentage(self.population_size,
+                                                                                                min_percentage,
+                                                                                                max_percentage)
 
             the_bests_to_select.append(the_best_to_possible_select)
 
@@ -236,7 +223,7 @@ class SHADE_1_1(BaseAlg):
         mutant = self.mutate(self._pop, the_bests_to_select, f_table)
 
         # Crossover step
-        trial = crossing(self._pop, mutant, cr_table)
+        trial = self._binomial_crossing.crossover_population(self._pop, mutant, cr_table)
 
         fix_boundary_constraints_with_parent(self._pop, trial, self.boundary_constraints_fun)
 
@@ -247,7 +234,7 @@ class SHADE_1_1(BaseAlg):
         new_pop = self.selection(self._pop, trial, f_table, cr_table)
 
         # Archive management
-        self._archive = archive_reduction(self._archive, self.population_size)
+        self._archive = self._archive_reduction.reduce_archive(self._archive, self._archive_size, self.population_size)
 
         # Update the population
         self._pop = new_pop

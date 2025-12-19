@@ -2,15 +2,18 @@ import copy
 import numpy as np
 from typing import List
 
+from detpy.DETAlgs.archive_reduction.archive_reduction import ArchiveReduction
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import ALSHADEData
-from detpy.DETAlgs.methods.methods_alshade import calculate_best_member_count, archive_reduction, crossing
 from detpy.DETAlgs.mutation_methods.current_to_pbest_1 import MutationCurrentToPBest1
 from detpy.DETAlgs.mutation_methods.current_to_xamean import MutationCurrentToXamean
+from detpy.DETAlgs.random.index_generator import IndexGenerator
+from detpy.DETAlgs.random.random_value_generator import RandomValueGenerator
 from detpy.math_functions.lehmer_mean import LehmerMean
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints_with_parent
 from detpy.models.enums.optimization import OptimizationType
 from detpy.models.population import Population
+from detpy.DETAlgs.crossover_methods.binomial_crossover import BinomialCrossover
 
 
 class ALSHADE(BaseAlg):
@@ -61,6 +64,10 @@ class ALSHADE(BaseAlg):
 
         # We need this value for checking close to zero in update_memory
         self._EPSILON = 0.00001
+        self._index_gen = IndexGenerator()
+        self._random_value_gen = RandomValueGenerator()
+        self._binomial_crossing = BinomialCrossover()
+        self._archive_reduction = ArchiveReduction()
 
     def _update_population_size(self, nfe: int, total_nfe: int, start_pop_size: int, min_pop_size: int):
         """
@@ -117,15 +124,10 @@ class ALSHADE(BaseAlg):
         pa = np.concatenate((population.members, self._archive))
 
         for i in range(population.size):
-            while True:
-                r1 = np.random.choice(len(population.members))
-                if r1 != i:
-                    break
+            r1 = self._index_gen.generate_unique(len(population.members), [i])
 
-            while True:
-                r2 = np.random.choice(len(pa))
-                if r2 != i and r2 != r1:
-                    break
+            # Archive is included population and archive members
+            r2 = self._index_gen.generate_unique(len(pa), [i, r1])
 
             p = np.random.rand()
 
@@ -156,14 +158,7 @@ class ALSHADE(BaseAlg):
                 memory.append(3)
             new_members.append(mutant)
 
-        new_population = Population(
-            lb=population.lb, ub=population.ub,
-            arg_num=population.arg_num, size=population.size,
-            optimization=population.optimization
-        )
-        new_population.members = np.array(new_members)
-        self._mutation_memory = memory
-        return new_population
+        return Population.with_new_members(population, new_members)
 
     def _selection(self, origin: Population, modified: Population, ftable: List[float], cr_table: List[float]):
         """
@@ -218,13 +213,7 @@ class ALSHADE(BaseAlg):
             self._P += (0.05 * (1 - self._P) * (p_a1 - p_a2) * self.nfe) / self.nfe_max
             self._P = min(0.9, max(0.1, self._P))
 
-        new_population = Population(
-            lb=origin.lb, ub=origin.ub,
-            arg_num=origin.arg_num, size=origin.size,
-            optimization=origin.optimization
-        )
-        new_population.members = np.array(new_members)
-        return new_population
+        return Population.with_new_members(origin, new_members)
 
     def _update_memory(self, success_f: List[float], success_cr: List[float], df: List[float]):
         """
@@ -267,23 +256,26 @@ class ALSHADE(BaseAlg):
         cr_table = []
         bests_to_select = []
         for _ in range(self._pop.size):
-            ri = np.random.randint(0, self._H)
+            ri = self._index_gen.generate(0, self._H)
 
             # We check here if we have TERMINAL value in memory_Cr
             if np.isnan(self._memory_Cr[ri]):
                 cr = 0.0
             else:
-                cr = np.random.normal(self._memory_Cr[ri], 0.1)
-                cr = np.clip(cr, 0.0, 1.0)
+                cr = self._random_value_gen.generate_normal(self._memory_Cr[ri], 0.1, 0.0, 1.0)
 
-            while True:
-                f = np.random.standard_cauchy() * 0.1 + self._memory_F[ri]
-                if f > 0:
-                    break
-            f = min(f, 1.0)
+            f = self._random_value_gen.generate_cauchy_greater_than_zero(self._memory_F[ri], 0.1, 0.0, 1.0)
+
             f_table.append(f)
             cr_table.append(cr)
-            bests_to_select.append(calculate_best_member_count(self.population_size))
+
+            min_percentage = 2 / self.population_size
+            max_percentage = 0.2
+
+            the_best_to_possible_select = self._random_value_gen.generate_count_from_percentage(self.population_size,
+                                                                                                min_percentage,
+                                                                                                max_percentage)
+            bests_to_select.append(the_best_to_possible_select)
         return f_table, cr_table, bests_to_select
 
     def next_epoch(self):
@@ -291,12 +283,12 @@ class ALSHADE(BaseAlg):
 
         mutant = self._mutate(self._pop, bests_to_select, f_table)
 
-        trial = crossing(self._pop, mutant, cr_table)
+        trial = self._binomial_crossing.crossover_population(self._pop, mutant, cr_table)
         fix_boundary_constraints_with_parent(self._pop, trial, self.boundary_constraints_fun)
         trial.update_fitness_values(self._function.eval, self.parallel_processing)
 
         self._pop = self._selection(self._pop, trial, f_table, cr_table)
-        self._archive = archive_reduction(self._archive, self._archive_size, self.population_size)
+        self._archive = self._archive_reduction.reduce_archive(self._archive, self._archive_size, self.population_size)
         self._update_memory(self._successF, self._successCr, self._difference_fitness_success)
         self._update_population_size(self.nfe, self.nfe_max, self._start_population_size,
                                      self._min_pop_size)

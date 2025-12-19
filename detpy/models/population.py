@@ -18,6 +18,29 @@ class Population:
     def generate_population(self):
         self.members = np.array([Member(self.lb, self.ub, self.arg_num) for _ in range(self.size)])
 
+    @classmethod
+    def with_new_members(cls, population, new_members):
+        """
+        Create a new Population instance with the same attributes as the given population,
+        but with a new set of members.
+
+        Parameters:
+        - population (Population): The existing population to copy attributes from.
+        - new_members (list): The new members to populate the new population.
+
+        Returns:
+        - Population: A new Population instance with the updated members.
+        """
+        new_population = cls(
+            lb=population.lb,
+            ub=population.ub,
+            arg_num=population.arg_num,
+            size=population.size,
+            optimization=population.optimization
+        )
+        new_population.members = np.array(new_members)
+        return new_population
+
     @staticmethod
     def calculate_fitness(member, fitness_fun):
         args = member.get_chromosomes()

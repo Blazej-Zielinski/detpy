@@ -77,27 +77,3 @@ def mutation_internal(base_member: Member, best_member: Member, r1: Member, r2: 
     return new_member
 
 
-def binomial_crossover_internal(x: Member, v: Member, cr: float):
-    """
-    Perform binomial crossover between two members x and v.
-
-    Parameters:
-    - x (Member): The original member (parent) from the population.
-    It is an instance of the `Member` class containing chromosomes.
-
-    - v (Member): The mutated member (donor vector) generated during the mutation step.
-    It is also an instance of the `Member` class containing chromosomes.
-
-    - cr (float): The crossover rate (a float between 0 and 1) that determines the probability
-    of inheriting a gene from the donor vector `v`.
-
-    Returns: A new member (child) created by combining genes from `x` and `v`
-    based on the crossover rate `cr`. The child is an instance of the `Member` class.
-    """
-    dim = len(x.chromosomes)
-    new_member = copy.deepcopy(x)
-    j_rand = np.random.randint(0, dim)
-    for j in range(dim):
-        if np.random.rand() < cr or j == j_rand:
-            new_member.chromosomes[j].real_value = v.chromosomes[j].real_value
-    return new_member
