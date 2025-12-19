@@ -6,6 +6,16 @@ from detpy.DETAlgs.lshade import LSHADE
 from detpy.DETAlgs.data.alg_data import LShadeData
 from detpy.models.fitness_function import FitnessFunctionOpfunu
 from detpy.models.enums import optimization, boundary_constrain
+from detpy.models.stop_condition.stop_condition import StopCondition
+
+
+class StopWhenFitnessBelowThreshold(StopCondition):
+    def should_stop(self, nfe, epoch, best_chromosome):
+        # Stop if the best fitness value is less than 100,000
+        # The parameters `nfe` (Number of Function Evaluations), `epoch` (current iteration number),
+        # and `best_chromosome` (the best solution found so far) can be used to define the stopping criterion.
+        return best_chromosome.fitness_value < 100_000
+
 
 fitness_fun_opf = FitnessFunctionOpfunu(
     func_type=F12014,
@@ -25,8 +35,8 @@ if __name__ == "__main__":
         dimension=dimension,
         lb=[-100] * dimension,
         ub=[100] * dimension,
-        show_plots=True,
-        # We want the plots to be rendered (Best fitness per NFE, Average fitness per NFE, Standard deviation per NFE)
+        show_plots=False,
+        additional_stop_criteria=StopWhenFitnessBelowThreshold(),
         optimization_type=optimization.OptimizationType.MINIMIZATION,
         boundary_constraints_fun=boundary_constrain.BoundaryFixing.RANDOM,
         function=fitness_fun_opf,
