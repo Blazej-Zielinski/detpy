@@ -1,7 +1,8 @@
+import copy
 import random
 import numpy as np
 
-from detpy.DETAlgs.methods.methods_de import mutation_ind
+from detpy.models.member import Member
 from detpy.models.population import Population
 
 
@@ -26,3 +27,11 @@ def derl_mutation(population: Population):
     )
     new_population.members = np.array(new_members)
     return new_population
+
+def mutation_ind(base_member: Member, member1: Member, member2: Member, f):
+    """
+        Formula: v_ij = x_r1 + F(x_r2 - x_r3)
+    """
+    new_member = copy.deepcopy(base_member)
+    new_member.chromosomes = base_member.chromosomes + (member1.chromosomes - member2.chromosomes) * f
+    return new_member

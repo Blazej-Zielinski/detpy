@@ -1,9 +1,9 @@
 import copy
 import random
 import numpy as np
-
-from detpy.DETAlgs.methods.methods_de import mutation_ind, binomial_crossing_ind
+from detpy.DETAlgs.methods.methods_de import binomial_crossing_ind
 from detpy.models.enums.optimization import OptimizationType
+from detpy.models.member import Member
 from detpy.models.population import Population
 
 
@@ -24,6 +24,14 @@ def sade_mutation(population: Population, f_arr):
     new_population.members = np.array(new_members)
     return new_population
 
+
+def mutation_ind(base_member: Member, member1: Member, member2: Member, f):
+    """
+        Formula: v_ij = x_r1 + F(x_r2 - x_r3)
+    """
+    new_member = copy.deepcopy(base_member)
+    new_member.chromosomes = base_member.chromosomes + (member1.chromosomes - member2.chromosomes) * f
+    return new_member
 
 def sade_binomial_crossing(origin_population: Population, mutated_population: Population, cr_arr):
     if origin_population.size != mutated_population.size:
