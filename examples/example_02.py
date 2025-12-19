@@ -32,11 +32,15 @@ def run_algorithm(algorithm_class, params, db_conn="Differential_evolution.db", 
     return [epoch.best_individual.fitness_value for epoch in results.epoch_metrics]
 
 
-def plot_fitness_convergence(fitness_results, algorithm_names, num_of_epochs):
-    epochs = range(1, num_of_epochs + 1)
+def plot_fitness_convergence(fitness_results, algorithm_names, max_nfe, population_size):
+    max_epochs = int(max_nfe / population_size)
     for fitness_values, name in zip(fitness_results, algorithm_names):
-        fitness_values = fitness_values[:num_of_epochs]
-        plt.plot(epochs, fitness_values, label=name)
+        n = min(len(fitness_values), max_epochs)
+
+        epochs = range(1, n + 1)
+        y = fitness_values[:n]
+
+        plt.plot(epochs, y, label=name)
 
     plt.grid(True)
     plt.xlabel('Epoch')
@@ -48,7 +52,7 @@ def plot_fitness_convergence(fitness_results, algorithm_names, num_of_epochs):
 
 
 if __name__ == "__main__":
-    num_of_nfe = 5000
+    num_of_nfe = 1000
     function_loader = FunctionLoader()
     ackley_function = function_loader.get_function(function_name="ackley", n_dimensions=2)
     fitness_fun = BenchmarkFitnessFunction(ackley_function)
@@ -107,4 +111,4 @@ if __name__ == "__main__":
     algorithm_names = ['AADE', 'COMDE', 'DE', 'DEGL', 'DELB', 'DERL', 'EIDE', 'EMDE', 'FiADE', 'IDE', 'ImprovedDE',
                        'JADE', 'MGDE', 'NMDE', 'OppBasedDE', 'SADE']
 
-    plot_fitness_convergence(fitness_results, algorithm_names, num_of_nfe)
+    plot_fitness_convergence(fitness_results, algorithm_names, num_of_nfe, params_common["population_size"])

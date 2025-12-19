@@ -16,10 +16,10 @@ def run_algorithm(algorithm_class, params, db_conn="Differential_evolution.db", 
     return [epoch.best_individual.fitness_value for epoch in results.epoch_metrics]
 
 
-def plot_fitness_convergence(fitness_results, algorithm_names, num_of_epochs, function_name):
-    epochs = range(1, num_of_epochs + 1)
+def plot_fitness_convergence(fitness_results, algorithm_names, max_nfe, function_name, population_size):
+    epochs = range(1, (int(max_nfe/population_size)) + 1)
     for fitness_values, name in zip(fitness_results, algorithm_names):
-        fitness_values = fitness_values[:num_of_epochs]
+        fitness_values = fitness_values[:int(max_nfe/population_size)]
         plt.plot(epochs, fitness_values, label=name)
 
     plt.xlabel('Epoch')
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     ]
 
     params_common = {
-        'nfe_max': num_of_nfe,
+        'max_nfe': num_of_nfe,
         'population_size': 100,
         'dimension': 2,
         'lb': [-32.768, -32.768],
@@ -65,4 +65,4 @@ if __name__ == "__main__":
             fitness_values = run_algorithm(algorithm_class, params)
             fitness_results.append(fitness_values)
 
-        plot_fitness_convergence(fitness_results, algorithm_names, num_of_nfe, function_name)
+        plot_fitness_convergence(fitness_results, algorithm_names, num_of_nfe, function_name, params_common["population_size"])

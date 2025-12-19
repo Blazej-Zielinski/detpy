@@ -37,15 +37,12 @@ def run_algorithm(algorithm_class, params, target_value=100, db_conn="Differenti
     results = algorithm.run()
     elapsed_time = time.time() - start_time  # Measure elapsed time
 
-    # Pobierz wartości funkcji przystosowania
     fitness_values = [epoch.best_individual.fitness_value for epoch in results.epoch_metrics]
 
-    # Oblicz błąd względem docelowej wartości
     errors = [target_value - value for value in fitness_values]
 
-    # Oblicz wskaźniki na podstawie błędów
     avg_error = sum(errors) / len(errors)
-    min_error = min(errors)  # Najmniejszy błąd (najbliżej docelowej wartości)
+    min_error = min(errors)
 
     return avg_error, elapsed_time, min_error
 
@@ -61,7 +58,6 @@ def run_multiple_times(algorithm_class, params, target_value=10, runs=10):
         all_times.append(elapsed_time)
         all_min_errors.append(min_error)
 
-    # Calculate average error and average time
     avg_error = sum(all_errors) / len(all_errors)
     avg_time = sum(all_times) / len(all_times)
     avg_min_error = sum(all_min_errors) / len(all_min_errors)

@@ -29,7 +29,7 @@ class FitnessFunctionOpfunu(FitnessFunctionBase):
         self.function = func_type(ndim=ndim)
 
     def eval(self, params):
-        return self.function.eval(params)
+        return self.function.evaluate(params)
 
 
 class BenchmarkFitnessFunction(FitnessFunctionBase):
