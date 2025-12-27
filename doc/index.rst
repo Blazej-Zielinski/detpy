@@ -80,5 +80,10 @@ https://doi.org/10.1016/j.softx.2024.102014
    ackleyall
    benchmark_functions
    optimization_opfunu
+   custom_fitness_function
+   optimization_detpy_2_0
+   lshade_example
+   extra_stopping_criterion
+
 
 
