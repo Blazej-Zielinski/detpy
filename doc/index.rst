@@ -40,6 +40,7 @@ The current source code is available at: https://github.com/Blazej-Zielinski/det
    shade
    lshade_rsp
    lshade
+   sps_lshade_eig
 
 .. toctree::
    :maxdepth: 1
