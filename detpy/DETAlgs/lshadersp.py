@@ -22,6 +22,9 @@ class LSHADERSP(BaseAlg):
     """
         L-SHADE-RSP: LSHADE Algorithm with a Rank-based Selective Pressure Strategy (RSP)
 
+        Links:
+        https://www.scitepress.org/papers/2018/68525/68525.pdf
+
         References:
         Shakhnaz Akhmedova, Vladimir Stanovov and Eugene Semenkin (2018). Research on In Proceedings of
         the 15th International Conference on Informatics in Control, Automation and Robotics (ICINCO 2018) -

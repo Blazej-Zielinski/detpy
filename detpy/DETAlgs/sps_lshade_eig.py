@@ -20,6 +20,18 @@ from detpy.models.population import Population
 
 
 class SPS_LSHADE_EIG(BaseAlg):
+    """
+     SPS_LSHADE_EIG
+
+     Links:
+     https://ieeexplore.ieee.org/document/7256999
+
+     References:
+     Guo, S.-M., Tsai, J. S.-H., Yang, C.-C., & Hsu, P.-H. (2015). A self-optimization approach for L-SHADE
+     incorporated with eigenvector-based crossover and successful-parent-selecting framework on CEC 2015 benchmark set.
+     In 2015 IEEE Congress on Evolutionary Computation (CEC) (pp. 1003–1010). 2015 IEEE Congress on
+     Evolutionary Computation (CEC). IEEE. https://doi.org/10.1109/cec.2015.7256999
+     """
     def __init__(self, params: SPSLShadeEIGDATA, db_conn=None, db_auto_write=False):
         super().__init__(SPS_LSHADE_EIG.__name__, params, db_conn, db_auto_write)
 

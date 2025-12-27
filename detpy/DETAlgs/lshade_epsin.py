@@ -17,6 +17,18 @@ from detpy.models.population import Population
 
 
 class LShadeEpsin(BaseAlg):
+    """
+     LShadeEpsin
+
+     Links:
+     https://ieeexplore.ieee.org/document/7744163
+
+     References:
+     Awad, N. H., Ali, M. Z., Suganthan, P. N., & Reynolds, R. G. (2016). An ensemble sinusoidal parameter adaptation
+     incorporated with L-SHADE for solving CEC2014 benchmark problems. In 2016 IEEE Congress on Evolutionary
+     Computation (CEC) (pp. 2958–2965). 2016 IEEE Congress on Evolutionary Computation (CEC). IEEE.
+     https://doi.org/10.1109/cec.2016.7744163
+     """
     def __init__(self, params: LShadeEpsinData, db_conn=None, db_auto_write=False):
         super().__init__(LShadeEpsin.__name__, params, db_conn, db_auto_write)
 

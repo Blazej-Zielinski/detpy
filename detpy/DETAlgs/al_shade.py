@@ -20,8 +20,13 @@ class ALSHADE(BaseAlg):
     """
         ALSHADE: A novel adaptive L-SHADE algorithm and its application in UAV swarm resource configuration problem
 
+        Links:
+        https://www.sciencedirect.com/science/article/abs/pii/S0020025522004893
+
         References:
-        Yintong Li, Tong Han, Huan Zhou, Shangqin Tang, Hui Zhao Information Sciences, vol. 606, pp. 350–367, 2022.
+        Li, Y., Han, T., Zhou, H., Tang, S., & Zhao, H. (2022). A novel adaptive L-SHADE algorithm and
+        its application in UAV swarm resource configuration problem. Information Sciences, 606, 350–367.
+        https://doi.org/10.1016/j.ins.2022.05.058
     """
 
     def __init__(self, params: ALSHADEData, db_conn=None, db_auto_write=False):

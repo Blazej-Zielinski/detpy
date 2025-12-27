@@ -21,8 +21,14 @@ class SHADE_1_1(BaseAlg):
     """
         SHADE 1.1: Success-History based Adaptive Differential Evolution
 
+        Links:
+        https://ieeexplore.ieee.org/document/6557555
+
+
         References:
-        Ryoji Tanabe and Alex Fukunaga Graduate School of Arts and Sciences The University of Tokyo
+        Tanabe, R., & Fukunaga, A. (2013). Success-history based parameter adaptation for Differential Evolution.
+        In 2013 IEEE Congress on Evolutionary Computation (pp. 71–78).
+        2013 IEEE Congress on Evolutionary Computation (CEC). IEEE. https://doi.org/10.1109/cec.2013.6557555
     """
 
     def __init__(self, params: Shade_1_1_Data, db_conn=None, db_auto_write=False):
