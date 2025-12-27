@@ -66,6 +66,7 @@ https://doi.org/10.1016/j.softx.2024.102014
    eps_de
    eps_deag
    lshade_epsin
+   eps_deg
 
 .. toctree::
    :maxdepth: 1
