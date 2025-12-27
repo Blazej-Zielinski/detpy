@@ -1,5 +1,4 @@
 from detpy.DETAlgs.base import BaseAlg
-import numpy as np
 from detpy.DETAlgs.data.alg_data import EPSDEGData
 from detpy.DETAlgs.methods.methods_de import crossing, mutation
 from detpy.DETAlgs.methods.methods_eps_de import calculate_epsilon_constrained, selection
@@ -8,6 +7,7 @@ from detpy.DETAlgs.methods.methods_eps_deg import gradient_mutation, calculate_i
 from detpy.models.enums.basevectorschema import BaseVectorSchema
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints, BoundaryFixing
 from detpy.models.enums.crossingtype import CrossingType
+import numpy as np
 
 
 class EPSDEG(BaseAlg):
