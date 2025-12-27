@@ -1,4 +1,3 @@
-
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import EPSDEwDCData
 from detpy.DETAlgs.methods.methods_de import mutation, crossing

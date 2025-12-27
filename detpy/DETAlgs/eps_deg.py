@@ -11,6 +11,7 @@ from detpy.models.enums.basevectorschema import BaseVectorSchema
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints, BoundaryFixing
 from detpy.models.enums.crossingtype import CrossingType
 
+
 class EPSDEG(BaseAlg):
 
     """
