@@ -70,6 +70,7 @@ https://doi.org/10.1016/j.softx.2024.102014
    eps_ade
    eps_rde
    shade_1_1
+   eps_de_w_dc
 
 .. toctree::
    :maxdepth: 1
