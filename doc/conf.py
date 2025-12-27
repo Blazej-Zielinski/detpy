@@ -8,7 +8,6 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../detpy'))
-autodoc_mock_imports = ["numpy"]
 
 project = 'DetPy'
 copyright = 'workshop participant'
