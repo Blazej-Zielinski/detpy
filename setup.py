@@ -51,6 +51,6 @@ setuptools.setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Utilities",
     ],
-    install_requires=["numpy", "opfunu", "matplotlib", "tqdm", "scipy"],
+    install_requires=["numpy", "opfunu", "matplotlib", "tqdm", "scipy", "sympy", "autograd", "pandas"],
     python_requires='>=3.7',
 )

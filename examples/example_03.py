@@ -17,9 +17,9 @@ def run_algorithm(algorithm_class, params, db_conn="Differential_evolution.db", 
 
 
 def plot_fitness_convergence(fitness_results, algorithm_names, max_nfe, function_name, population_size):
-    epochs = range(1, (int(max_nfe/population_size)) + 1)
+    epochs = range(1, (int(max_nfe / population_size)) + 1)
     for fitness_values, name in zip(fitness_results, algorithm_names):
-        fitness_values = fitness_values[:int(max_nfe/population_size)]
+        fitness_values = fitness_values[:int(max_nfe / population_size)]
         plt.plot(epochs, fitness_values, label=name)
 
     plt.xlabel('Epoch')
@@ -65,4 +65,5 @@ if __name__ == "__main__":
             fitness_values = run_algorithm(algorithm_class, params)
             fitness_results.append(fitness_values)
 
-        plot_fitness_convergence(fitness_results, algorithm_names, num_of_nfe, function_name, params_common["population_size"])
+        plot_fitness_convergence(fitness_results, algorithm_names, num_of_nfe, function_name,
+                                 params_common["population_size"])
