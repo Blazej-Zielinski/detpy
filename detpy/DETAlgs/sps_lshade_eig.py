@@ -32,6 +32,7 @@ class SPS_LSHADE_EIG(BaseAlg):
      In 2015 IEEE Congress on Evolutionary Computation (CEC) (pp. 1003–1010). 2015 IEEE Congress on
      Evolutionary Computation (CEC). IEEE. https://doi.org/10.1109/cec.2015.7256999
      """
+
     def __init__(self, params: SPSLShadeEIGDATA, db_conn=None, db_auto_write=False):
         super().__init__(SPS_LSHADE_EIG.__name__, params, db_conn, db_auto_write)
 

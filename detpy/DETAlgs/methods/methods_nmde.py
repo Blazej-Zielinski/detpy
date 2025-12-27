@@ -29,6 +29,7 @@ def nmde_mutation(population: Population, f_arr):
     new_population.members = np.array(new_members)
     return new_population
 
+
 def mutation_ind(base_member: Member, member1: Member, member2: Member, f):
     """
         Formula: v_ij = x_r1 + F(x_r2 - x_r3)
@@ -36,6 +37,7 @@ def mutation_ind(base_member: Member, member1: Member, member2: Member, f):
     new_member = copy.deepcopy(base_member)
     new_member.chromosomes = base_member.chromosomes + (member1.chromosomes - member2.chromosomes) * f
     return new_member
+
 
 def nmde_binomial_crossing(origin_population: Population, mutated_population: Population, cr_arr):
     if origin_population.size != mutated_population.size:

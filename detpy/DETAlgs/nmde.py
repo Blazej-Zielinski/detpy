@@ -80,4 +80,3 @@ class NMDE(BaseAlg):
         self._cr_arr = cr_arr
         self._f_set = set()
         self._cr_set = set()
-

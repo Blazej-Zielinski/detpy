@@ -8,7 +8,7 @@ from detpy.DETAlgs.data.alg_data import LSHADERSPData
 
 from random import randint
 
-from detpy.DETAlgs.methods.methods_lshadersp import  archive_reduction, rank_selection
+from detpy.DETAlgs.methods.methods_lshadersp import archive_reduction, rank_selection
 from detpy.DETAlgs.mutation_methods.current_to_pbest_r import MutationCurrentToPBestR
 from detpy.DETAlgs.random.random_value_generator import RandomValueGenerator
 from detpy.math_functions.lehmer_mean import LehmerMean

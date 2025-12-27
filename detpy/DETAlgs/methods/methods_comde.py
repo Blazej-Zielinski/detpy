@@ -9,8 +9,8 @@ from detpy.models.population import Population
 def comde_mutation(population: Population):
     new_members = []
     for _ in range(population.size):
-        f_l = np.random.uniform()                   # random in (0, 1]
-        f_g = np.random.uniform(low=-1, high=1)     # random in (−1, 0) ∪ (0, 1)
+        f_l = np.random.uniform()  # random in (0, 1]
+        f_g = np.random.uniform(low=-1, high=1)  # random in (−1, 0) ∪ (0, 1)
         while f_g == 0 or f_l == 0:  # not pleasant
             f_l = np.random.uniform()
             f_g = np.random.uniform(low=-1, high=1)
@@ -37,6 +37,7 @@ def comde_mutation(population: Population):
     )
     new_population.members = np.array(new_members)
     return new_population
+
 
 def mutation_ind(base_member: Member, member1: Member, member2: Member, f):
     """

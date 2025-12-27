@@ -32,8 +32,9 @@ def aade_crossing(origin_population: Population, mutated_population: Population,
         print("Binomial_crossing: populations have different sizes")
         return None
 
-    new_members = [binomial_crossing_ind(origin_population.members[i], mutated_population.members[i], crossover_rates[i][0])
-                   for i in range(origin_population.size)]
+    new_members = [
+        binomial_crossing_ind(origin_population.members[i], mutated_population.members[i], crossover_rates[i][0])
+        for i in range(origin_population.size)]
 
     new_population = Population(
         lb=origin_population.lb,

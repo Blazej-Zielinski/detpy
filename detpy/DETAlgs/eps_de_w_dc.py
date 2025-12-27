@@ -9,7 +9,6 @@ from detpy.models.enums.crossingtype import CrossingType
 
 
 class EPSDEwDC(BaseAlg):
-
     """
           EPSDEwDC - Epsilon Constrained Differential Evolution with Dynamic ε-Level Control
 
@@ -27,18 +26,20 @@ class EPSDEwDC(BaseAlg):
         super().__init__(EPSDEwDC.__name__, params, db_conn, db_auto_write)
         self.mutation_factor = params.mutation_factor  # F
         self.crossover_rate = params.crossover_rate  # Cr
-        self.g_funcs = params.g_funcs #Inequality constraints functions
-        self.h_funcs = params.h_funcs #Equality constraints functions
+        self.g_funcs = params.g_funcs  # Inequality constraints functions
+        self.h_funcs = params.h_funcs  # Equality constraints functions
         self.tolerance_h = params.tolerance_h
         self.penalty_power = params.penalty_power
         self.theta = params.theta if params.theta is not None else int(0.2 * self.population_size)
         self.eta = params.eta
         self.control_generations = params.control_generations
-        self.epsilon_constrained = calculate_epsilon_constrained(self._pop, self.g_funcs, self.h_funcs, self.penalty_power, self.tolerance_h)
-        self.t_prime = calculate_t_prime(self._epoch_number, self.epsilon_constrained, self.eta, self.control_generations, self.penalty_power)
-        self.initial_epsilon_level = epsilon_dynamic_control(self._epoch_number, self.theta, self.epsilon_constrained, self.t_prime, self.control_generations)
+        self.epsilon_constrained = calculate_epsilon_constrained(self._pop, self.g_funcs, self.h_funcs,
+                                                                 self.penalty_power, self.tolerance_h)
+        self.t_prime = calculate_t_prime(self._epoch_number, self.epsilon_constrained, self.eta,
+                                         self.control_generations, self.penalty_power)
+        self.initial_epsilon_level = epsilon_dynamic_control(self._epoch_number, self.theta, self.epsilon_constrained,
+                                                             self.t_prime, self.control_generations)
         self.epsilon_level = self.initial_epsilon_level
-
 
     def next_epoch(self):
         # New population after mutation
@@ -56,7 +57,8 @@ class EPSDEwDC(BaseAlg):
         # Update values before selection
         u_pop.update_fitness_values(self._function.eval, self.parallel_processing)
 
-        u_pop_epsilon_constrained = calculate_epsilon_constrained(u_pop, self.g_funcs, self.h_funcs, self.penalty_power, self.tolerance_h)
+        u_pop_epsilon_constrained = calculate_epsilon_constrained(u_pop, self.g_funcs, self.h_funcs, self.penalty_power,
+                                                                  self.tolerance_h)
 
         # Select new population
         new_pop = selection(self._pop, u_pop, self.epsilon_constrained, u_pop_epsilon_constrained, self.epsilon_level)
@@ -64,10 +66,11 @@ class EPSDEwDC(BaseAlg):
         # Override data
         self._pop = new_pop
 
-        self.epsilon_constrained = calculate_epsilon_constrained(self._pop, self.g_funcs, self.h_funcs, self.penalty_power, self.tolerance_h)
+        self.epsilon_constrained = calculate_epsilon_constrained(self._pop, self.g_funcs, self.h_funcs,
+                                                                 self.penalty_power, self.tolerance_h)
 
         self.t_prime = calculate_t_prime(self._epoch_number, self.epsilon_constrained, self.eta,
-                                              self.control_generations, self.penalty_power, self.t_prime,
-                                              self.epsilon_level, self.initial_epsilon_level)
+                                         self.control_generations, self.penalty_power, self.t_prime,
+                                         self.epsilon_level, self.initial_epsilon_level)
         self.epsilon_level = epsilon_dynamic_control(self._epoch_number, self.theta, self.epsilon_constrained,
-                                                         self.t_prime, self.control_generations, self.initial_epsilon_level)
+                                                     self.t_prime, self.control_generations, self.initial_epsilon_level)

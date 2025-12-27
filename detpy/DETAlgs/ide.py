@@ -30,7 +30,7 @@ class IDE(BaseAlg):
 
         # New population after mutation
         v_pop = mutation(self._pop, base_vector_schema=self.base_vector_schema,
-                         optimization_type=self.optimization_type,y = self.y, f=f)
+                         optimization_type=self.optimization_type, y=self.y, f=f)
 
         # Apply boundary constrains on population in place
         fix_boundary_constraints(v_pop, self.boundary_constraints_fun)
@@ -46,4 +46,3 @@ class IDE(BaseAlg):
 
         # Override data
         self._pop = new_pop
-

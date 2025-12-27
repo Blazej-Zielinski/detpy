@@ -10,7 +10,6 @@ from detpy.models.enums.optimization import OptimizationType
 from detpy.DETAlgs.methods.methods_de import binomial_crossing_ind
 
 
-
 def jade_mutation(population: Population, mutation_factors: np.ndarray[float], p_best: float,
                   archive: list[Member] = []) -> Population:
     pop_members_list = population.members.tolist()

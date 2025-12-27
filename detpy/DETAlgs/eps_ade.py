@@ -2,7 +2,7 @@ import copy
 import random
 import numpy as np
 from detpy.DETAlgs.base import BaseAlg
-from detpy.DETAlgs.data.alg_data import  EPSADEData
+from detpy.DETAlgs.data.alg_data import EPSADEData
 from detpy.DETAlgs.methods.methods_de import mutation, crossing
 from detpy.DETAlgs.methods.methods_eps_ade import control_epsilon_level, adaptive_de_operation
 from detpy.DETAlgs.methods.methods_eps_de import calculate_epsilon_constrained, epsilon_level_comparisons, \
@@ -16,7 +16,6 @@ from detpy.models.population import Population
 
 
 class EPSADE(BaseAlg):
-
     """
           EPSADE - Constrained Adaptive Differential Evolution
 
@@ -42,9 +41,9 @@ class EPSADE(BaseAlg):
         self.mutation_factor_perturbation_width = params.mutation_factor_perturbation_width
         self.crossover_rate_perturbation_width = params.crossover_rate_perturbation_width
         self.weight_of_update = np.clip(params.weight_of_update, 1e-12, 1)
-        self.truncation_mechanism_factory = params.truncation_mechanism_factory #ap
-        self.g_funcs = params.g_funcs #Inequality constraints functions
-        self.h_funcs = params.h_funcs #Equality constraints functions
+        self.truncation_mechanism_factory = params.truncation_mechanism_factory  # ap
+        self.g_funcs = params.g_funcs  # Inequality constraints functions
+        self.h_funcs = params.h_funcs  # Equality constraints functions
         self.tolerance_h = params.tolerance_h
         self.control_generations = params.control_generations
         self.epsilon_scaling_factor = params.epsilon_scaling_factor
@@ -67,11 +66,13 @@ class EPSADE(BaseAlg):
             return None
 
         optimization = self._pop.optimization
-        modified_epsilon_constrained = calculate_epsilon_constrained(modified_population, self.g_funcs, self.h_funcs, self.penalty_power, self.tolerance_h)
+        modified_epsilon_constrained = calculate_epsilon_constrained(modified_population, self.g_funcs, self.h_funcs,
+                                                                     self.penalty_power, self.tolerance_h)
         new_members = []
         for i in range(self._pop.size):
             if epsilon_level_comparisons(modified_population.members[i], self._pop.members[i],
-                                         modified_epsilon_constrained[i], self.epsilon_constrained[i], self.epsilon_level,
+                                         modified_epsilon_constrained[i], self.epsilon_constrained[i],
+                                         self.epsilon_level,
                                          optimization):
                 new_members.append(copy.deepcopy(modified_population.members[i]))
             else:
@@ -81,12 +82,16 @@ class EPSADE(BaseAlg):
                 crossover_rate = np.clip(
                     self.mu_crossover_rate + self.crossover_rate_perturbation_width * random.uniform(-0.5, 0.5)
                     , 0, 1)
-                new_member = adaptive_de_operation(self._pop, self._pop.members[i], mutation_factor, crossover_rate, self._function)
-                new_member_epsilon_constrained = epsilon_constrained_method(new_member.get_chromosomes(), self.g_funcs, self.h_funcs, self.penalty_power, self.tolerance_h)
+                new_member = adaptive_de_operation(self._pop, self._pop.members[i], mutation_factor, crossover_rate,
+                                                   self._function)
+                new_member_epsilon_constrained = epsilon_constrained_method(new_member.get_chromosomes(), self.g_funcs,
+                                                                            self.h_funcs, self.penalty_power,
+                                                                            self.tolerance_h)
 
                 if epsilon_level_comparisons(new_member, self._pop.members[i],
-                                         new_member_epsilon_constrained, self.epsilon_constrained[i], self.epsilon_level,
-                                         optimization):
+                                             new_member_epsilon_constrained, self.epsilon_constrained[i],
+                                             self.epsilon_level,
+                                             optimization):
                     new_members.append(new_member)
                     self.number_of_successful_operation += 1
                     self.mutation_factor_sum += mutation_factor
@@ -104,11 +109,12 @@ class EPSADE(BaseAlg):
         new_population.members = np.array(new_members)
         return new_population
 
-
     def update_adaptive_parameters(self):
         if self.number_of_successful_operation > 0:
-            self.mu_mutation_factory = (1 - self.weight_of_update) * self.mu_mutation_factory + (self.weight_of_update * self.mutation_factor_sum) / self.number_of_successful_operation
-            self.mu_crossover_rate = (1 - self.weight_of_update) * self.mu_crossover_rate + (self.weight_of_update * self.crossover_rate_sum) / self.number_of_successful_operation
+            self.mu_mutation_factory = (1 - self.weight_of_update) * self.mu_mutation_factory + (
+                        self.weight_of_update * self.mutation_factor_sum) / self.number_of_successful_operation
+            self.mu_crossover_rate = (1 - self.weight_of_update) * self.mu_crossover_rate + (
+                        self.weight_of_update * self.crossover_rate_sum) / self.number_of_successful_operation
 
     def next_epoch(self):
         self.number_of_successful_operation = 0
@@ -140,7 +146,8 @@ class EPSADE(BaseAlg):
         self.epsilon_constrained = calculate_epsilon_constrained(new_pop, self.g_funcs, self.h_funcs,
                                                                  self.penalty_power, self.tolerance_h)
 
-        self.epsilon_level = control_epsilon_level(self.epsilon_level, self.epsilon_constrained, self.truncation_mechanism_factory, self.population_size)
+        self.epsilon_level = control_epsilon_level(self.epsilon_level, self.epsilon_constrained,
+                                                   self.truncation_mechanism_factory, self.population_size)
 
         # Override data
         self._pop = new_pop

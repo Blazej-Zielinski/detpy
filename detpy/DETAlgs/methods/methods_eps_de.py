@@ -7,14 +7,20 @@ from detpy.models.enums.optimization import OptimizationType
 from detpy.models.member import Member
 from detpy.models.population import Population
 
-def calculate_epsilon_constrained(population : Population, g_funcs: list, h_funcs: list, penalty_power: int, tolerance_h : float) -> list:
-    return list(epsilon_constrained_method(member.get_chromosomes(), g_funcs, h_funcs, penalty_power, tolerance_h) for member in population.members)
 
-def epsilon_constrained_method(chromosomes: ndarray, g_funcs: list, h_funcs: list, penalty_power: int, tolerance_h : float) -> float:
+def calculate_epsilon_constrained(population: Population, g_funcs: list, h_funcs: list, penalty_power: int,
+                                  tolerance_h: float) -> list:
+    return list(
+        epsilon_constrained_method(member.get_chromosomes(), g_funcs, h_funcs, penalty_power, tolerance_h) for member in
+        population.members)
+
+
+def epsilon_constrained_method(chromosomes: ndarray, g_funcs: list, h_funcs: list, penalty_power: int,
+                               tolerance_h: float) -> float:
     """
           Formula: sum(max(0, g_j(x))^p) + sum(h_j(x)^p)
     """
-    g_constraint_violation = sum(abs(max(0, g(chromosomes)))** penalty_power  for g in g_funcs)
+    g_constraint_violation = sum(abs(max(0, g(chromosomes))) ** penalty_power for g in g_funcs)
     h_constraint_violation = []
     for h in h_funcs:
         h_result = abs(h(chromosomes))
@@ -24,9 +30,10 @@ def epsilon_constrained_method(chromosomes: ndarray, g_funcs: list, h_funcs: lis
             h_constraint_violation.append(h_result ** penalty_power)
     return g_constraint_violation + sum(h_constraint_violation)
 
+
 def epsilon_level_comparisons(reference_member: Member, comparison_member: Member,
-                              origin_epsilon_constrained : float, modified_epsilon_constrained : float,
-                              epsilon_level : int, optimization : OptimizationType) -> bool:
+                              origin_epsilon_constrained: float, modified_epsilon_constrained: float,
+                              epsilon_level: int, optimization: OptimizationType) -> bool:
     if ((origin_epsilon_constrained <= epsilon_level and modified_epsilon_constrained <= epsilon_level)
             or origin_epsilon_constrained == modified_epsilon_constrained):
         if optimization == OptimizationType.MINIMIZATION:
@@ -45,9 +52,10 @@ def epsilon_level_comparisons(reference_member: Member, comparison_member: Membe
         else:
             return False
 
+
 def selection(origin_population: Population, modified_population: Population,
-              origin_epsilon_constrained : list[float], modified_epsilon_constrained : list[float],
-              epsilon_level : int) -> Population | None:
+              origin_epsilon_constrained: list[float], modified_epsilon_constrained: list[float],
+              epsilon_level: int) -> Population | None:
     """
        Perform selection operation for the population.
        Parameters:
@@ -71,7 +79,9 @@ def selection(origin_population: Population, modified_population: Population,
     optimization = origin_population.optimization
     new_members = []
     for i in range(origin_population.size):
-        if epsilon_level_comparisons(origin_population.members[i], modified_population.members[i], origin_epsilon_constrained[i], modified_epsilon_constrained[i], epsilon_level, optimization):
+        if epsilon_level_comparisons(origin_population.members[i], modified_population.members[i],
+                                     origin_epsilon_constrained[i], modified_epsilon_constrained[i], epsilon_level,
+                                     optimization):
             new_members.append(copy.deepcopy(origin_population.members[i]))
         else:
             new_members.append(copy.deepcopy(modified_population.members[i]))

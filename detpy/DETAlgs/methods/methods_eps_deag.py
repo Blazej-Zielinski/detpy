@@ -37,8 +37,9 @@ def mutation(population: Population, archive: np.ndarray, f: float):
 
 
 def selection(origin_population: Population, modified_population: Population,
-              origin_epsilon_constrained : list[float], modified_epsilon_constrained : list[float], archive : list[float], selected_child : set,
-              epsilon_level : int):
+              origin_epsilon_constrained: list[float], modified_epsilon_constrained: list[float], archive: list[float],
+              selected_child: set,
+              epsilon_level: int):
     """
        Perform selection operation for the population.
        Parameters:
@@ -67,8 +68,8 @@ def selection(origin_population: Population, modified_population: Population,
         if i in selected_child:
             new_members.append(copy.deepcopy(origin_population.members[i]))
         elif epsilon_level_comparisons(modified_population.members[i], origin_population.members[i],
-                                  modified_epsilon_constrained[i], origin_epsilon_constrained[i],
-                                  epsilon_level, optimization):
+                                       modified_epsilon_constrained[i], origin_epsilon_constrained[i],
+                                       epsilon_level, optimization):
             new_members.append(copy.deepcopy(modified_population.members[i]))
             selected_child.discard(i)
         else:
@@ -77,7 +78,6 @@ def selection(origin_population: Population, modified_population: Population,
             archive.remove(selected_archive)
             archive.append(copy.deepcopy(modified_population.members[i]))
             new_members.append(copy.deepcopy(origin_population.members[i]))
-
 
     new_population = Population(
         lb=origin_population.lb,
@@ -89,9 +89,14 @@ def selection(origin_population: Population, modified_population: Population,
     new_population.members = np.array(new_members)
     return new_population
 
-def epsilon_constrained_comparator(first_member : Member, second_member : Member, g_funcs : list, h_funcs : list, penalty_power: int, epsilon_level : int, optimization : OptimizationType, tolerance_h: float):
-    epsilon_constrained_for_first_member = epsilon_constrained_method(first_member.get_chromosomes(), g_funcs, h_funcs, penalty_power, tolerance_h)
-    epsilon_constrained_for_second_member = epsilon_constrained_method(second_member.get_chromosomes(), g_funcs, h_funcs, penalty_power, tolerance_h)
+
+def epsilon_constrained_comparator(first_member: Member, second_member: Member, g_funcs: list, h_funcs: list,
+                                   penalty_power: int, epsilon_level: int, optimization: OptimizationType,
+                                   tolerance_h: float):
+    epsilon_constrained_for_first_member = epsilon_constrained_method(first_member.get_chromosomes(), g_funcs, h_funcs,
+                                                                      penalty_power, tolerance_h)
+    epsilon_constrained_for_second_member = epsilon_constrained_method(second_member.get_chromosomes(), g_funcs,
+                                                                       h_funcs, penalty_power, tolerance_h)
     if epsilon_level_comparisons(first_member, second_member,
                                  epsilon_constrained_for_first_member, epsilon_constrained_for_second_member,
                                  epsilon_level, optimization):
@@ -102,7 +107,8 @@ def epsilon_constrained_comparator(first_member : Member, second_member : Member
         return 1
     return 0
 
-def calculate_init_epsilon_level(epsilon_constrained : list, theta : float):
+
+def calculate_init_epsilon_level(epsilon_constrained: list, theta: float):
     if theta > 1:
         return theta * np.max(epsilon_constrained)
     else:
@@ -111,29 +117,35 @@ def calculate_init_epsilon_level(epsilon_constrained : list, theta : float):
         index = int(epsilon_constrained_length * theta)
         return sorted_epsilon_constrained[index]
 
-def calculate_epsilon_level(init_epsilon_level : float, epoch_number : int, control_generations : int, epsilon_scaling_factor : int):
+
+def calculate_epsilon_level(init_epsilon_level: float, epoch_number: int, control_generations: int,
+                            epsilon_scaling_factor: int):
     if epoch_number >= control_generations:
         return 0
     else:
         return init_epsilon_level * (1 - (epoch_number / control_generations)) ** epsilon_scaling_factor
 
 
-def inverse_gradient_constraints(gradient_constraint : np.ndarray):
+def inverse_gradient_constraints(gradient_constraint: np.ndarray):
     if gradient_constraint.shape[0] == gradient_constraint.shape[1] and np.linalg.det(gradient_constraint) != 0:
         return np.linalg.inv(gradient_constraint)
 
     return np.linalg.pinv(gradient_constraint)
 
-def derivative_numeric(chromosome : list, g_funcs : list, h_funcs : list, eta: float = 1e-5):
+
+def derivative_numeric(chromosome: list, g_funcs: list, h_funcs: list, eta: float = 1e-5):
     chromosome_length = len(chromosome)
     grad = []
     for i in range(chromosome_length):
         e = np.zeros_like(chromosome)
         e[i] = 1.0
-        grad.append((constraint_functions((chromosome + eta * e).tolist(), DerivativeMethod.NUMERIC, g_funcs, h_funcs) - constraint_functions(chromosome, DerivativeMethod.NUMERIC, g_funcs, h_funcs)) / eta)
+        grad.append((constraint_functions((chromosome + eta * e).tolist(), DerivativeMethod.NUMERIC, g_funcs,
+                                          h_funcs) - constraint_functions(chromosome, DerivativeMethod.NUMERIC, g_funcs,
+                                                                          h_funcs)) / eta)
     return np.array(grad).T
 
-def derivative_symbolic(chromosome: list, g_funcs : list, h_funcs : list):
+
+def derivative_symbolic(chromosome: list, g_funcs: list, h_funcs: list):
     n = len(chromosome)
     variables = sp.symbols(f'x0:{n}')
 
@@ -147,7 +159,8 @@ def derivative_symbolic(chromosome: list, g_funcs : list, h_funcs : list):
 
     return np.array(val)
 
-def constraint_functions(chromosomes : list, derivative_method : DerivativeMethod, g_funcs : list, h_funcs : list):
+
+def constraint_functions(chromosomes: list, derivative_method: DerivativeMethod, g_funcs: list, h_funcs: list):
     if DerivativeMethod.AUTOMATIC == derivative_method:
         inequality_constraints = anp.array([g(chromosomes) for g in g_funcs])
         equality_constraints = anp.array([h(chromosomes) for h in h_funcs])
@@ -157,7 +170,9 @@ def constraint_functions(chromosomes : list, derivative_method : DerivativeMetho
     equality_constraints = ([h(chromosomes) for h in h_funcs])
     return np.concatenate((inequality_constraints, equality_constraints))
 
-def calculate_delta_x(chromosomes : list[float], derivative_method : DerivativeMethod, g_funcs : list, h_funcs : list, epsilon_constrain : float):
+
+def calculate_delta_x(chromosomes: list[float], derivative_method: DerivativeMethod, g_funcs: list, h_funcs: list,
+                      epsilon_constrain: float):
     if DerivativeMethod.NUMERIC == derivative_method:
         gradient_constraint = derivative_numeric(chromosomes, g_funcs, h_funcs)
     elif DerivativeMethod.SYMBOLIC == derivative_method:
@@ -174,7 +189,10 @@ def calculate_delta_x(chromosomes : list[float], derivative_method : DerivativeM
 
     return -np.dot(-inv_gradient_constraint, epsilon_constrain)
 
-def gradient_mutation(pop_population: Population, number_of_repeating_mutation : int, gradient_base_mutation_rate : float, derivative_method : DerivativeMethod, g_funcs : list, h_funcs : list, penalty_power : int, gradient_mutation_flag : bool, boundary_constraints_fun: BoundaryFixing, tolerance_h: float):
+
+def gradient_mutation(pop_population: Population, number_of_repeating_mutation: int, gradient_base_mutation_rate: float,
+                      derivative_method: DerivativeMethod, g_funcs: list, h_funcs: list, penalty_power: int,
+                      gradient_mutation_flag: bool, boundary_constraints_fun: BoundaryFixing, tolerance_h: float):
     new_members = []
     if gradient_mutation_flag:
         boundary_constraints_fun = get_boundary_constraints_fun(boundary_constraints_fun)
@@ -182,15 +200,18 @@ def gradient_mutation(pop_population: Population, number_of_repeating_mutation :
             member = copy.deepcopy(pop_population.members[i])
             if random.uniform(0, 1) < gradient_base_mutation_rate:
                 h = 0
-                epsilon_constrain = epsilon_constrained_method(member.get_chromosomes(), g_funcs, h_funcs, penalty_power, tolerance_h)
+                epsilon_constrain = epsilon_constrained_method(member.get_chromosomes(), g_funcs, h_funcs,
+                                                               penalty_power, tolerance_h)
                 while h < number_of_repeating_mutation and epsilon_constrain > 0:
-                    delta_x = calculate_delta_x(member.get_chromosomes(), derivative_method, g_funcs, h_funcs, epsilon_constrain)
+                    delta_x = calculate_delta_x(member.get_chromosomes(), derivative_method, g_funcs, h_funcs,
+                                                epsilon_constrain)
 
                     for j in range(member.args_num):
                         member.chromosomes[j].real_value = member.chromosomes[j].real_value + delta_x.item(j)
 
                     boundary_constraints_fun(member)
-                    epsilon_constrain = epsilon_constrained_method(member.get_chromosomes(), g_funcs, h_funcs, penalty_power, tolerance_h)
+                    epsilon_constrain = epsilon_constrained_method(member.get_chromosomes(), g_funcs, h_funcs,
+                                                                   penalty_power, tolerance_h)
                     h += 1
 
             new_members.append(member)

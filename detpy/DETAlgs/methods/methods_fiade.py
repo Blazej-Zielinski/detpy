@@ -6,6 +6,7 @@ from detpy.models.enums.optimization import OptimizationType
 from detpy.models.population import Population
 from detpy.DETAlgs.methods.methods_de import binomial_crossing_ind
 
+
 def mutation(population: Population, mutation_factors: list[list[float, bool]]) -> Population:
     members = population.members.tolist()
     drew_members = [random.sample(members, 3) for _ in range(population.size)]
@@ -27,7 +28,7 @@ def mutation(population: Population, mutation_factors: list[list[float, bool]]) 
 
 
 def fiade_crossing(origin_population: Population, mutated_population: Population,
-             crossover_rates: list[list[float, bool]]) -> Population:
+                   crossover_rates: list[list[float, bool]]) -> Population:
     if origin_population.size != mutated_population.size:
         raise ValueError("Populations must have the same size for crossing")
 

@@ -14,6 +14,7 @@ from detpy.models.enums.optimization import OptimizationType
 from detpy.models.member import Member
 from detpy.models.population import Population
 
+
 class DETCR(BaseAlg):
     """
           DETCR - Hybrid DE Algorithm With Adaptive Crossover Operator
@@ -33,7 +34,7 @@ class DETCR(BaseAlg):
 
         self.rate_ls = 1 - (1 / (100 * self.nr_of_args))
 
-        #Adaptive mechanism
+        # Adaptive mechanism
         self.max_crossover_rate = params.triangular_distribution_for_crossover_rate[2]
         self.med_crossover_rate = params.triangular_distribution_for_crossover_rate[1]
         self.min_crossover_rate = params.triangular_distribution_for_crossover_rate[0]
@@ -42,7 +43,7 @@ class DETCR(BaseAlg):
         self.med_mutation_factory = params.triangular_distribution_for_mutation_factory[1]
         self.min_mutation_factory = params.triangular_distribution_for_mutation_factory[0]
 
-        #Population management
+        # Population management
         self.gamma_var = params.gamma_var
         self.min_diversity_in_population = 0.05 * (np.array(self._pop.ub) - np.array(self._pop.lb))
         self.population_refreshment_size = 2 * self.nr_of_args
@@ -109,7 +110,7 @@ class DETCR(BaseAlg):
 
         for i in range(new_member.args_num):
             new_member.chromosomes[i] = org_member.chromosomes[i] + linear_recombination * (
-                        mut_member.chromosomes[i] - org_member.chromosomes[i])
+                    mut_member.chromosomes[i] - org_member.chromosomes[i])
 
         return new_member
 
@@ -127,7 +128,8 @@ class DETCR(BaseAlg):
 
         return new_member, mutation_success_count, no_change_counter
 
-    def crossing(self, origin_population: Population, mutated_population: Population, cr_list: List, linear_recombination):
+    def crossing(self, origin_population: Population, mutated_population: Population, cr_list: List,
+                 linear_recombination):
         if origin_population.size != mutated_population.size:
             print("Binomial_crossing: populations have different sizes")
             return None
@@ -143,7 +145,7 @@ class DETCR(BaseAlg):
 
             if cr >= 0.95:
                 new_member = self.lineal_recombination(origin_population.members[i], mutated_population.members[i],
-                                                 linear_recombination)
+                                                       linear_recombination)
                 mutation_success_count = 1
             else:
                 new_member, mutation_success_count, no_change_counter \
@@ -151,15 +153,18 @@ class DETCR(BaseAlg):
 
             if mutation_success_count == 0 and cr < 0.5:
                 permutation_first_value = np.random.permutation(self.nr_of_args)[0]
-                new_member.chromosomes[permutation_first_value] = origin_population.members[i].chromosomes[permutation_first_value]
+                new_member.chromosomes[permutation_first_value] = origin_population.members[i].chromosomes[
+                    permutation_first_value]
 
             if mutation_success_count == 0 and 0.5 <= cr < 0.95:
                 new_member.chromosomes = (origin_population.members[i].chromosomes + linear_recombination
-                              * (mutated_population.members[i].chromosomes - origin_population.members[i].chromosomes))
+                                          * (mutated_population.members[i].chromosomes - origin_population.members[
+                            i].chromosomes))
 
             if no_change_counter == self.nr_of_args:
                 permutation_first_value = np.random.permutation(self.nr_of_args)
-                new_member.chromosomes[permutation_first_value] = mutated_population.members[i].chromosomes[permutation_first_value]
+                new_member.chromosomes[permutation_first_value] = mutated_population.members[i].chromosomes[
+                    permutation_first_value]
 
             if not new_member.is_member_in_interval():
                 boundary_constraints_fun(new_member)
@@ -179,7 +184,7 @@ class DETCR(BaseAlg):
         new_population.members = np.array(new_members)
         return new_population
 
-    def population_refreshment_mechanism(self, pop : Population):
+    def population_refreshment_mechanism(self, pop: Population):
         refresh_population = copy.deepcopy(pop)
         members = np.array([member.get_chromosomes() for member in pop.members])
         var_pop = iqr(members, axis=0)
@@ -191,9 +196,11 @@ class DETCR(BaseAlg):
                 self.optimization_bounds[:, 0] = median - self.min_diversity_in_population
                 self.optimization_bounds[:, 1] = median + self.min_diversity_in_population
             else:
-                median = np.median(members, axis = 0)
-                self.optimization_bounds[:, 0] = median - (self.optimization_bounds[:, 1] - self.optimization_bounds[:, 0]) / self.gamma_var
-                self.optimization_bounds[:, 1] = median + (self.optimization_bounds[:, 1] - self.optimization_bounds[:, 0]) / self.gamma_var
+                median = np.median(members, axis=0)
+                self.optimization_bounds[:, 0] = median - (
+                            self.optimization_bounds[:, 1] - self.optimization_bounds[:, 0]) / self.gamma_var
+                self.optimization_bounds[:, 1] = median + (
+                            self.optimization_bounds[:, 1] - self.optimization_bounds[:, 0]) / self.gamma_var
 
             self.check_optimization_bounds()
 
@@ -227,11 +234,11 @@ class DETCR(BaseAlg):
                     2 / (self.max_mutation_factory - self.min_mutation_factory)) * 0.5:
                 mutation_factories[i] = self.min_mutation_factory + np.sqrt(
                     rand_u * (self.max_mutation_factory - self.min_mutation_factory) * (
-                                self.med_mutation_factory - self.min_mutation_factory))
+                            self.med_mutation_factory - self.min_mutation_factory))
             else:
                 mutation_factories[i] = self.max_mutation_factory - np.sqrt(
                     (1 - rand_u) * (self.max_mutation_factory - self.min_mutation_factory) * (
-                                self.max_mutation_factory - self.med_mutation_factory))
+                            self.max_mutation_factory - self.med_mutation_factory))
 
             rand_u = np.random.rand()
             if rand_u < (self.med_crossover_rate - self.min_crossover_rate) * (
@@ -242,10 +249,10 @@ class DETCR(BaseAlg):
             else:
                 crossover_rates[i] = self.max_crossover_rate - np.sqrt(
                     (1 - rand_u) * (self.max_crossover_rate - self.min_crossover_rate) * (
-                                self.max_crossover_rate - self.med_crossover_rate))
+                            self.max_crossover_rate - self.med_crossover_rate))
         return mutation_factories.tolist(), crossover_rates.tolist()
 
-    def adapting_triangular_distribution(self, mutation_factories : List):
+    def adapting_triangular_distribution(self, mutation_factories: List):
         if self.success_evo_cr >= self.number_of_success_crossover_rate:
             self.success_evo_cr = 0
 

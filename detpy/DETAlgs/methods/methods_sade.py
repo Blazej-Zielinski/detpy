@@ -33,6 +33,7 @@ def mutation_ind(base_member: Member, member1: Member, member2: Member, f):
     new_member.chromosomes = base_member.chromosomes + (member1.chromosomes - member2.chromosomes) * f
     return new_member
 
+
 def sade_binomial_crossing(origin_population: Population, mutated_population: Population, cr_arr):
     if origin_population.size != mutated_population.size:
         print("Binomial_crossing: populations have different sizes")

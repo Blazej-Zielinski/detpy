@@ -1,16 +1,15 @@
-
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import EPSRDEData
 from detpy.DETAlgs.methods.methods_eps_de import selection, calculate_epsilon_constrained
 from detpy.DETAlgs.methods.methods_eps_deag import calculate_epsilon_level
 from detpy.DETAlgs.methods.methods_eps_deg import calculate_init_epsilon_level
-from detpy.DETAlgs.methods.methods_eps_rde import mutation, crossing, create_ranks, calculate_mutation_factors, calculate_crossover_rates
+from detpy.DETAlgs.methods.methods_eps_rde import mutation, crossing, create_ranks, calculate_mutation_factors, \
+    calculate_crossover_rates
 from detpy.models.enums.basevectorschema import BaseVectorSchema
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 
 
 class EPSRDE(BaseAlg):
-
     """
           EPSRDE -  Epsilon Constrained Rank-Based Differential Evolution
 
@@ -31,21 +30,24 @@ class EPSRDE(BaseAlg):
         self.max_mutation_factor = params.max_mutation_factor  # max F
         self.min_crossover_rate = params.min_crossover_rate  # min Cr
         self.max_crossover_rate = params.max_crossover_rate  # max Cr
-        self.g_funcs = params.g_funcs #Inequality constraints functions
-        self.h_funcs = params.h_funcs #Equality constraints functions
+        self.g_funcs = params.g_funcs  # Inequality constraints functions
+        self.h_funcs = params.h_funcs  # Equality constraints functions
         self.tolerance_h = params.tolerance_h
-        self.control_generations =  params.control_generations
+        self.control_generations = params.control_generations
         self.epsilon_scaling_factor = params.epsilon_scaling_factor
         self.penalty_power = params.penalty_power
         self.theta = params.theta if params.theta is not None else int(0.2 * self.population_size)
-        self.epsilon_constrained = calculate_epsilon_constrained(self._pop, self.g_funcs, self.h_funcs, self.penalty_power, self.tolerance_h)
+        self.epsilon_constrained = calculate_epsilon_constrained(self._pop, self.g_funcs, self.h_funcs,
+                                                                 self.penalty_power, self.tolerance_h)
         self.init_epsilon_level = calculate_init_epsilon_level(self.epsilon_constrained, self.theta)
         self.epsilon_level = self.init_epsilon_level
         self.ranks = create_ranks(self._pop, self.epsilon_constrained)
 
     def next_epoch(self):
-        mutation_factors = calculate_mutation_factors(self._pop, self.ranks, self.min_mutation_factor, self.max_mutation_factor)
-        crossover_rates = calculate_crossover_rates(self._pop, self.ranks, self.min_crossover_rate, self.max_crossover_rate)
+        mutation_factors = calculate_mutation_factors(self._pop, self.ranks, self.min_mutation_factor,
+                                                      self.max_mutation_factor)
+        crossover_rates = calculate_crossover_rates(self._pop, self.ranks, self.min_crossover_rate,
+                                                    self.max_crossover_rate)
 
         # New population after mutation
         v_pop = mutation(self._pop, base_vector_schema=BaseVectorSchema.RAND,
@@ -62,7 +64,8 @@ class EPSRDE(BaseAlg):
         # Update values before selection
         u_pop.update_fitness_values(self._function.eval, self.parallel_processing)
 
-        u_pop_epsilon_constrained = calculate_epsilon_constrained(u_pop, self.g_funcs, self.h_funcs, self.penalty_power, self.tolerance_h)
+        u_pop_epsilon_constrained = calculate_epsilon_constrained(u_pop, self.g_funcs, self.h_funcs, self.penalty_power,
+                                                                  self.tolerance_h)
 
         # Select new population
         new_pop = selection(self._pop, u_pop, self.epsilon_constrained, u_pop_epsilon_constrained, self.epsilon_level)

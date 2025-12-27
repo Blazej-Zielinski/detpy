@@ -45,7 +45,9 @@ def mutation(
     new_population.members = np.array(new_members)
     return new_population
 
-def crossing(origin_population: Population, mutated_population: Population, cr : list[float], crossing_type: CrossingType):
+
+def crossing(origin_population: Population, mutated_population: Population, cr: list[float],
+             crossing_type: CrossingType):
     if origin_population.size != mutated_population.size:
         print("Populations have different sizes")
         return None
@@ -68,11 +70,20 @@ def crossing(origin_population: Population, mutated_population: Population, cr :
     new_population.members = np.array(new_members)
     return new_population
 
-def calculate_mutation_factors(population : Population, ranks : list[int], min_mutation_factor : float, max_mutation_factor : float):
-        return list(min_mutation_factor + (max_mutation_factor - min_mutation_factor) * ((ranks[i] - 1) / (population.size - 1)) for i in range(population.size))
 
-def calculate_crossover_rates(population : Population, ranks : list[int], min_crossover_rate : float, max_crossover_rate : float):
-    return list(max_crossover_rate - (max_crossover_rate - min_crossover_rate) * ((ranks[i] - 1) / (population.size - 1)) for i in range(population.size))
+def calculate_mutation_factors(population: Population, ranks: list[int], min_mutation_factor: float,
+                               max_mutation_factor: float):
+    return list(
+        min_mutation_factor + (max_mutation_factor - min_mutation_factor) * ((ranks[i] - 1) / (population.size - 1)) for
+        i in range(population.size))
 
-def create_ranks(population : Population, epsilon_constrained : list):
+
+def calculate_crossover_rates(population: Population, ranks: list[int], min_crossover_rate: float,
+                              max_crossover_rate: float):
+    return list(
+        max_crossover_rate - (max_crossover_rate - min_crossover_rate) * ((ranks[i] - 1) / (population.size - 1)) for i
+        in range(population.size))
+
+
+def create_ranks(population: Population, epsilon_constrained: list):
     return sorted(range(population.size), key=lambda i: epsilon_constrained[i])

@@ -19,8 +19,8 @@ def control_epsilon_level(epsilon_level: float, epsilon_constrained: list[float]
         return np.clip(epsilon_level, clip_min, clip_max)
 
 
-def adaptive_de_operation(origin_population: Population, origin_member : Member, mutation_factor : float, crossover_rate : float, fitness_function_base : FitnessFunctionBase) -> Member:
-
+def adaptive_de_operation(origin_population: Population, origin_member: Member, mutation_factor: float,
+                          crossover_rate: float, fitness_function_base: FitnessFunctionBase) -> Member:
     diff_members = random.sample(origin_population.members.tolist(), 3)
     mutation_member = mutation_ind(diff_members[0], diff_members[1:], mutation_factor)
     boundary_clipping(mutation_member)

@@ -48,4 +48,3 @@ def ide_get_cr(pop: Population):
             cr_arr[i] = cr_min
 
     return cr_arr
-

@@ -54,4 +54,3 @@ class OppBasedDE(BaseAlg):
 
         # Override data
         self._pop = new_pop
-

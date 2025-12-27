@@ -204,7 +204,6 @@ class SHADE_1_1(BaseAlg):
             else:
                 cr = self._random_value_gen.generate_normal(self._memory_Cr[ri], 0.1, 0.0, 1.0)
 
-
             f = self._random_value_gen.generate_cauchy_greater_than_zero(self._memory_F[ri], 0.1, 0.0, 1.0)
 
             f_table.append(f)
