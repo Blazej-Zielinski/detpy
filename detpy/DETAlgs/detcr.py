@@ -7,7 +7,7 @@ from scipy.optimize import minimize
 from scipy.stats import iqr
 
 from detpy.DETAlgs.base import BaseAlg
-from detpy.DETAlgs.data.alg_data import DEACRData
+from detpy.DETAlgs.data.alg_data import DETCRData
 from detpy.DETAlgs.methods.methods_de import selection
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints, get_boundary_constraints_fun
 from detpy.models.enums.optimization import OptimizationType
@@ -28,7 +28,7 @@ class DETCR(BaseAlg):
           New Orleans, LA, USA, 2011, doi: 10.1109/CEC.2011.5949800.
     """
 
-    def __init__(self, params: DEACRData, db_conn=None, db_auto_write=False):
+    def __init__(self, params: DETCRData, db_conn=None, db_auto_write=False):
         super().__init__(DETCR.__name__, params, db_conn, db_auto_write)
 
         self.rate_ls = 1 - (1 / (100 * self.nr_of_args))
