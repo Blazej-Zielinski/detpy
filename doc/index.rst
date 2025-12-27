@@ -3,7 +3,7 @@ DetPy documentation
 
 Welcome to DetPy documentation! 
 
-The DetPy library contains an implemented differential evolution algorithm with 15 of its modifications. We encourage you to use this library to solve advanced optimization problems.
+The DetPy library contains an implemented differential evolution algorithm with 29 of its modifications. We encourage you to use this library to solve advanced optimization problems.
 
 The current source code is available at: https://github.com/Blazej-Zielinski/detpy
 
@@ -37,6 +37,12 @@ The current source code is available at: https://github.com/Blazej-Zielinski/det
    improvedde
    fiade
    oppbasedde
+   shade
+   lshade_rsp
+   lshade
+   sps_lshade_eig
+   al_shade
+   detcr
 
 .. toctree::
    :maxdepth: 1
