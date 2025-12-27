@@ -1,5 +1,26 @@
 # DetPy (Differential Evolution Tools): A Python toolbox for solving optimization problems using differential evolution
 
+## 📖 Citation
+
+If you use **DetPy** in your research, please cite:
+
+**Zieliński, B., Ściegienny, S., Orlicki, H., & Książek, W. (2025).**  
+*DetPy (Differential Evolution Tools): A Python toolbox for solving optimization problems using differential evolution.*  
+**SoftwareX**, 29, 102014.  
+https://doi.org/10.1016/j.softx.2024.102014
+
+### BibTeX
+```bibtex
+@article{Zielinski2025DetPy,
+  title   = {DetPy (Differential Evolution Tools): A Python toolbox for solving optimization problems using differential evolution},
+  author  = {Zieliński, Błażej and Ściegienny, Szymon and Orlicki, Hubert and Książek, Wojciech},
+  journal = {SoftwareX},
+  volume  = {29},
+  pages   = {102014},
+  year    = {2025},
+  doi     = {10.1016/j.softx.2024.102014}
+}
+
 # Introduction
 The DetPy library contains implementations of the differential evolution algorithm and 18 modifications of this 
 algorithm. It can be used to solve advanced optimization problems.
