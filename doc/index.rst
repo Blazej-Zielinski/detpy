@@ -47,5 +47,6 @@ The current source code is available at: https://github.com/Blazej-Zielinski/det
    benchmark_functions
    optimization_opfunu
    custom_fitness_function
+   optimization_detpy_2_0
 
 
