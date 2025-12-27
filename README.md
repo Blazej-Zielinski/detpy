@@ -20,6 +20,7 @@ https://doi.org/10.1016/j.softx.2024.102014
   year    = {2025},
   doi     = {10.1016/j.softx.2024.102014}
 }
+```
 
 # Introduction
 The DetPy library contains implementations of the differential evolution algorithm and 18 modifications of this 
