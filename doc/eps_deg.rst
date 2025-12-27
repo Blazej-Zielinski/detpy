@@ -3,7 +3,7 @@ EPSDEG
 
 EPSDEG (Epsilon Constrained Differential Evolution with Gradient-Based Mutation) 
 
-.. autoclass:: DETAlgs.eps_deg.EPSDEG
+.. autoclass:: detpy.DETAlgs.eps_deg.EPSDEG
    :members:
    :undoc-members:
    :inherited-members:
