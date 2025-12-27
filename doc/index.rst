@@ -48,5 +48,7 @@ The current source code is available at: https://github.com/Blazej-Zielinski/det
    optimization_opfunu
    custom_fitness_function
    optimization_detpy_2_0
+   lshade_example
+   extra_stopping_criterion
 
 
