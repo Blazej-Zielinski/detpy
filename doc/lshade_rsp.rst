@@ -3,7 +3,7 @@ LSHADE_RSP
 
 LSHADE_RSP (Algorithm with a Rank-based Selective Pressure Strategy) 
 
-.. autoclass:: DETAlgs.derl.LSHADERSP
+.. autoclass:: DETAlgs.lshadersp.LSHADERSP
    :members:
    :undoc-members:
    :inherited-members:
