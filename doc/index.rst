@@ -37,6 +37,7 @@ The current source code is available at: https://github.com/Blazej-Zielinski/det
    improvedde
    fiade
    oppbasedde
+   shade
 
 .. toctree::
    :maxdepth: 1
