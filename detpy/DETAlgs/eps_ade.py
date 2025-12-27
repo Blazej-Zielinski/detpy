@@ -1,8 +1,6 @@
 import copy
 import random
-
 import numpy as np
-
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import  EPSADEData
 from detpy.DETAlgs.methods.methods_de import mutation, crossing

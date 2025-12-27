@@ -1,7 +1,5 @@
-
-import numpy as np
-
 from detpy.DETAlgs.base import BaseAlg
+import numpy as np
 from detpy.DETAlgs.data.alg_data import EPSDEGData
 from detpy.DETAlgs.methods.methods_de import crossing, mutation
 from detpy.DETAlgs.methods.methods_eps_de import calculate_epsilon_constrained, selection
