@@ -16,7 +16,7 @@ jobs:
           echo "PYTHONPATH=$(pwd):$(pwd)/detpy" >> $GITHUB_ENV
       - name: Install dependencies
         run: |
-          pip install sphinx sphinx_rtd_theme myst_parser tqdm numpy matplotlib opfunu sympy autograd scipy
+          pip install sphinx sphinx_rtd_theme myst_parser tqdm numpy matplotlib opfunu sympy autograd scipy pandas
       - name: Sphinx build
         run: |
           sphinx-build doc _build
