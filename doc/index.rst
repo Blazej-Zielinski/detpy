@@ -39,6 +39,7 @@ The current source code is available at: https://github.com/Blazej-Zielinski/det
    oppbasedde
    shade
    lshade_rsp
+   lshade
 
 .. toctree::
    :maxdepth: 1
