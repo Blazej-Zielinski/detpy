@@ -10,6 +10,9 @@ To install **DetPy**, use the following command:
 You can find the full source code on GitHub:
 `DetPy Repository <https://github.com/Blazej-Zielinski/detpy/tree/main>`_.
 
+The latest stable release of the library is available on PyPI:
+`DetPy on PyPI <https://pypi.org/project/detpy/>`_.
+
 Introduction
 ============================
 
@@ -61,7 +64,7 @@ To begin using DetPy, follow these steps:
     fitness_fun = BenchmarkFitnessFunction(ackley_function)
     
     params = SADEData(
-        epoch=100,
+        max_nfe=100,
         population_size=100,
         dimension=2,
         lb=[-32.768, -32.768],
