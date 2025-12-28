@@ -1,0 +1,207 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Optimization of custom fitness function &mdash; DetPy 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2709fde1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Optimization of CEC function with Detpy 2.0" href="optimization_detpy_2_0.html" />
+    <link rel="prev" title="Optimization of functions from Opfunu" href="optimization_opfunu.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DetPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">General</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#introduction">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#user-guide">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#examples">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="de.html">DE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="comde.html">COMDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="derl.html">DERL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nmde.html">NMDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="emde.html">EMDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ide.html">IDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sade.html">SADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jade.html">JADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="degl.html">DEGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aade.html">AADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="delb.html">DELB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eide.html">EIDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mgde.html">MGDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="improvedde.html">ImprovedDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fiade.html">FIADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oppbasedde.html">OppBasedDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="shade.html">SHADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lshade_rsp.html">LSHADE_RSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lshade.html">LSHADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sps_lshade_eig.html">SPS_LSHADE_EIG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="al_shade.html">AL-SHADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="detcr.html">DETCR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eps_de.html">EPSDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eps_deag.html">EPSDEAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lshade_epsin.html">LSHADE_EPSIN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eps_deg.html">EPSDEG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eps_ade.html">EPSADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eps_rde.html">EPSRDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="shade_1_1.html">SHADE 1.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eps_de_w_dc.html">EPSDEwDC</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">DetPy</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="ackley.html">Optimization of the Ackley function based SADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ackleyall.html">Optimization of the Ackley function with all DE variants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmark_functions.html">Optimization of common benchmark functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimization_opfunu.html">Optimization of functions from Opfunu</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Optimization of custom fitness function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimization_detpy_2_0.html">Optimization of CEC function with Detpy 2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lshade_example.html">LShade example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extra_stopping_criterion.html">Using an extra stopping criterion</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DetPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Optimization of custom fitness function</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/custom_fitness_function.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="optimization-of-custom-fitness-function">
+<h1>Optimization of custom fitness function<a class="headerlink" href="#optimization-of-custom-fitness-function" title="Link to this heading"></a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">detpy.DETAlgs.data.alg_data</span> <span class="kn">import</span> <span class="n">MGDEData</span><span class="p">,</span> <span class="n">EIDEData</span>
+<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">detpy.DETAlgs.eide</span> <span class="kn">import</span> <span class="n">EIDE</span>
+<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">detpy.DETAlgs.mgde</span> <span class="kn">import</span> <span class="n">MGDE</span>
+<span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">detpy.models.enums.basevectorschema</span> <span class="kn">import</span> <span class="n">BaseVectorSchema</span>
+<span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">detpy.models.enums.boundary_constrain</span> <span class="kn">import</span> <span class="n">BoundaryFixing</span>
+<span class="linenos"> 6</span><span class="kn">from</span> <span class="nn">detpy.models.enums.optimization</span> <span class="kn">import</span> <span class="n">OptimizationType</span>
+<span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">detpy.models.fitness_function</span> <span class="kn">import</span> <span class="n">FitnessFunctionBase</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="k">class</span> <span class="nc">MyFitnessFunctionWrapper</span><span class="p">(</span><span class="n">FitnessFunctionBase</span><span class="p">):</span>
+<span class="linenos">11</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="linenos">12</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<span class="linenos">13</span>        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+<span class="linenos">14</span>        <span class="bp">self</span><span class="o">.</span><span class="n">function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped_fitness_func</span>
+<span class="linenos">15</span>
+<span class="linenos">16</span>    <span class="k">def</span> <span class="nf">_wrapped_fitness_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">):</span>
+<span class="linenos">17</span>        <span class="k">return</span> <span class="n">MyFitnessFunc</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+<span class="linenos">20</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+<span class="linenos">21</span>
+<span class="linenos">22</span>
+<span class="linenos">23</span><span class="k">def</span> <span class="nf">MyFitnessFunc</span><span class="p">(</span><span class="n">solution</span><span class="p">):</span>
+<span class="linenos">24</span>    <span class="k">return</span> <span class="n">solution</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">solution</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="linenos">25</span>
+<span class="linenos">26</span>
+<span class="linenos">27</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">28</span>    <span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="linenos">29</span>    <span class="n">b</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
+<span class="linenos">30</span>    <span class="n">fitness_function</span> <span class="o">=</span> <span class="n">MyFitnessFunctionWrapper</span><span class="p">(</span><span class="s2">&quot;Function name&quot;</span><span class="p">)</span>
+<span class="linenos">31</span>
+<span class="linenos">32</span>    <span class="n">params</span> <span class="o">=</span> <span class="n">EIDEData</span><span class="p">(</span>
+<span class="linenos">33</span>        <span class="n">max_nfe</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+<span class="linenos">34</span>        <span class="n">population_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<span class="linenos">35</span>        <span class="n">dimension</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">),</span>
+<span class="linenos">36</span>        <span class="n">lb</span><span class="o">=</span><span class="n">a</span><span class="p">,</span>
+<span class="linenos">37</span>        <span class="n">ub</span><span class="o">=</span><span class="n">b</span><span class="p">,</span>
+<span class="linenos">38</span>        <span class="n">optimization_type</span><span class="o">=</span><span class="n">OptimizationType</span><span class="o">.</span><span class="n">MINIMIZATION</span><span class="p">,</span>
+<span class="linenos">39</span>        <span class="n">base_vector_schema</span><span class="o">=</span><span class="n">BaseVectorSchema</span><span class="o">.</span><span class="n">CURRENT</span><span class="p">,</span>
+<span class="linenos">40</span>        <span class="n">boundary_constraints_fun</span><span class="o">=</span><span class="n">BoundaryFixing</span><span class="o">.</span><span class="n">RANDOM</span><span class="p">,</span>
+<span class="linenos">41</span>        <span class="n">function</span><span class="o">=</span><span class="n">fitness_function</span><span class="p">,</span>
+<span class="linenos">42</span>        <span class="n">log_population</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="linenos">43</span>        <span class="n">y</span><span class="o">=</span><span class="mi">3</span>
+<span class="linenos">44</span>    <span class="p">)</span>
+<span class="linenos">45</span>    <span class="n">params</span><span class="o">.</span><span class="n">parallel_processing</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;thread&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="linenos">46</span>
+<span class="linenos">47</span>    <span class="n">default2</span> <span class="o">=</span> <span class="n">EIDE</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">db_conn</span><span class="o">=</span><span class="s2">&quot;Differential_evolution.db&quot;</span><span class="p">,</span> <span class="n">db_auto_write</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos">48</span>    <span class="n">results</span> <span class="o">=</span> <span class="n">default2</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="linenos">49</span>    <span class="n">default2</span><span class="o">.</span><span class="n">write_results_to_database</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">epoch_metrics</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="optimization_opfunu.html" class="btn btn-neutral float-left" title="Optimization of functions from Opfunu" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="optimization_detpy_2_0.html" class="btn btn-neutral float-right" title="Optimization of CEC function with Detpy 2.0" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright workshop participant.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

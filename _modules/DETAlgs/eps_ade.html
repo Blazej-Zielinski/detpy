@@ -1,0 +1,313 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DETAlgs.eps_ade &mdash; DetPy 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            DetPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">General</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html#introduction">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html#user-guide">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html#examples">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../de.html">DE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../comde.html">COMDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../derl.html">DERL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../nmde.html">NMDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../emde.html">EMDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ide.html">IDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sade.html">SADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../jade.html">JADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../degl.html">DEGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../aade.html">AADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../delb.html">DELB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../eide.html">EIDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mgde.html">MGDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../improvedde.html">ImprovedDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fiade.html">FIADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../oppbasedde.html">OppBasedDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../shade.html">SHADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../lshade_rsp.html">LSHADE_RSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../lshade.html">LSHADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sps_lshade_eig.html">SPS_LSHADE_EIG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../al_shade.html">AL-SHADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../detcr.html">DETCR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../eps_de.html">EPSDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../eps_deag.html">EPSDEAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../lshade_epsin.html">LSHADE_EPSIN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../eps_deg.html">EPSDEG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../eps_ade.html">EPSADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../eps_rde.html">EPSRDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../shade_1_1.html">SHADE 1.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../eps_de_w_dc.html">EPSDEwDC</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">DetPy</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../ackley.html">Optimization of the Ackley function based SADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ackleyall.html">Optimization of the Ackley function with all DE variants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmark_functions.html">Optimization of common benchmark functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../optimization_opfunu.html">Optimization of functions from Opfunu</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../custom_fitness_function.html">Optimization of custom fitness function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../optimization_detpy_2_0.html">Optimization of CEC function with Detpy 2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../lshade_example.html">LShade example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../extra_stopping_criterion.html">Using an extra stopping criterion</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DetPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">DETAlgs.eps_ade</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for DETAlgs.eps_ade</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">detpy.DETAlgs.base</span> <span class="kn">import</span> <span class="n">BaseAlg</span>
+<span class="kn">from</span> <span class="nn">detpy.DETAlgs.data.alg_data</span> <span class="kn">import</span> <span class="n">EPSADEData</span>
+<span class="kn">from</span> <span class="nn">detpy.DETAlgs.methods.methods_de</span> <span class="kn">import</span> <span class="n">mutation</span><span class="p">,</span> <span class="n">crossing</span>
+<span class="kn">from</span> <span class="nn">detpy.DETAlgs.methods.methods_eps_ade</span> <span class="kn">import</span> <span class="n">control_epsilon_level</span><span class="p">,</span> <span class="n">adaptive_de_operation</span>
+<span class="kn">from</span> <span class="nn">detpy.DETAlgs.methods.methods_eps_de</span> <span class="kn">import</span> <span class="n">calculate_epsilon_constrained</span><span class="p">,</span> <span class="n">epsilon_level_comparisons</span><span class="p">,</span> \
+    <span class="n">epsilon_constrained_method</span>
+<span class="kn">from</span> <span class="nn">detpy.DETAlgs.methods.methods_eps_deag</span> <span class="kn">import</span> <span class="n">calculate_epsilon_level</span>
+<span class="kn">from</span> <span class="nn">detpy.DETAlgs.methods.methods_eps_deg</span> <span class="kn">import</span> <span class="n">calculate_init_epsilon_level</span>
+<span class="kn">from</span> <span class="nn">detpy.models.enums.basevectorschema</span> <span class="kn">import</span> <span class="n">BaseVectorSchema</span>
+<span class="kn">from</span> <span class="nn">detpy.models.enums.boundary_constrain</span> <span class="kn">import</span> <span class="n">fix_boundary_constraints</span>
+<span class="kn">from</span> <span class="nn">detpy.models.enums.crossingtype</span> <span class="kn">import</span> <span class="n">CrossingType</span>
+<span class="kn">from</span> <span class="nn">detpy.models.population</span> <span class="kn">import</span> <span class="n">Population</span>
+
+
+<div class="viewcode-block" id="EPSADE">
+<a class="viewcode-back" href="../../eps_ade.html#DETAlgs.eps_ade.EPSADE">[docs]</a>
+<span class="k">class</span> <span class="nc">EPSADE</span><span class="p">(</span><span class="n">BaseAlg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">          EPSADE - Constrained Adaptive Differential Evolution</span>
+
+<span class="sd">          Links:</span>
+<span class="sd">          https://ieeexplore.ieee.org/abstract/document/5586545</span>
+
+<span class="sd">          References:</span>
+<span class="sd">          Tetsuyuki Takahama; Setsuko Sakai;</span>
+<span class="sd">          &quot;Efficient constrained optimization by the ε constrained adaptive differential evolution&quot;,</span>
+<span class="sd">          2010 IEEE Congress on Evolutionary Computation,</span>
+<span class="sd">          18-23 July 2010, Barcelona, Spain doi: 10.1109/CEC.2010.5586545.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">EPSADEData</span><span class="p">,</span> <span class="n">db_conn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">db_auto_write</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">EPSADE</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">db_conn</span><span class="p">,</span> <span class="n">db_auto_write</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_mutation_factor</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">init_mutation_factor</span>  <span class="c1"># F</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_crossover_rate</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">init_crossover_rate</span>  <span class="c1"># Cr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mu_mutation_factory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_mutation_factor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mu_crossover_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_crossover_rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_successful_operation</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mutation_factor_sum</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crossover_rate_sum</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mutation_factor_perturbation_width</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">mutation_factor_perturbation_width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crossover_rate_perturbation_width</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">crossover_rate_perturbation_width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight_of_update</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">weight_of_update</span><span class="p">,</span> <span class="mf">1e-12</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">truncation_mechanism_factory</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">truncation_mechanism_factory</span>  <span class="c1"># ap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g_funcs</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">g_funcs</span>  <span class="c1"># Inequality constraints functions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h_funcs</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">h_funcs</span>  <span class="c1"># Equality constraints functions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tolerance_h</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">tolerance_h</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">control_generations</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">control_generations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_scaling_factor</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">epsilon_scaling_factor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">penalty_power</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">penalty_power</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">theta</span> <span class="k">if</span> <span class="n">params</span><span class="o">.</span><span class="n">theta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">population_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_constrained</span> <span class="o">=</span> <span class="n">calculate_epsilon_constrained</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">g_funcs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">h_funcs</span><span class="p">,</span>
+                                                                 <span class="bp">self</span><span class="o">.</span><span class="n">penalty_power</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolerance_h</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_epsilon_level</span> <span class="o">=</span> <span class="n">calculate_init_epsilon_level</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsilon_constrained</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_epsilon_level</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">penalty_power</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">penalty_power</span>
+
+<div class="viewcode-block" id="EPSADE.selection">
+<a class="viewcode-back" href="../../eps_ade.html#DETAlgs.eps_ade.EPSADE.selection">[docs]</a>
+    <span class="k">def</span> <span class="nf">selection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modified_population</span><span class="p">:</span> <span class="n">Population</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Population</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">modified_population</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Selection: populations have different sizes&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop</span><span class="o">.</span><span class="n">optimization</span> <span class="o">!=</span> <span class="n">modified_population</span><span class="o">.</span><span class="n">optimization</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Selection: populations have different optimization types&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">optimization</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop</span><span class="o">.</span><span class="n">optimization</span>
+        <span class="n">modified_epsilon_constrained</span> <span class="o">=</span> <span class="n">calculate_epsilon_constrained</span><span class="p">(</span><span class="n">modified_population</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">g_funcs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">h_funcs</span><span class="p">,</span>
+                                                                     <span class="bp">self</span><span class="o">.</span><span class="n">penalty_power</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolerance_h</span><span class="p">)</span>
+        <span class="n">new_members</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pop</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">epsilon_level_comparisons</span><span class="p">(</span><span class="n">modified_population</span><span class="o">.</span><span class="n">members</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop</span><span class="o">.</span><span class="n">members</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                         <span class="n">modified_epsilon_constrained</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_constrained</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_level</span><span class="p">,</span>
+                                         <span class="n">optimization</span><span class="p">):</span>
+                <span class="n">new_members</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">modified_population</span><span class="o">.</span><span class="n">members</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mutation_factor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">mu_mutation_factory</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation_factor_perturbation_width</span> <span class="o">*</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+                    <span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)</span>
+                <span class="n">crossover_rate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">mu_crossover_rate</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">crossover_rate_perturbation_width</span> <span class="o">*</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+                    <span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">new_member</span> <span class="o">=</span> <span class="n">adaptive_de_operation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop</span><span class="o">.</span><span class="n">members</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">mutation_factor</span><span class="p">,</span> <span class="n">crossover_rate</span><span class="p">,</span>
+                                                   <span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="p">)</span>
+                <span class="n">new_member_epsilon_constrained</span> <span class="o">=</span> <span class="n">epsilon_constrained_method</span><span class="p">(</span><span class="n">new_member</span><span class="o">.</span><span class="n">get_chromosomes</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">g_funcs</span><span class="p">,</span>
+                                                                            <span class="bp">self</span><span class="o">.</span><span class="n">h_funcs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">penalty_power</span><span class="p">,</span>
+                                                                            <span class="bp">self</span><span class="o">.</span><span class="n">tolerance_h</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">epsilon_level_comparisons</span><span class="p">(</span><span class="n">new_member</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop</span><span class="o">.</span><span class="n">members</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                             <span class="n">new_member_epsilon_constrained</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_constrained</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_level</span><span class="p">,</span>
+                                             <span class="n">optimization</span><span class="p">):</span>
+                    <span class="n">new_members</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_member</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">number_of_successful_operation</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">mutation_factor_sum</span> <span class="o">+=</span> <span class="n">mutation_factor</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">crossover_rate_sum</span> <span class="o">+=</span> <span class="n">crossover_rate</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">new_members</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pop</span><span class="o">.</span><span class="n">members</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+        <span class="n">new_population</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span>
+            <span class="n">lb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pop</span><span class="o">.</span><span class="n">lb</span><span class="p">,</span>
+            <span class="n">ub</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pop</span><span class="o">.</span><span class="n">ub</span><span class="p">,</span>
+            <span class="n">arg_num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pop</span><span class="o">.</span><span class="n">arg_num</span><span class="p">,</span>
+            <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pop</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+            <span class="n">optimization</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pop</span><span class="o">.</span><span class="n">optimization</span>
+        <span class="p">)</span>
+        <span class="n">new_population</span><span class="o">.</span><span class="n">members</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">new_members</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_population</span></div>
+
+
+<div class="viewcode-block" id="EPSADE.update_adaptive_parameters">
+<a class="viewcode-back" href="../../eps_ade.html#DETAlgs.eps_ade.EPSADE.update_adaptive_parameters">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_adaptive_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_successful_operation</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mu_mutation_factory</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_of_update</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu_mutation_factory</span> <span class="o">+</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">weight_of_update</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation_factor_sum</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_successful_operation</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mu_crossover_rate</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_of_update</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu_crossover_rate</span> <span class="o">+</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">weight_of_update</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">crossover_rate_sum</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_successful_operation</span></div>
+
+
+<div class="viewcode-block" id="EPSADE.next_epoch">
+<a class="viewcode-back" href="../../eps_ade.html#DETAlgs.eps_ade.EPSADE.next_epoch">[docs]</a>
+    <span class="k">def</span> <span class="nf">next_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_successful_operation</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mutation_factor_sum</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crossover_rate_sum</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># New population after mutation</span>
+        <span class="n">v_pop</span> <span class="o">=</span> <span class="n">mutation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pop</span><span class="p">,</span> <span class="n">base_vector_schema</span><span class="o">=</span><span class="n">BaseVectorSchema</span><span class="o">.</span><span class="n">RAND</span><span class="p">,</span>
+                         <span class="n">optimization_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">optimization_type</span><span class="p">,</span>
+                         <span class="n">y</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                         <span class="n">f</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">init_mutation_factor</span><span class="p">)</span>
+
+        <span class="c1"># Apply boundary constrains on population in place</span>
+        <span class="n">fix_boundary_constraints</span><span class="p">(</span><span class="n">v_pop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_constraints_fun</span><span class="p">)</span>
+
+        <span class="c1"># New population after crossing</span>
+        <span class="n">u_pop</span> <span class="o">=</span> <span class="n">crossing</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pop</span><span class="p">,</span> <span class="n">v_pop</span><span class="p">,</span> <span class="n">cr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">init_crossover_rate</span><span class="p">,</span> <span class="n">crossing_type</span><span class="o">=</span><span class="n">CrossingType</span><span class="o">.</span><span class="n">EXPOTENTIAL</span><span class="p">)</span>
+
+        <span class="c1"># Update values before selection</span>
+        <span class="n">u_pop</span><span class="o">.</span><span class="n">update_fitness_values</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="o">.</span><span class="n">eval</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parallel_processing</span><span class="p">)</span>
+
+        <span class="c1"># Select new population</span>
+        <span class="n">new_pop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selection</span><span class="p">(</span><span class="n">u_pop</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_adaptive_parameters</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_level</span> <span class="o">=</span> <span class="n">calculate_epsilon_level</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">init_epsilon_level</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_epoch_number</span><span class="p">,</span>
+                                                     <span class="bp">self</span><span class="o">.</span><span class="n">control_generations</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_scaling_factor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_constrained</span> <span class="o">=</span> <span class="n">calculate_epsilon_constrained</span><span class="p">(</span><span class="n">new_pop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">g_funcs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">h_funcs</span><span class="p">,</span>
+                                                                 <span class="bp">self</span><span class="o">.</span><span class="n">penalty_power</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolerance_h</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_level</span> <span class="o">=</span> <span class="n">control_epsilon_level</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsilon_level</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_constrained</span><span class="p">,</span>
+                                                   <span class="bp">self</span><span class="o">.</span><span class="n">truncation_mechanism_factory</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">population_size</span><span class="p">)</span>
+
+        <span class="c1"># Override data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pop</span> <span class="o">=</span> <span class="n">new_pop</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright workshop participant.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,301 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ImprovedDE &mdash; DetPy 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2709fde1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="FIADE" href="fiade.html" />
+    <link rel="prev" title="MGDE" href="mgde.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DetPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">General</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#introduction">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#user-guide">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#examples">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="de.html">DE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="comde.html">COMDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="derl.html">DERL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nmde.html">NMDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="emde.html">EMDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ide.html">IDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sade.html">SADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jade.html">JADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="degl.html">DEGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aade.html">AADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="delb.html">DELB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eide.html">EIDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mgde.html">MGDE</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ImprovedDE</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#DETAlgs.improved_de.ImprovedDE"><code class="docutils literal notranslate"><span class="pre">ImprovedDE</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#DETAlgs.improved_de.ImprovedDE.dynamic_mutation_factor"><code class="docutils literal notranslate"><span class="pre">ImprovedDE.dynamic_mutation_factor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#DETAlgs.improved_de.ImprovedDE.next_epoch"><code class="docutils literal notranslate"><span class="pre">ImprovedDE.next_epoch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#DETAlgs.improved_de.ImprovedDE.nfe"><code class="docutils literal notranslate"><span class="pre">ImprovedDE.nfe</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#DETAlgs.improved_de.ImprovedDE.run"><code class="docutils literal notranslate"><span class="pre">ImprovedDE.run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#DETAlgs.improved_de.ImprovedDE.write_results_to_database"><code class="docutils literal notranslate"><span class="pre">ImprovedDE.write_results_to_database()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData"><code class="docutils literal notranslate"><span class="pre">ImprovedDEData</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.additional_stop_criteria"><code class="docutils literal notranslate"><span class="pre">ImprovedDEData.additional_stop_criteria</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.boundary_constraints_fun"><code class="docutils literal notranslate"><span class="pre">ImprovedDEData.boundary_constraints_fun</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.crossover_rate"><code class="docutils literal notranslate"><span class="pre">ImprovedDEData.crossover_rate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.dimension"><code class="docutils literal notranslate"><span class="pre">ImprovedDEData.dimension</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.function"><code class="docutils literal notranslate"><span class="pre">ImprovedDEData.function</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.lb"><code class="docutils literal notranslate"><span class="pre">ImprovedDEData.lb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.log_population"><code class="docutils literal notranslate"><span class="pre">ImprovedDEData.log_population</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.max_nfe"><code class="docutils literal notranslate"><span class="pre">ImprovedDEData.max_nfe</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.mutation_factor"><code class="docutils literal notranslate"><span class="pre">ImprovedDEData.mutation_factor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.optimization_type"><code class="docutils literal notranslate"><span class="pre">ImprovedDEData.optimization_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.parallel_processing"><code class="docutils literal notranslate"><span class="pre">ImprovedDEData.parallel_processing</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.population_size"><code class="docutils literal notranslate"><span class="pre">ImprovedDEData.population_size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.show_plots"><code class="docutils literal notranslate"><span class="pre">ImprovedDEData.show_plots</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.ub"><code class="docutils literal notranslate"><span class="pre">ImprovedDEData.ub</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="fiade.html">FIADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oppbasedde.html">OppBasedDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="shade.html">SHADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lshade_rsp.html">LSHADE_RSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lshade.html">LSHADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sps_lshade_eig.html">SPS_LSHADE_EIG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="al_shade.html">AL-SHADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="detcr.html">DETCR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eps_de.html">EPSDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eps_deag.html">EPSDEAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lshade_epsin.html">LSHADE_EPSIN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eps_deg.html">EPSDEG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eps_ade.html">EPSADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eps_rde.html">EPSRDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="shade_1_1.html">SHADE 1.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eps_de_w_dc.html">EPSDEwDC</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">DetPy</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ackley.html">Optimization of the Ackley function based SADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ackleyall.html">Optimization of the Ackley function with all DE variants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmark_functions.html">Optimization of common benchmark functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimization_opfunu.html">Optimization of functions from Opfunu</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_fitness_function.html">Optimization of custom fitness function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimization_detpy_2_0.html">Optimization of CEC function with Detpy 2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lshade_example.html">LShade example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extra_stopping_criterion.html">Using an extra stopping criterion</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DetPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ImprovedDE</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/improvedde.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="improvedde">
+<h1>ImprovedDE<a class="headerlink" href="#improvedde" title="Link to this heading"></a></h1>
+<p>ImprovedDE (DE with dynamic mutation parameters)</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="DETAlgs.improved_de.ImprovedDE">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">DETAlgs.improved_de.</span></span><span class="sig-name descname"><span class="pre">ImprovedDE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData" title="detpy.DETAlgs.data.alg_data.ImprovedDEData"><span class="pre">ImprovedDEData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_conn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_auto_write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DETAlgs/improved_de.html#ImprovedDE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DETAlgs.improved_de.ImprovedDE" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseAlg</span></code></p>
+<p>Links:
+<a class="reference external" href="https://link.springer.com/article/10.1007/s00500-023-09080-1">https://link.springer.com/article/10.1007/s00500-023-09080-1</a></p>
+<p>References:
+Yifeng Lin · Yuer Yang · Yinyan Zhang
+Improved differential evolution with dynamic mutation parameters
+Soft Computing Optimization Published: 17 August 2023 Volume 27, pages 17923–17941, (2023)
+<a class="reference external" href="https://doi.org/10.1007/s00500-023-09080-1">https://doi.org/10.1007/s00500-023-09080-1</a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="DETAlgs.improved_de.ImprovedDE.dynamic_mutation_factor">
+<span class="sig-name descname"><span class="pre">dynamic_mutation_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DETAlgs/improved_de.html#ImprovedDE.dynamic_mutation_factor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DETAlgs.improved_de.ImprovedDE.dynamic_mutation_factor" title="Link to this definition"></a></dt>
+<dd><p>Implements dynamic mutation factor based on Scheme 6:
+FS(k) = 1 - 1 / (1 + exp(-iteration))</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="DETAlgs.improved_de.ImprovedDE.next_epoch">
+<span class="sig-name descname"><span class="pre">next_epoch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DETAlgs/improved_de.html#ImprovedDE.next_epoch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DETAlgs.improved_de.ImprovedDE.next_epoch" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="DETAlgs.improved_de.ImprovedDE.nfe">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nfe</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#DETAlgs.improved_de.ImprovedDE.nfe" title="Link to this definition"></a></dt>
+<dd><p>Number of function evaluations performed so far.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="DETAlgs.improved_de.ImprovedDE.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#DETAlgs.improved_de.ImprovedDE.run" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="DETAlgs.improved_de.ImprovedDE.write_results_to_database">
+<span class="sig-name descname"><span class="pre">write_results_to_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#DETAlgs.improved_de.ImprovedDE.write_results_to_database" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.ImprovedDEData">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detpy.DETAlgs.data.alg_data.</span></span><span class="sig-name descname"><span class="pre">ImprovedDEData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_nfe:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">100000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimension:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_stop_criteria:</span> <span class="pre">detpy.models.stop_condition.stop_condition.StopCondition</span> <span class="pre">=</span> <span class="pre">&lt;detpy.models.stop_condition.never_stop_condition.NeverStopCondition</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7f136577ee40&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lb:</span> <span class="pre">list</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub:</span> <span class="pre">list</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimization_type:</span> <span class="pre">detpy.models.enums.optimization.OptimizationType</span> <span class="pre">=</span> <span class="pre">&lt;OptimizationType.MINIMIZATION:</span> <span class="pre">'minimization'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_constraints_fun:</span> <span class="pre">detpy.models.enums.boundary_constrain.BoundaryFixing</span> <span class="pre">=</span> <span class="pre">&lt;BoundaryFixing.RANDOM:</span> <span class="pre">'random'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function:</span> <span class="pre">detpy.models.fitness_function.FitnessFunctionBase</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_population:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallel_processing:</span> <span class="pre">Optional[list]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_plots:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_factor:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crossover_rate:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/detpy/DETAlgs/data/alg_data.html#ImprovedDEData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseData</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.ImprovedDEData.additional_stop_criteria">
+<span class="sig-name descname"><span class="pre">additional_stop_criteria</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">StopCondition</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;detpy.models.stop_condition.never_stop_condition.NeverStopCondition</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.additional_stop_criteria" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.ImprovedDEData.boundary_constraints_fun">
+<span class="sig-name descname"><span class="pre">boundary_constraints_fun</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BoundaryFixing</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'random'</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.boundary_constraints_fun" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.ImprovedDEData.crossover_rate">
+<span class="sig-name descname"><span class="pre">crossover_rate</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.crossover_rate" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.ImprovedDEData.dimension">
+<span class="sig-name descname"><span class="pre">dimension</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.dimension" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.ImprovedDEData.function">
+<span class="sig-name descname"><span class="pre">function</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">FitnessFunctionBase</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.function" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.ImprovedDEData.lb">
+<span class="sig-name descname"><span class="pre">lb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.lb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.ImprovedDEData.log_population">
+<span class="sig-name descname"><span class="pre">log_population</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.log_population" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.ImprovedDEData.max_nfe">
+<span class="sig-name descname"><span class="pre">max_nfe</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100000</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.max_nfe" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.ImprovedDEData.mutation_factor">
+<span class="sig-name descname"><span class="pre">mutation_factor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.1</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.mutation_factor" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.ImprovedDEData.optimization_type">
+<span class="sig-name descname"><span class="pre">optimization_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">OptimizationType</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'minimization'</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.optimization_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.ImprovedDEData.parallel_processing">
+<span class="sig-name descname"><span class="pre">parallel_processing</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.parallel_processing" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.ImprovedDEData.population_size">
+<span class="sig-name descname"><span class="pre">population_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.population_size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.ImprovedDEData.show_plots">
+<span class="sig-name descname"><span class="pre">show_plots</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.show_plots" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.ImprovedDEData.ub">
+<span class="sig-name descname"><span class="pre">ub</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.ImprovedDEData.ub" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mgde.html" class="btn btn-neutral float-left" title="MGDE" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="fiade.html" class="btn btn-neutral float-right" title="FIADE" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright workshop participant.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

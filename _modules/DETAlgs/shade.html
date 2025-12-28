@@ -1,0 +1,401 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DETAlgs.shade &mdash; DetPy 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            DetPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">General</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html#introduction">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html#user-guide">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html#examples">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../de.html">DE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../comde.html">COMDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../derl.html">DERL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../nmde.html">NMDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../emde.html">EMDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ide.html">IDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sade.html">SADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../jade.html">JADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../degl.html">DEGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../aade.html">AADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../delb.html">DELB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../eide.html">EIDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mgde.html">MGDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../improvedde.html">ImprovedDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fiade.html">FIADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../oppbasedde.html">OppBasedDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../shade.html">SHADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../lshade_rsp.html">LSHADE_RSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../lshade.html">LSHADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sps_lshade_eig.html">SPS_LSHADE_EIG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../al_shade.html">AL-SHADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../detcr.html">DETCR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../eps_de.html">EPSDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../eps_deag.html">EPSDEAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../lshade_epsin.html">LSHADE_EPSIN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../eps_deg.html">EPSDEG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../eps_ade.html">EPSADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../eps_rde.html">EPSRDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../shade_1_1.html">SHADE 1.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../eps_de_w_dc.html">EPSDEwDC</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">DetPy</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../ackley.html">Optimization of the Ackley function based SADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ackleyall.html">Optimization of the Ackley function with all DE variants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmark_functions.html">Optimization of common benchmark functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../optimization_opfunu.html">Optimization of functions from Opfunu</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../custom_fitness_function.html">Optimization of custom fitness function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../optimization_detpy_2_0.html">Optimization of CEC function with Detpy 2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../lshade_example.html">LShade example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../extra_stopping_criterion.html">Using an extra stopping criterion</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DetPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">DETAlgs.shade</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for DETAlgs.shade</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">detpy.DETAlgs.archive_reduction.archive_reduction</span> <span class="kn">import</span> <span class="n">ArchiveReduction</span>
+<span class="kn">from</span> <span class="nn">detpy.DETAlgs.base</span> <span class="kn">import</span> <span class="n">BaseAlg</span>
+<span class="kn">from</span> <span class="nn">detpy.DETAlgs.crossover_methods.binomial_crossover</span> <span class="kn">import</span> <span class="n">BinomialCrossover</span>
+<span class="kn">from</span> <span class="nn">detpy.DETAlgs.data.alg_data</span> <span class="kn">import</span> <span class="n">ShadeData</span>
+<span class="kn">from</span> <span class="nn">detpy.DETAlgs.math.math_functions</span> <span class="kn">import</span> <span class="n">MathFunctions</span>
+<span class="kn">from</span> <span class="nn">detpy.DETAlgs.mutation_methods.current_to_pbest_1</span> <span class="kn">import</span> <span class="n">MutationCurrentToPBest1</span>
+<span class="kn">from</span> <span class="nn">detpy.DETAlgs.random.index_generator</span> <span class="kn">import</span> <span class="n">IndexGenerator</span>
+<span class="kn">from</span> <span class="nn">detpy.DETAlgs.random.random_value_generator</span> <span class="kn">import</span> <span class="n">RandomValueGenerator</span>
+
+<span class="kn">from</span> <span class="nn">detpy.models.enums.boundary_constrain</span> <span class="kn">import</span> <span class="n">fix_boundary_constraints</span>
+<span class="kn">from</span> <span class="nn">detpy.models.enums.optimization</span> <span class="kn">import</span> <span class="n">OptimizationType</span>
+
+<span class="kn">from</span> <span class="nn">detpy.models.population</span> <span class="kn">import</span> <span class="n">Population</span>
+
+
+<div class="viewcode-block" id="SHADE">
+<a class="viewcode-back" href="../../shade.html#DETAlgs.shade.SHADE">[docs]</a>
+<span class="k">class</span> <span class="nc">SHADE</span><span class="p">(</span><span class="n">BaseAlg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        SHADE: Success-History based Adaptive Differential Evolution</span>
+
+<span class="sd">        Links:</span>
+<span class="sd">        https://ieeexplore.ieee.org/document/6557555</span>
+
+<span class="sd">        References:</span>
+<span class="sd">        Tanabe, R., &amp; Fukunaga, A. (2013). Success-history based parameter adaptation for Differential Evolution.</span>
+<span class="sd">        In 2013 IEEE Congress on Evolutionary Computation (pp. 71–78). 2013 IEEE Congress on Evolutionary Computation</span>
+<span class="sd">        (CEC). IEEE. https://doi.org/10.1109/cec.2013.6557555</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">ShadeData</span><span class="p">,</span> <span class="n">db_conn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">db_auto_write</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">SHADE</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">db_conn</span><span class="p">,</span> <span class="n">db_auto_write</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_H</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">memory_size</span>  <span class="c1"># Memory size for f and cr adaptation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_memory_F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_H</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># Initial memory for F</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_memory_Cr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_H</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># Initial memory for Cr</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_successCr</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_successF</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_difference_fitness_success</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_min_the_best_percentage</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">population_size</span>  <span class="c1"># Minimal percentage of the best members to consider</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_archive_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">population_size</span>  <span class="c1"># Size of the archive is the same as population</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_archive</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Archive for storing the members from old populations</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_k_index</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index_gen</span> <span class="o">=</span> <span class="n">IndexGenerator</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_random_value_gen</span> <span class="o">=</span> <span class="n">RandomValueGenerator</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_binomial_crossing</span> <span class="o">=</span> <span class="n">BinomialCrossover</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_archive_reduction</span> <span class="o">=</span> <span class="n">ArchiveReduction</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">population</span><span class="p">:</span> <span class="n">Population</span><span class="p">,</span>
+                <span class="n">the_best_to_select_table</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+                <span class="n">f_table</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+                <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Population</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform mutation step for the population in SHADE.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        - population (Population): The population to mutate.</span>
+<span class="sd">        - the_best_to_select_table (List[int]): List of the number of the best members to select.</span>
+<span class="sd">        - f_table (List[float]): List of scaling factors for mutation.</span>
+
+<span class="sd">        Returns: A new Population with mutated members.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_members</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">sum_archive_and_population</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">population</span><span class="o">.</span><span class="n">members</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_archive</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+            <span class="n">r1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_gen</span><span class="o">.</span><span class="n">generate_unique</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">members</span><span class="p">),</span> <span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+            <span class="c1"># Archive is included population and archive members</span>
+            <span class="n">r2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_gen</span><span class="o">.</span><span class="n">generate_unique</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sum_archive_and_population</span><span class="p">),</span> <span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">r1</span><span class="p">])</span>
+
+            <span class="c1"># Select top p-best members from the population</span>
+            <span class="n">best_members</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">get_best_members</span><span class="p">(</span><span class="n">the_best_to_select_table</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+            <span class="c1"># Randomly select one of the p-best members</span>
+            <span class="n">random_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_gen</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">best_members</span><span class="p">))</span>
+            <span class="n">selected_best_member</span> <span class="o">=</span> <span class="n">best_members</span><span class="p">[</span><span class="n">random_index</span><span class="p">]</span>
+
+            <span class="c1"># Apply the mutation formula (current-to-pbest strategy)</span>
+            <span class="n">mutated_member</span> <span class="o">=</span> <span class="n">MutationCurrentToPBest1</span><span class="o">.</span><span class="n">mutate</span><span class="p">(</span>
+                <span class="n">base_member</span><span class="o">=</span><span class="n">population</span><span class="o">.</span><span class="n">members</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                <span class="n">best_member</span><span class="o">=</span><span class="n">selected_best_member</span><span class="p">,</span>
+                <span class="n">r1</span><span class="o">=</span><span class="n">population</span><span class="o">.</span><span class="n">members</span><span class="p">[</span><span class="n">r1</span><span class="p">],</span>
+                <span class="n">r2</span><span class="o">=</span><span class="n">sum_archive_and_population</span><span class="p">[</span><span class="n">r2</span><span class="p">],</span>
+                <span class="n">f</span><span class="o">=</span><span class="n">f_table</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="p">)</span>
+
+            <span class="n">new_members</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mutated_member</span><span class="p">)</span>
+
+        <span class="c1"># Create a new population with the mutated members</span>
+        <span class="n">new_population</span> <span class="o">=</span> <span class="n">Population</span><span class="o">.</span><span class="n">with_new_members</span><span class="p">(</span><span class="n">population</span><span class="p">,</span> <span class="n">new_members</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_population</span>
+
+    <span class="k">def</span> <span class="nf">_selection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">origin_population</span><span class="p">,</span> <span class="n">modified_population</span><span class="p">,</span> <span class="n">ftable</span><span class="p">,</span> <span class="n">cr_table</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform the selection step for the SHADE algorithm.</span>
+
+<span class="sd">        This method selects the members for the next generation based on their fitness values.</span>
+<span class="sd">        If the modified member is better than the original member, it is selected; otherwise, the original member is retained.</span>
+<span class="sd">        Additionally, information about successful trials is stored for updating memory parameters.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        - origin_population (Population): The original population before the selection step.</span>
+<span class="sd">        - modified_population (Population): The modified population after mutation and crossover.</span>
+<span class="sd">        - ftable (List[float]): List of scaling factors used during mutation.</span>
+<span class="sd">        - cr_table (List[float]): List of crossover rates used during crossover.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        - Population: A new population containing the selected members for the next generation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">optimization</span> <span class="o">=</span> <span class="n">origin_population</span><span class="o">.</span><span class="n">optimization</span>
+        <span class="n">new_members</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Define comparison and difference functions based on optimization type</span>
+        <span class="k">if</span> <span class="n">optimization</span> <span class="o">==</span> <span class="n">OptimizationType</span><span class="o">.</span><span class="n">MINIMIZATION</span><span class="p">:</span>
+            <span class="n">is_better</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">orig</span><span class="p">,</span> <span class="n">mod</span><span class="p">:</span> <span class="n">mod</span><span class="o">.</span><span class="n">fitness_value</span> <span class="o">&lt;</span> <span class="n">orig</span><span class="o">.</span><span class="n">fitness_value</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">orig</span><span class="p">,</span> <span class="n">mod</span><span class="p">:</span> <span class="n">orig</span><span class="o">.</span><span class="n">fitness_value</span> <span class="o">-</span> <span class="n">mod</span><span class="o">.</span><span class="n">fitness_value</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># MAXIMIZATION</span>
+            <span class="n">is_better</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">orig</span><span class="p">,</span> <span class="n">mod</span><span class="p">:</span> <span class="n">mod</span><span class="o">.</span><span class="n">fitness_value</span> <span class="o">&gt;</span> <span class="n">orig</span><span class="o">.</span><span class="n">fitness_value</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">orig</span><span class="p">,</span> <span class="n">mod</span><span class="p">:</span> <span class="n">mod</span><span class="o">.</span><span class="n">fitness_value</span> <span class="o">-</span> <span class="n">orig</span><span class="o">.</span><span class="n">fitness_value</span>
+
+        <span class="c1"># Iterate through the population and perform selection</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">origin_population</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+            <span class="n">orig</span> <span class="o">=</span> <span class="n">origin_population</span><span class="o">.</span><span class="n">members</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">mod</span> <span class="o">=</span> <span class="n">modified_population</span><span class="o">.</span><span class="n">members</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_better</span><span class="p">(</span><span class="n">orig</span><span class="p">,</span> <span class="n">mod</span><span class="p">):</span>
+                <span class="c1"># Retain the original member if it is better or equal</span>
+                <span class="n">new_members</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">orig</span><span class="p">))</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># If the modified member is better, update the archive and success metrics</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_archive</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">orig</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_successF</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ftable</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_successCr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cr_table</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_difference_fitness_success</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">diff</span><span class="p">(</span><span class="n">orig</span><span class="p">,</span> <span class="n">mod</span><span class="p">))</span>
+            <span class="n">new_members</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">mod</span><span class="p">))</span>
+
+        <span class="c1"># Return a new population with the selected members</span>
+        <span class="k">return</span> <span class="n">Population</span><span class="o">.</span><span class="n">with_new_members</span><span class="p">(</span><span class="n">origin_population</span><span class="p">,</span> <span class="n">new_members</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_update_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">success_f</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">success_cr</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">difference_fitness_success</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the memory for the crossover rates and scaling factors based on the success of the trial vectors.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        - success_f (List[float]): List of scaling factors that led to better trial vectors.</span>
+<span class="sd">        - success_cr (List[float]): List of crossover rates that led to better trial vectors.</span>
+<span class="sd">        - difference_fitness_success (List[float]): List of differences in objective function values (|f(u_k, G) - f(x_k, G)|).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">success_f</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">success_cr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">total</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">difference_fitness_success</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">total</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span>
+
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">difference_fitness_success</span> <span class="o">/</span> <span class="n">total</span>
+            <span class="n">f_new</span> <span class="o">=</span> <span class="n">MathFunctions</span><span class="o">.</span><span class="n">calculate_lehmer_mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">success_f</span><span class="p">),</span> <span class="n">weights</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">f_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">f_new</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">cr_new</span> <span class="o">=</span> <span class="n">MathFunctions</span><span class="o">.</span><span class="n">calculate_weighted_average</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">success_cr</span><span class="p">),</span> <span class="n">weights</span><span class="p">)</span>
+            <span class="n">cr_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">cr_new</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_memory_F</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_k_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_new</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_memory_Cr</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_k_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">cr_new</span>
+
+            <span class="c1"># Reset the lists for the next generation</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_successF</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_successCr</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_difference_fitness_success</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_k_index</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_k_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_H</span>
+
+    <span class="k">def</span> <span class="nf">_initialize_parameters_for_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the parameters for the next epoch of the SHADE algorithm.</span>
+<span class="sd">        f_table: List of scaling factors for mutation.</span>
+<span class="sd">        cr_table: List of crossover rates.</span>
+<span class="sd">        the_bests_to_select: List of the number of the best members to select because in crossover we need to select</span>
+<span class="sd">        the best members from the population for one factor.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        - f_table (List[float]): List of scaling factors for mutation.</span>
+<span class="sd">        - cr_table (List[float]): List of crossover rates.</span>
+<span class="sd">        - the_bests_to_select (List[int]): List of the number of the best members to possibly select.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f_table</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">cr_table</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">the_bests_to_select</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pop</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+            <span class="n">ri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_gen</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_H</span><span class="p">)</span>
+            <span class="n">mean_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_memory_F</span><span class="p">[</span><span class="n">ri</span><span class="p">]</span>
+            <span class="n">mean_cr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_memory_Cr</span><span class="p">[</span><span class="n">ri</span><span class="p">]</span>
+            <span class="n">cr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_value_gen</span><span class="o">.</span><span class="n">generate_normal</span><span class="p">(</span><span class="n">mean_cr</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+            <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_value_gen</span><span class="o">.</span><span class="n">generate_cauchy_greater_than_zero</span><span class="p">(</span><span class="n">mean_f</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+            <span class="n">f_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">cr_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cr</span><span class="p">)</span>
+
+            <span class="n">min_percentage</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">population_size</span>
+            <span class="n">max_percentage</span> <span class="o">=</span> <span class="mf">0.2</span>
+
+            <span class="n">the_best_to_possible_select</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_value_gen</span><span class="o">.</span><span class="n">generate_count_from_percentage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population_size</span><span class="p">,</span>
+                                                                                                <span class="n">min_percentage</span><span class="p">,</span>
+                                                                                                <span class="n">max_percentage</span><span class="p">)</span>
+
+            <span class="n">the_bests_to_select</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">the_best_to_possible_select</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">f_table</span><span class="p">,</span> <span class="n">cr_table</span><span class="p">,</span> <span class="n">the_bests_to_select</span>
+
+<div class="viewcode-block" id="SHADE.next_epoch">
+<a class="viewcode-back" href="../../shade.html#DETAlgs.shade.SHADE.next_epoch">[docs]</a>
+    <span class="k">def</span> <span class="nf">next_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform the next epoch of the SHADE algorithm.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f_table</span><span class="p">,</span> <span class="n">cr_table</span><span class="p">,</span> <span class="n">the_bests_to_select</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_parameters_for_epoch</span><span class="p">()</span>
+
+        <span class="n">mutant</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mutate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pop</span><span class="p">,</span> <span class="n">the_bests_to_select</span><span class="p">,</span> <span class="n">f_table</span><span class="p">)</span>
+
+        <span class="n">fix_boundary_constraints</span><span class="p">(</span><span class="n">mutant</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_constraints_fun</span><span class="p">)</span>
+
+        <span class="c1"># Crossover step</span>
+        <span class="n">trial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binomial_crossing</span><span class="o">.</span><span class="n">crossover_population</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pop</span><span class="p">,</span> <span class="n">mutant</span><span class="p">,</span> <span class="n">cr_table</span><span class="p">)</span>
+
+        <span class="c1"># Evaluate fitness values for the trial population</span>
+        <span class="n">trial</span><span class="o">.</span><span class="n">update_fitness_values</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="o">.</span><span class="n">eval</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parallel_processing</span><span class="p">)</span>
+
+        <span class="c1"># Selection step</span>
+        <span class="n">new_pop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_selection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pop</span><span class="p">,</span> <span class="n">trial</span><span class="p">,</span> <span class="n">f_table</span><span class="p">,</span> <span class="n">cr_table</span><span class="p">)</span>
+
+        <span class="c1"># Archive management</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_archive</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_archive_reduction</span><span class="o">.</span><span class="n">reduce_archive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_archive</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_archive_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">population_size</span><span class="p">)</span>
+
+        <span class="c1"># Update the population</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pop</span> <span class="o">=</span> <span class="n">new_pop</span>
+
+        <span class="c1"># Update the memory for CR and F</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_memory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_successF</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_successCr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_difference_fitness_success</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright workshop participant.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,334 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JADE &mdash; DetPy 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2709fde1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="DEGL" href="degl.html" />
+    <link rel="prev" title="SADE" href="sade.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DetPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">General</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#introduction">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#user-guide">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#examples">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="de.html">DE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="comde.html">COMDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="derl.html">DERL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nmde.html">NMDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="emde.html">EMDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ide.html">IDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sade.html">SADE</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">JADE</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#DETAlgs.jade.JADE"><code class="docutils literal notranslate"><span class="pre">JADE</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#DETAlgs.jade.JADE.next_epoch"><code class="docutils literal notranslate"><span class="pre">JADE.next_epoch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#DETAlgs.jade.JADE.nfe"><code class="docutils literal notranslate"><span class="pre">JADE.nfe</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#DETAlgs.jade.JADE.run"><code class="docutils literal notranslate"><span class="pre">JADE.run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#DETAlgs.jade.JADE.write_results_to_database"><code class="docutils literal notranslate"><span class="pre">JADE.write_results_to_database()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData"><code class="docutils literal notranslate"><span class="pre">JADEData</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData.additional_stop_criteria"><code class="docutils literal notranslate"><span class="pre">JADEData.additional_stop_criteria</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData.archive_size"><code class="docutils literal notranslate"><span class="pre">JADEData.archive_size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData.boundary_constraints_fun"><code class="docutils literal notranslate"><span class="pre">JADEData.boundary_constraints_fun</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData.c"><code class="docutils literal notranslate"><span class="pre">JADEData.c</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData.crossover_rate_high"><code class="docutils literal notranslate"><span class="pre">JADEData.crossover_rate_high</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData.crossover_rate_low"><code class="docutils literal notranslate"><span class="pre">JADEData.crossover_rate_low</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData.crossover_rate_mean"><code class="docutils literal notranslate"><span class="pre">JADEData.crossover_rate_mean</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData.crossover_rate_std"><code class="docutils literal notranslate"><span class="pre">JADEData.crossover_rate_std</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData.dimension"><code class="docutils literal notranslate"><span class="pre">JADEData.dimension</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData.function"><code class="docutils literal notranslate"><span class="pre">JADEData.function</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData.lb"><code class="docutils literal notranslate"><span class="pre">JADEData.lb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData.log_population"><code class="docutils literal notranslate"><span class="pre">JADEData.log_population</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData.max_nfe"><code class="docutils literal notranslate"><span class="pre">JADEData.max_nfe</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData.mutation_factor_mean"><code class="docutils literal notranslate"><span class="pre">JADEData.mutation_factor_mean</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData.mutation_factor_std"><code class="docutils literal notranslate"><span class="pre">JADEData.mutation_factor_std</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData.optimization_type"><code class="docutils literal notranslate"><span class="pre">JADEData.optimization_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData.p"><code class="docutils literal notranslate"><span class="pre">JADEData.p</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData.parallel_processing"><code class="docutils literal notranslate"><span class="pre">JADEData.parallel_processing</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData.population_size"><code class="docutils literal notranslate"><span class="pre">JADEData.population_size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData.show_plots"><code class="docutils literal notranslate"><span class="pre">JADEData.show_plots</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData.ub"><code class="docutils literal notranslate"><span class="pre">JADEData.ub</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="degl.html">DEGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aade.html">AADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="delb.html">DELB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eide.html">EIDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mgde.html">MGDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="improvedde.html">ImprovedDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fiade.html">FIADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oppbasedde.html">OppBasedDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="shade.html">SHADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lshade_rsp.html">LSHADE_RSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lshade.html">LSHADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sps_lshade_eig.html">SPS_LSHADE_EIG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="al_shade.html">AL-SHADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="detcr.html">DETCR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eps_de.html">EPSDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eps_deag.html">EPSDEAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lshade_epsin.html">LSHADE_EPSIN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eps_deg.html">EPSDEG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eps_ade.html">EPSADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eps_rde.html">EPSRDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="shade_1_1.html">SHADE 1.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eps_de_w_dc.html">EPSDEwDC</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">DetPy</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ackley.html">Optimization of the Ackley function based SADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ackleyall.html">Optimization of the Ackley function with all DE variants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmark_functions.html">Optimization of common benchmark functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimization_opfunu.html">Optimization of functions from Opfunu</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_fitness_function.html">Optimization of custom fitness function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimization_detpy_2_0.html">Optimization of CEC function with Detpy 2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lshade_example.html">LShade example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extra_stopping_criterion.html">Using an extra stopping criterion</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DetPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">JADE</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/jade.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="jade">
+<h1>JADE<a class="headerlink" href="#jade" title="Link to this heading"></a></h1>
+<p>JADE (Adaptive differential evolution with optional external archive)</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="DETAlgs.jade.JADE">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">DETAlgs.jade.</span></span><span class="sig-name descname"><span class="pre">JADE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#detpy.DETAlgs.data.alg_data.JADEData" title="detpy.DETAlgs.data.alg_data.JADEData"><span class="pre">JADEData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_conn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_auto_write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DETAlgs/jade.html#JADE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DETAlgs.jade.JADE" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseAlg</span></code></p>
+<p>Links:
+<a class="reference external" href="https://ieeexplore.ieee.org/document/5208221">https://ieeexplore.ieee.org/document/5208221</a></p>
+<p>References:
+J. Zhang and A. C. Sanderson, “JADE: Adaptive Differential Evolution With Optional External Archive,”
+in IEEE Transactions on Evolutionary Computation, vol. 13, no. 5, pp. 945-958, Oct. 2009,
+doi: 10.1109/TEVC.2009.2014613.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="DETAlgs.jade.JADE.next_epoch">
+<span class="sig-name descname"><span class="pre">next_epoch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DETAlgs/jade.html#JADE.next_epoch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DETAlgs.jade.JADE.next_epoch" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="DETAlgs.jade.JADE.nfe">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nfe</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#DETAlgs.jade.JADE.nfe" title="Link to this definition"></a></dt>
+<dd><p>Number of function evaluations performed so far.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="DETAlgs.jade.JADE.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#DETAlgs.jade.JADE.run" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="DETAlgs.jade.JADE.write_results_to_database">
+<span class="sig-name descname"><span class="pre">write_results_to_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#DETAlgs.jade.JADE.write_results_to_database" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.JADEData">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detpy.DETAlgs.data.alg_data.</span></span><span class="sig-name descname"><span class="pre">JADEData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_nfe:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">100000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimension:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_stop_criteria:</span> <span class="pre">detpy.models.stop_condition.stop_condition.StopCondition</span> <span class="pre">=</span> <span class="pre">&lt;detpy.models.stop_condition.never_stop_condition.NeverStopCondition</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7f136577ee40&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lb:</span> <span class="pre">list</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub:</span> <span class="pre">list</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimization_type:</span> <span class="pre">detpy.models.enums.optimization.OptimizationType</span> <span class="pre">=</span> <span class="pre">&lt;OptimizationType.MINIMIZATION:</span> <span class="pre">'minimization'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_constraints_fun:</span> <span class="pre">detpy.models.enums.boundary_constrain.BoundaryFixing</span> <span class="pre">=</span> <span class="pre">&lt;BoundaryFixing.RANDOM:</span> <span class="pre">'random'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function:</span> <span class="pre">detpy.models.fitness_function.FitnessFunctionBase</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_population:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallel_processing:</span> <span class="pre">Optional[list]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_plots:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">archive_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_factor_mean:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_factor_std:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crossover_rate_mean:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crossover_rate_std:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crossover_rate_low:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crossover_rate_high:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/detpy/DETAlgs/data/alg_data.html#JADEData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.JADEData" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseData</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.JADEData.additional_stop_criteria">
+<span class="sig-name descname"><span class="pre">additional_stop_criteria</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">StopCondition</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;detpy.models.stop_condition.never_stop_condition.NeverStopCondition</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.JADEData.additional_stop_criteria" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.JADEData.archive_size">
+<span class="sig-name descname"><span class="pre">archive_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.JADEData.archive_size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.JADEData.boundary_constraints_fun">
+<span class="sig-name descname"><span class="pre">boundary_constraints_fun</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BoundaryFixing</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'random'</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.JADEData.boundary_constraints_fun" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.JADEData.c">
+<span class="sig-name descname"><span class="pre">c</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.1</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.JADEData.c" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.JADEData.crossover_rate_high">
+<span class="sig-name descname"><span class="pre">crossover_rate_high</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.1</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.JADEData.crossover_rate_high" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.JADEData.crossover_rate_low">
+<span class="sig-name descname"><span class="pre">crossover_rate_low</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.1</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.JADEData.crossover_rate_low" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.JADEData.crossover_rate_mean">
+<span class="sig-name descname"><span class="pre">crossover_rate_mean</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.1</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.JADEData.crossover_rate_mean" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.JADEData.crossover_rate_std">
+<span class="sig-name descname"><span class="pre">crossover_rate_std</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.1</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.JADEData.crossover_rate_std" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.JADEData.dimension">
+<span class="sig-name descname"><span class="pre">dimension</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.JADEData.dimension" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.JADEData.function">
+<span class="sig-name descname"><span class="pre">function</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">FitnessFunctionBase</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.JADEData.function" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.JADEData.lb">
+<span class="sig-name descname"><span class="pre">lb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.JADEData.lb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.JADEData.log_population">
+<span class="sig-name descname"><span class="pre">log_population</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.JADEData.log_population" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.JADEData.max_nfe">
+<span class="sig-name descname"><span class="pre">max_nfe</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100000</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.JADEData.max_nfe" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.JADEData.mutation_factor_mean">
+<span class="sig-name descname"><span class="pre">mutation_factor_mean</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.1</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.JADEData.mutation_factor_mean" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.JADEData.mutation_factor_std">
+<span class="sig-name descname"><span class="pre">mutation_factor_std</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.1</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.JADEData.mutation_factor_std" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.JADEData.optimization_type">
+<span class="sig-name descname"><span class="pre">optimization_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">OptimizationType</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'minimization'</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.JADEData.optimization_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.JADEData.p">
+<span class="sig-name descname"><span class="pre">p</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.1</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.JADEData.p" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.JADEData.parallel_processing">
+<span class="sig-name descname"><span class="pre">parallel_processing</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.JADEData.parallel_processing" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.JADEData.population_size">
+<span class="sig-name descname"><span class="pre">population_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.JADEData.population_size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.JADEData.show_plots">
+<span class="sig-name descname"><span class="pre">show_plots</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.JADEData.show_plots" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="detpy.DETAlgs.data.alg_data.JADEData.ub">
+<span class="sig-name descname"><span class="pre">ub</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span></em><a class="headerlink" href="#detpy.DETAlgs.data.alg_data.JADEData.ub" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="sade.html" class="btn btn-neutral float-left" title="SADE" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="degl.html" class="btn btn-neutral float-right" title="DEGL" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright workshop participant.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,557 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>detpy.DETAlgs.data.alg_data &mdash; DetPy 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            DetPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">General</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html#introduction">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html#user-guide">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html#examples">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../de.html">DE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../comde.html">COMDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../derl.html">DERL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nmde.html">NMDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../emde.html">EMDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../ide.html">IDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../sade.html">SADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../jade.html">JADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../degl.html">DEGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../aade.html">AADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../delb.html">DELB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../eide.html">EIDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mgde.html">MGDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../improvedde.html">ImprovedDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../fiade.html">FIADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../oppbasedde.html">OppBasedDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../shade.html">SHADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../lshade_rsp.html">LSHADE_RSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../lshade.html">LSHADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../sps_lshade_eig.html">SPS_LSHADE_EIG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../al_shade.html">AL-SHADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../detcr.html">DETCR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../eps_de.html">EPSDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../eps_deag.html">EPSDEAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../lshade_epsin.html">LSHADE_EPSIN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../eps_deg.html">EPSDEG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../eps_ade.html">EPSADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../eps_rde.html">EPSRDE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../shade_1_1.html">SHADE 1.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../eps_de_w_dc.html">EPSDEwDC</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">DetPy</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../ackley.html">Optimization of the Ackley function based SADE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../ackleyall.html">Optimization of the Ackley function with all DE variants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../benchmark_functions.html">Optimization of common benchmark functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../optimization_opfunu.html">Optimization of functions from Opfunu</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../custom_fitness_function.html">Optimization of custom fitness function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../optimization_detpy_2_0.html">Optimization of CEC function with Detpy 2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../lshade_example.html">LShade example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../extra_stopping_criterion.html">Using an extra stopping criterion</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DetPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">detpy.DETAlgs.data.alg_data</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for detpy.DETAlgs.data.alg_data</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span>
+
+<span class="kn">from</span> <span class="nn">detpy.DETAlgs.population_reduction.linear_population_size_reduction</span> <span class="kn">import</span> <span class="n">LinearPopulationSizeReduction</span>
+<span class="kn">from</span> <span class="nn">detpy.DETAlgs.population_reduction.population_size_reduction_strategy</span> <span class="kn">import</span> <span class="n">PopulationSizeReductionStrategy</span>
+<span class="kn">from</span> <span class="nn">detpy.models.enums.basevectorschema</span> <span class="kn">import</span> <span class="n">BaseVectorSchema</span>
+<span class="kn">from</span> <span class="nn">detpy.models.enums.crossingtype</span> <span class="kn">import</span> <span class="n">CrossingType</span>
+<span class="kn">from</span> <span class="nn">detpy.models.enums.derivative_method</span> <span class="kn">import</span> <span class="n">DerivativeMethod</span>
+<span class="kn">from</span> <span class="nn">detpy.models.fitness_function</span> <span class="kn">import</span> <span class="n">FitnessFunctionBase</span>
+<span class="kn">from</span> <span class="nn">detpy.models.enums.boundary_constrain</span> <span class="kn">import</span> <span class="n">BoundaryFixing</span>
+<span class="kn">from</span> <span class="nn">detpy.models.enums.optimization</span> <span class="kn">import</span> <span class="n">OptimizationType</span>
+<span class="kn">from</span> <span class="nn">detpy.models.stop_condition.never_stop_condition</span> <span class="kn">import</span> <span class="n">NeverStopCondition</span>
+<span class="kn">from</span> <span class="nn">detpy.models.stop_condition.stop_condition</span> <span class="kn">import</span> <span class="n">StopCondition</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">BaseData</span><span class="p">:</span>
+    <span class="n">population_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">max_nfe</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100_000</span>
+    <span class="n">dimension</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">additional_stop_criteria</span><span class="p">:</span> <span class="n">StopCondition</span> <span class="o">=</span> <span class="n">NeverStopCondition</span><span class="p">()</span>
+    <span class="n">lb</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">])</span>
+    <span class="n">ub</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">])</span>
+    <span class="n">optimization_type</span><span class="p">:</span> <span class="n">OptimizationType</span> <span class="o">=</span> <span class="n">OptimizationType</span><span class="o">.</span><span class="n">MINIMIZATION</span>
+    <span class="n">boundary_constraints_fun</span><span class="p">:</span> <span class="n">BoundaryFixing</span> <span class="o">=</span> <span class="n">BoundaryFixing</span><span class="o">.</span><span class="n">RANDOM</span>
+    <span class="n">function</span><span class="p">:</span> <span class="n">FitnessFunctionBase</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">log_population</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">parallel_processing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">show_plots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<div class="viewcode-block" id="DEData">
+<a class="viewcode-back" href="../../../../de.html#detpy.DETAlgs.data.alg_data.DEData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">DEData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">mutation_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">crossover_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">crossing_type</span><span class="p">:</span> <span class="n">CrossingType</span> <span class="o">=</span> <span class="n">CrossingType</span><span class="o">.</span><span class="n">BINOMIAL</span>
+    <span class="n">y</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">base_vector_schema</span><span class="p">:</span> <span class="n">BaseVectorSchema</span> <span class="o">=</span> <span class="n">BaseVectorSchema</span><span class="o">.</span><span class="n">CURRENT</span></div>
+
+
+
+<div class="viewcode-block" id="COMDEData">
+<a class="viewcode-back" href="../../../../comde.html#detpy.DETAlgs.data.alg_data.COMDEData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">COMDEData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">mutation_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">crossover_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">crossing_type</span><span class="p">:</span> <span class="n">CrossingType</span> <span class="o">=</span> <span class="n">CrossingType</span><span class="o">.</span><span class="n">BINOMIAL</span></div>
+
+
+
+<div class="viewcode-block" id="DERLData">
+<a class="viewcode-back" href="../../../../derl.html#detpy.DETAlgs.data.alg_data.DERLData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">DERLData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">mutation_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">crossover_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">crossing_type</span><span class="p">:</span> <span class="n">CrossingType</span> <span class="o">=</span> <span class="n">CrossingType</span><span class="o">.</span><span class="n">BINOMIAL</span></div>
+
+
+
+<div class="viewcode-block" id="NMDEData">
+<a class="viewcode-back" href="../../../../nmde.html#detpy.DETAlgs.data.alg_data.NMDEData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">NMDEData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">delta_f</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">delta_cr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">sp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span></div>
+
+
+
+<div class="viewcode-block" id="SADEData">
+<a class="viewcode-back" href="../../../../sade.html#detpy.DETAlgs.data.alg_data.SADEData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">SADEData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">prob_f</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">prob_cr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span></div>
+
+
+
+<div class="viewcode-block" id="EMDEData">
+<a class="viewcode-back" href="../../../../emde.html#detpy.DETAlgs.data.alg_data.EMDEData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">EMDEData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">crossover_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">crossing_type</span><span class="p">:</span> <span class="n">CrossingType</span> <span class="o">=</span> <span class="n">CrossingType</span><span class="o">.</span><span class="n">BINOMIAL</span></div>
+
+
+
+<div class="viewcode-block" id="IDEData">
+<a class="viewcode-back" href="../../../../ide.html#detpy.DETAlgs.data.alg_data.IDEData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">IDEData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">base_vector_schema</span><span class="p">:</span> <span class="n">BaseVectorSchema</span> <span class="o">=</span> <span class="n">BaseVectorSchema</span><span class="o">.</span><span class="n">CURRENT</span>
+    <span class="n">y</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+
+
+<div class="viewcode-block" id="DELBData">
+<a class="viewcode-back" href="../../../../delb.html#detpy.DETAlgs.data.alg_data.DELBData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">DELBData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">crossover_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">w_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>  <span class="c1"># control frequency of local exploration around trial and best vectors</span>
+    <span class="n">crossing_type</span><span class="p">:</span> <span class="n">CrossingType</span> <span class="o">=</span> <span class="n">CrossingType</span><span class="o">.</span><span class="n">BINOMIAL</span></div>
+
+
+
+<div class="viewcode-block" id="OppBasedData">
+<a class="viewcode-back" href="../../../../oppbasedde.html#detpy.DETAlgs.data.alg_data.OppBasedData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">OppBasedData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">mutation_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">crossover_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">crossing_type</span><span class="p">:</span> <span class="n">CrossingType</span> <span class="o">=</span> <span class="n">CrossingType</span><span class="o">.</span><span class="n">BINOMIAL</span>
+    <span class="n">y</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">base_vector_schema</span><span class="p">:</span> <span class="n">BaseVectorSchema</span> <span class="o">=</span> <span class="n">BaseVectorSchema</span><span class="o">.</span><span class="n">CURRENT</span>
+    <span class="n">max_nfc</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">jumping_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span></div>
+
+
+
+<div class="viewcode-block" id="DEGLData">
+<a class="viewcode-back" href="../../../../degl.html#detpy.DETAlgs.data.alg_data.DEGLData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">DEGLData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">mutation_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">crossover_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">crossing_type</span><span class="p">:</span> <span class="n">CrossingType</span> <span class="o">=</span> <span class="n">CrossingType</span><span class="o">.</span><span class="n">BINOMIAL</span>
+    <span class="n">radius</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># neighborhood size, 2k + 1 &lt;= NP, at least k=2</span>
+    <span class="n">weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>  <span class="c1"># controls the balance between the exploration and exploitation</span></div>
+
+
+
+<div class="viewcode-block" id="JADEData">
+<a class="viewcode-back" href="../../../../jade.html#detpy.DETAlgs.data.alg_data.JADEData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">JADEData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">archive_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">mutation_factor_mean</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">mutation_factor_std</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">crossover_rate_mean</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">crossover_rate_std</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">crossover_rate_low</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">crossover_rate_high</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">c</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>  <span class="c1"># describes the rate of parameter adaptation</span>
+    <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>  <span class="c1"># describes the greediness of the mutation strategy</span></div>
+
+
+
+<div class="viewcode-block" id="AADEData">
+<a class="viewcode-back" href="../../../../aade.html#detpy.DETAlgs.data.alg_data.AADEData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">AADEData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">mutation_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">crossover_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span></div>
+
+
+
+<div class="viewcode-block" id="EIDEData">
+<a class="viewcode-back" href="../../../../eide.html#detpy.DETAlgs.data.alg_data.EIDEData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">EIDEData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">crossover_rate_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">crossover_rate_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">crossing_type</span><span class="p">:</span> <span class="n">CrossingType</span> <span class="o">=</span> <span class="n">CrossingType</span><span class="o">.</span><span class="n">BINOMIAL</span>
+    <span class="n">y</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">base_vector_schema</span><span class="p">:</span> <span class="n">BaseVectorSchema</span> <span class="o">=</span> <span class="n">BaseVectorSchema</span><span class="o">.</span><span class="n">CURRENT</span></div>
+
+
+
+<div class="viewcode-block" id="MGDEData">
+<a class="viewcode-back" href="../../../../mgde.html#detpy.DETAlgs.data.alg_data.MGDEData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">MGDEData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">crossover_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">crossing_type</span><span class="p">:</span> <span class="n">CrossingType</span> <span class="o">=</span> <span class="n">CrossingType</span><span class="o">.</span><span class="n">BINOMIAL</span>
+    <span class="n">mutation_factor_f</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">mutation_factor_k</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">mu</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span></div>
+
+
+
+<div class="viewcode-block" id="FiADEData">
+<a class="viewcode-back" href="../../../../fiade.html#detpy.DETAlgs.data.alg_data.FiADEData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">FiADEData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">mutation_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">crossover_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">adaptive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+
+<div class="viewcode-block" id="ImprovedDEData">
+<a class="viewcode-back" href="../../../../improvedde.html#detpy.DETAlgs.data.alg_data.ImprovedDEData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ImprovedDEData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">mutation_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">crossover_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span></div>
+
+
+
+<div class="viewcode-block" id="ShadeData">
+<a class="viewcode-back" href="../../../../shade.html#detpy.DETAlgs.data.alg_data.ShadeData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ShadeData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">memory_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span></div>
+
+
+
+<div class="viewcode-block" id="Shade_1_1_Data">
+<a class="viewcode-back" href="../../../../shade_1_1.html#detpy.DETAlgs.data.alg_data.Shade_1_1_Data">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Shade_1_1_Data</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">memory_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">best_member_percentage</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span></div>
+
+
+
+<div class="viewcode-block" id="LSHADERSPData">
+<a class="viewcode-back" href="../../../../lshade_rsp.html#detpy.DETAlgs.data.alg_data.LSHADERSPData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">LSHADERSPData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">scaling_factor_for_rank_selection</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3.5</span>
+    <span class="n">memory_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">minimum_population_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">population_reduction_strategy</span><span class="p">:</span> <span class="n">PopulationSizeReductionStrategy</span> <span class="o">=</span> <span class="n">LinearPopulationSizeReduction</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="LShadeData">
+<a class="viewcode-back" href="../../../../lshade.html#detpy.DETAlgs.data.alg_data.LShadeData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">LShadeData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">population_reduction_strategy</span><span class="p">:</span> <span class="n">PopulationSizeReductionStrategy</span> <span class="o">=</span> <span class="n">LinearPopulationSizeReduction</span><span class="p">()</span>
+    <span class="n">minimum_population_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">memory_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">best_member_percentage</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span></div>
+
+
+
+<div class="viewcode-block" id="SPSLShadeEIGDATA">
+<a class="viewcode-back" href="../../../../sps_lshade_eig.html#detpy.DETAlgs.data.alg_data.SPSLShadeEIGDATA">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">SPSLShadeEIGDATA</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">minimum_population_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">population_reduction_strategy</span><span class="p">:</span> <span class="n">PopulationSizeReductionStrategy</span> <span class="o">=</span> <span class="n">LinearPopulationSizeReduction</span><span class="p">()</span>
+    <span class="n">memory_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">q</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span>
+    <span class="n">f_init</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">cr_init</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span>
+    <span class="n">er_init</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">cr_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.6</span>
+    <span class="n">cr_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.95</span>
+    <span class="n">learning_rate_init</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">p_best_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">w_ext</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.90</span>
+    <span class="n">w_er</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.6807</span>
+    <span class="n">w_cr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2079</span>
+    <span class="n">w_f</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3530</span></div>
+
+
+
+<div class="viewcode-block" id="ALSHADEData">
+<a class="viewcode-back" href="../../../../al_shade.html#detpy.DETAlgs.data.alg_data.ALSHADEData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ALSHADEData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">minimum_population_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">memory_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">archive_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">elite_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">init_probability_mutation_strategy</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">population_size_reduction_strategy</span><span class="p">:</span> <span class="n">PopulationSizeReductionStrategy</span> <span class="o">=</span> <span class="n">LinearPopulationSizeReduction</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="DETCRData">
+<a class="viewcode-back" href="../../../../detcr.html#detpy.DETAlgs.data.alg_data.DETCRData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">DETCRData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">triangular_distribution_for_crossover_rate</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+    <span class="n">triangular_distribution_for_mutation_factory</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+    <span class="n">number_of_success_crossover_rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">15</span>
+    <span class="n">lineal_recombination_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.75</span>
+    <span class="n">gamma_var</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span></div>
+
+
+
+<div class="viewcode-block" id="LShadeEpsinData">
+<a class="viewcode-back" href="../../../../lshade_epsin.html#detpy.DETAlgs.data.alg_data.LShadeEpsinData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">LShadeEpsinData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">minimum_population_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">memory_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">best_member_percentage</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>
+
+    <span class="n">f_sin_freq</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>  <span class="c1"># Base frequency of the sinusoidal oscillation controlling the scaling factor F during the early exploration phase.</span>
+    <span class="n">population_reduction_strategy</span><span class="p">:</span> <span class="n">PopulationSizeReductionStrategy</span> <span class="o">=</span> <span class="n">LinearPopulationSizeReduction</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="EPSDEData">
+<a class="viewcode-back" href="../../../../eps_de.html#detpy.DETAlgs.data.alg_data.EPSDEData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">EPSDEData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">mutation_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7</span>
+    <span class="n">crossover_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.9</span>
+    <span class="n">epsilon_level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">penalty_power</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">tolerance_h</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span>
+    <span class="n">g_funcs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">h_funcs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="EPSDEAGData">
+<a class="viewcode-back" href="../../../../eps_deag.html#detpy.DETAlgs.data.alg_data.EPSDEAGData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">EPSDEAGData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">init_mutation_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">init_crossover_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.9</span>
+    <span class="n">theta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.9</span>
+    <span class="n">tolerance_h</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span>
+    <span class="n">penalty_power</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">control_generations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">150</span>
+    <span class="n">archive_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span>
+    <span class="n">gradient_base_mutation_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>
+    <span class="n">number_of_repeating_mutation</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">number_of_repeating_de_operations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">gradient_mutation_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">derivative_method</span> <span class="o">=</span> <span class="n">DerivativeMethod</span><span class="o">.</span><span class="n">NUMERIC</span>
+    <span class="n">g_funcs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">h_funcs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="EPSDEGData">
+<a class="viewcode-back" href="../../../../eps_deg.html#detpy.DETAlgs.data.alg_data.EPSDEGData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">EPSDEGData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">mutation_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">crossover_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.9</span>
+    <span class="n">gradient_base_mutation_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>
+    <span class="n">tolerance_h</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span>
+    <span class="n">theta</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">penalty_power</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">control_generations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">150</span>
+    <span class="n">gradient_mutation_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">derivative_method</span> <span class="o">=</span> <span class="n">DerivativeMethod</span><span class="o">.</span><span class="n">NUMERIC</span>
+    <span class="n">g_funcs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">h_funcs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="EPSADEData">
+<a class="viewcode-back" href="../../../../eps_ade.html#detpy.DETAlgs.data.alg_data.EPSADEData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">EPSADEData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">init_mutation_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7</span>
+    <span class="n">init_crossover_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.9</span>
+    <span class="n">mutation_factor_perturbation_width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">crossover_rate_perturbation_width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">weight_of_update</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">penalty_power</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">theta</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">tolerance_h</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span>
+    <span class="n">epsilon_scaling_factor</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">control_generations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">truncation_mechanism_factory</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.9</span>
+    <span class="n">g_funcs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">h_funcs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="EPSRDEData">
+<a class="viewcode-back" href="../../../../eps_rde.html#detpy.DETAlgs.data.alg_data.EPSRDEData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">EPSRDEData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">crossing_type</span><span class="p">:</span> <span class="n">CrossingType</span> <span class="o">=</span> <span class="n">CrossingType</span><span class="o">.</span><span class="n">EXPOTENTIAL</span>
+    <span class="n">min_mutation_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.6</span>
+    <span class="n">max_mutation_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.95</span>
+    <span class="n">min_crossover_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.85</span>
+    <span class="n">max_crossover_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.95</span>
+    <span class="n">penalty_power</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">control_generations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">150</span>
+    <span class="n">epsilon_scaling_factor</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">theta</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">tolerance_h</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span>
+    <span class="n">g_funcs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">h_funcs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EPSDEwDCData">
+<a class="viewcode-back" href="../../../../eps_de_w_dc.html#detpy.DETAlgs.data.alg_data.EPSDEwDCData">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">EPSDEwDCData</span><span class="p">(</span><span class="n">BaseData</span><span class="p">):</span>
+    <span class="n">mutation_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7</span>
+    <span class="n">crossover_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.9</span>
+    <span class="n">penalty_power</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">tolerance_h</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span>
+    <span class="n">eta</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">control_generations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">150</span>
+    <span class="n">g_funcs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">h_funcs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright workshop participant.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
