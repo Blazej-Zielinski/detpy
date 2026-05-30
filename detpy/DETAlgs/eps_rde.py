@@ -5,7 +5,7 @@ from detpy.DETAlgs.methods.methods_eps_de import selection, calculate_epsilon_co
 from detpy.DETAlgs.methods.methods_eps_deag import calculate_epsilon_level
 from detpy.DETAlgs.methods.methods_eps_deg import calculate_init_epsilon_level
 from detpy.DETAlgs.methods.methods_eps_rde import mutation, crossing, create_ranks, calculate_mutation_factors, calculate_crossover_rates
-from detpy.models.enums.basevectorschema import BaseVectorSchema
+from detpy.DETAlgs.random.index_generator import IndexGenerator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 
 
@@ -41,17 +41,21 @@ class EPSRDE(BaseAlg):
         self.epsilon_constrained = calculate_epsilon_constrained(self._pop, self.g_funcs, self.h_funcs, self.penalty_power, self.tolerance_h)
         self.init_epsilon_level = calculate_init_epsilon_level(self.epsilon_constrained, self.theta)
         self.epsilon_level = self.init_epsilon_level
-        self.ranks = create_ranks(self._pop, self.epsilon_constrained)
+        self.ranks = create_ranks(self.epsilon_constrained)
+        self._index_gen = IndexGenerator()
 
     def next_epoch(self):
-        mutation_factors = calculate_mutation_factors(self._pop, self.ranks, self.min_mutation_factor, self.max_mutation_factor)
-        crossover_rates = calculate_crossover_rates(self._pop, self.ranks, self.min_crossover_rate, self.max_crossover_rate)
+        ranks = []
+        for i in range(self.population_size):
+            r1 = self._index_gen.generate_unique(self.population_size, [i])
+            r2 = self._index_gen.generate_unique(self.population_size, [i, r1])
+            r3 = self._index_gen.generate_unique(self.population_size, [i, r1, r2])
+            ranks.append([r1, r2, r3])
+        mutation_factors = calculate_mutation_factors(self.population_size, self.ranks, ranks, self.min_mutation_factor, self.max_mutation_factor)
+        crossover_rates = calculate_crossover_rates(self.population_size, self.ranks, ranks, self.min_crossover_rate, self.max_crossover_rate)
 
         # New population after mutation
-        v_pop = mutation(self._pop, base_vector_schema=BaseVectorSchema.RAND,
-                         optimization_type=self.optimization_type,
-                         y=1,
-                         f=mutation_factors)
+        v_pop = mutation(self._pop, f=mutation_factors, ranks=ranks)
 
         # Apply boundary constrains on population in place
         fix_boundary_constraints(v_pop, self.boundary_constraints_fun)
@@ -72,6 +76,6 @@ class EPSRDE(BaseAlg):
         self.epsilon_constrained = calculate_epsilon_constrained(new_pop, self.g_funcs, self.h_funcs,
                                                                  self.penalty_power, self.tolerance_h)
 
-        self.ranks = create_ranks(self._pop, self.epsilon_constrained)
+        self.ranks = create_ranks(self.epsilon_constrained)
         # Override data
         self._pop = new_pop

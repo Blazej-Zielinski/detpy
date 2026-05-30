@@ -17,7 +17,7 @@ def gradient_mutation(pop_population: Population, number_of_repeating_mutation :
         epsilon_constrain = epsilon_constrained_method(member.get_chromosomes(), g_funcs, h_funcs, penalty_power, tolerance_h)
         if epsilon_constrain > epsilon_level and random.uniform(0, 1) < gradient_base_mutation_rate:
             for _ in range(number_of_repeating_mutation):
-                delta_x = calculate_delta_x(member.get_chromosomes(), derivative_method, g_funcs, h_funcs, epsilon_constrain)
+                delta_x = calculate_delta_x(member.get_chromosomes(), derivative_method, g_funcs, h_funcs)
 
                 for j in range(member.args_num):
                     member.chromosomes[j].real_value = member.chromosomes[j].real_value + delta_x.item(j)

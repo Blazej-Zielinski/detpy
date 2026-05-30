@@ -1,38 +1,21 @@
-import random
 
 import numpy as np
 
-from detpy.DETAlgs.methods.methods_de import get_best_member, mutation_ind, binomial_crossing_ind, \
+from detpy.DETAlgs.methods.methods_de import mutation_ind, binomial_crossing_ind, \
     exponential_crossing_ind
-from detpy.models.enums.basevectorschema import BaseVectorSchema
 from detpy.models.enums.crossingtype import CrossingType
-from detpy.models.enums.optimization import OptimizationType
 from detpy.models.population import Population
 
 
 def mutation(
         population: Population,
-        base_vector_schema: BaseVectorSchema,
-        optimization_type: OptimizationType,
         f: list[float],
-        y: int
+        ranks : list[int],
 ):
     new_members = []
-    best_member = get_best_member(optimization_type, population)
-
     for i in range(population.size):
-        diff_members = random.sample(population.members.tolist(), 2 * y)
-
-        if base_vector_schema == BaseVectorSchema.RAND:
-            base_vector = random.choice(population.members.tolist())
-        elif base_vector_schema == BaseVectorSchema.CURRENT:
-            base_vector = population.members[i]
-        elif base_vector_schema == BaseVectorSchema.BEST:
-            base_vector = best_member
-        else:
-            raise ValueError("Unknown base vector schema.")
-
-        new_member = mutation_ind(base_vector, diff_members, f[i])
+        r1, r2, r3 = ranks[i]
+        new_member = mutation_ind(population.members[r1], [population.members[r2], population.members[r3]], f[i])
         new_members.append(new_member)
 
     new_population = Population(
@@ -68,11 +51,18 @@ def crossing(origin_population: Population, mutated_population: Population, cr :
     new_population.members = np.array(new_members)
     return new_population
 
-def calculate_mutation_factors(population : Population, ranks : list[int], min_mutation_factor : float, max_mutation_factor : float):
-        return list(min_mutation_factor + (max_mutation_factor - min_mutation_factor) * ((ranks[i] - 1) / (population.size - 1)) for i in range(population.size))
+def calculate_mutation_factors(population_siz : int, ranks : list[int], index_ranks: list[int], min_mutation_factor : float, max_mutation_factor : float):
+        return list(min_mutation_factor + (max_mutation_factor - min_mutation_factor) * ((ranks[index_ranks[i][0]] - 1) / (population_siz - 1)) for i in range(population_siz))
 
-def calculate_crossover_rates(population : Population, ranks : list[int], min_crossover_rate : float, max_crossover_rate : float):
-    return list(max_crossover_rate - (max_crossover_rate - min_crossover_rate) * ((ranks[i] - 1) / (population.size - 1)) for i in range(population.size))
+def calculate_crossover_rates(population_siz : int, ranks : list[int], index_ranks: list[int],  min_crossover_rate : float, max_crossover_rate : float):
+    return list(max_crossover_rate - (max_crossover_rate - min_crossover_rate) * ((ranks[index_ranks[i][0]] - 1) / (population_siz - 1)) for i in range(population_siz))
 
-def create_ranks(population : Population, epsilon_constrained : list):
-    return sorted(range(population.size), key=lambda i: epsilon_constrained[i])
+def create_ranks(epsilon_constrained):
+    n_constraints = len(epsilon_constrained)
+    order = sorted(range(n_constraints), key=lambda i: epsilon_constrained[i])
+
+    ranks = [0] * n_constraints
+    for rank, idx in enumerate(order, start=1):
+        ranks[idx] = rank
+
+    return ranks
