@@ -28,7 +28,9 @@ def mutation(
     new_population.members = np.array(new_members)
     return new_population
 
-def crossing(origin_population: Population, mutated_population: Population, cr : list[float], crossing_type: CrossingType):
+
+def crossing(origin_population: Population, mutated_population: Population, cr: list[float],
+             crossing_type: CrossingType):
     if origin_population.size != mutated_population.size:
         print("Populations have different sizes")
         return None

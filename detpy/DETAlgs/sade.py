@@ -51,4 +51,3 @@ class SADE(BaseAlg):
         self._cr_arr = cr_arr
         self.prob_f = prob_f
         self.prob_cr = prob_cr
-

@@ -21,8 +21,13 @@ class LSHADE(BaseAlg):
     """
         LSHADE: Improving the Search Performance of SHADE Using Linear Population Size Reduction
 
+        Links:
+        https://ieeexplore.ieee.org/document/6900380
+
         References:
-        Ryoji Tanabe and Alex Fukunaga Graduate School of Arts and Sciences The University of Tokyo
+        Tanabe, R., & Fukunaga, A. S. (2014). Improving the search performance of SHADE using linear population size
+        reduction. In 2014 IEEE Congress on Evolutionary Computation (CEC) (pp. 1658–1665). 2014 IEEE Congress on
+        Evolutionary Computation (CEC). IEEE. https://doi.org/10.1109/cec.2014.6900380
     """
 
     def __init__(self, params: LShadeData, db_conn=None, db_auto_write=False):

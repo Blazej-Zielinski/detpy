@@ -1,5 +1,27 @@
 # DetPy (Differential Evolution Tools): A Python toolbox for solving optimization problems using differential evolution
 
+## 📖 Citation
+
+If you use **DetPy** in your research, please cite:
+
+**Zieliński, B., Ściegienny, S., Orlicki, H., & Książek, W. (2025).**  
+*DetPy (Differential Evolution Tools): A Python toolbox for solving optimization problems using differential evolution.*  
+**SoftwareX**, 29, 102014.  
+https://doi.org/10.1016/j.softx.2024.102014
+
+### BibTeX
+```bibtex
+@article{Zielinski2025DetPy,
+  title   = {DetPy (Differential Evolution Tools): A Python toolbox for solving optimization problems using differential evolution},
+  author  = {Zieliński, Błażej and Ściegienny, Szymon and Orlicki, Hubert and Książek, Wojciech},
+  journal = {SoftwareX},
+  volume  = {29},
+  pages   = {102014},
+  year    = {2025},
+  doi     = {10.1016/j.softx.2024.102014}
+}
+```
+
 # Introduction
 The DetPy library contains implementations of the differential evolution algorithm and 18 modifications of this 
 algorithm. It can be used to solve advanced optimization problems.
@@ -45,52 +67,30 @@ pip install detpy
 # Example - optimization of the Ackley function based SADE
 ```
 from detpy.DETAlgs.data.alg_data import SADEData
-
 from detpy.DETAlgs.sade import SADE
-
 from detpy.functions import FunctionLoader
-
 from detpy.models.enums.boundary_constrain import BoundaryFixing
-
 from detpy.models.enums.optimization import OptimizationType
-
 from detpy.models.fitness_function import BenchmarkFitnessFunction
 
-
 function_loader = FunctionLoader()
-
 ackley_function = function_loader.get_function(function_name="ackley", n_dimensions=2)
-
 fitness_fun = BenchmarkFitnessFunction(ackley_function)
 
-
 params = SADEData(
-
-    epoch=100,
-
+    max_nfe=10000,
     population_size=100,
-
     dimension=2,
-
     lb=[-32.768, -32.768],
-
     ub=[32.768, 32.768],
-
-    mode=OptimizationType.MINIMIZATION,
-
+    optimization_type=OptimizationType.MINIMIZATION,
     boundary_constraints_fun=BoundaryFixing.RANDOM,
-
     function=fitness_fun,
-
     log_population=True,
-
     parallel_processing=['thread', 4]
-
 )
 
-
 default2 = SADE(params, db_conn="Differential_evolution.db", db_auto_write=False)
-
 results = default2.run()
 ```
 

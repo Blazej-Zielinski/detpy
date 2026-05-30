@@ -46,4 +46,3 @@ class DELB(BaseAlg):
 
         # Override data
         self._pop = new_pop
-

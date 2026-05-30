@@ -75,5 +75,3 @@ def mutation_internal(base_member: Member, best_member: Member, r1: Member, r2: 
             f * (best_member.chromosomes - base_member.chromosomes)) + (
                                      f * (r1.chromosomes - r2.chromosomes))
     return new_member
-
-

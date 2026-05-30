@@ -57,7 +57,7 @@ def mgde_adapt_threshold(population: Population, threshold: float, mu: float, fu
 
             temp = copy.deepcopy(member)
             temp.chromosomes[d] = member.chromosomes[d] + (
-                        member.chromosomes[d] - best_member.chromosomes[d]) * h * (-1) ** n
+                    member.chromosomes[d] - best_member.chromosomes[d]) * h * (-1) ** n
 
             temp.calculate_fitness_fun(func)
             if temp < best_member:

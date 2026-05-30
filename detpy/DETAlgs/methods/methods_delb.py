@@ -69,7 +69,7 @@ def delb_selection(origin_population: Population, modified_population: Populatio
                 if r > modified_population.members[i]:
                     new_members.append(copy.deepcopy(r))
                 else:
-                    c = best_member + 0.5 * (modified_population.members[i] - best_member)
+                    c = best_member + (modified_population.members[i] - best_member) * 0.5
                     c.calculate_fitness_fun(fitness_fun=fitness_func)
                     if c > modified_population.members[i]:
                         new_members.append(copy.deepcopy(c))

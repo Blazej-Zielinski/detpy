@@ -19,7 +19,7 @@ class AlgorithmResult:
 
         plt.xlabel('Number function evaluations (NFE)')
         plt.ylabel('Best Fitness Value')
-        plt.title(f'Best Fitness per Epoch - {method_name}')
+        plt.title(f'Best Fitness per NFE - {method_name}')
         plt.legend()
         plt.show()
 
@@ -29,7 +29,7 @@ class AlgorithmResult:
 
         plt.xlabel('Number function evaluations (NFE)')
         plt.ylabel('Average Fitness Value')
-        plt.title(f'Average Fitness per Epoch - {method_name}')
+        plt.title(f'Average Fitness per NFE - {method_name}')
         plt.legend()
         plt.show()
 
@@ -38,6 +38,6 @@ class AlgorithmResult:
         plt.grid(True)
         plt.xlabel('Number function evaluations (NFE)')
         plt.ylabel('Standard Deviation')
-        plt.title(f'Standard Deviation of Fitness per Epoch - {method_name}')
+        plt.title(f'Standard Deviation of Fitness per NFE - {method_name}')
         plt.legend()
         plt.show()

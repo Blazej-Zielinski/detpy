@@ -30,13 +30,8 @@ from detpy.DETAlgs.shade import SHADE
 from detpy.DETAlgs.shade_1_1 import SHADE_1_1
 from detpy.DETAlgs.sps_lshade_eig import SPS_LSHADE_EIG
 
-
-from detpy.functions import FunctionLoader
-from detpy.models.fitness_function import BenchmarkFitnessFunction, FitnessFunctionOpfunu
+from detpy.models.fitness_function import FitnessFunctionOpfunu
 from detpy.models.enums import optimization, boundary_constrain
-from detpy.models.stop_condition.lambda_stop_condition import LambdaStopCondition
-from detpy.models.stop_condition.never_stop_condition import NeverStopCondition
-from detpy.models.stop_condition.stop_condition import StopCondition
 
 pd.set_option('display.float_format', lambda x: '%.6f' % x)
 
@@ -89,17 +84,10 @@ def plot_fitness_convergence(fitness_results, algorithm_names, num_of_epochs):
     plt.show()
 
 
-class InlineStopCondition(StopCondition):
-    def should_continue(self, nfe, epoch, best_chromosome):
-        return best_chromosome.fitness_value >= 600
-
-
 if __name__ == "__main__":
     num_of_epochs = 100
-    num_of_nfe = 1200
-    function_loader = FunctionLoader()
-    ackley_function = function_loader.get_function(function_name="cec2014_f1_opfunu", n_dimensions=10)
-    fitness_fun = BenchmarkFitnessFunction(ackley_function)
+    num_of_nfe = 10_000
+
     fitness_fun_opf = FitnessFunctionOpfunu(
         func_type=F12014,
         ndim=10
@@ -112,10 +100,9 @@ if __name__ == "__main__":
         'lb': [-100] * 10,
         'ub': [100] * 10,
         'show_plots': False,
-        # 'additional_stop_criteria':  LambdaStopCondition(lambda nfe, epoch, best: epoch >= 10),
         'optimization_type': optimization.OptimizationType.MINIMIZATION,
         'boundary_constraints_fun': boundary_constrain.BoundaryFixing.RANDOM,
-        'function': fitness_fun,
+        'function': fitness_fun_opf,
         'log_population': True,
         'parallel_processing': ['thread', 1]
     }

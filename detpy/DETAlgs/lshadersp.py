@@ -8,7 +8,7 @@ from detpy.DETAlgs.data.alg_data import LSHADERSPData
 
 from random import randint
 
-from detpy.DETAlgs.methods.methods_lshadersp import  archive_reduction, rank_selection
+from detpy.DETAlgs.methods.methods_lshadersp import archive_reduction, rank_selection
 from detpy.DETAlgs.mutation_methods.current_to_pbest_r import MutationCurrentToPBestR
 from detpy.DETAlgs.random.random_value_generator import RandomValueGenerator
 from detpy.math_functions.lehmer_mean import LehmerMean
@@ -21,6 +21,9 @@ from detpy.models.population import Population
 class LSHADERSP(BaseAlg):
     """
         L-SHADE-RSP: LSHADE Algorithm with a Rank-based Selective Pressure Strategy (RSP)
+
+        Links:
+        https://www.scitepress.org/papers/2018/68525/68525.pdf
 
         References:
         Shakhnaz Akhmedova, Vladimir Stanovov and Eugene Semenkin (2018). Research on In Proceedings of
