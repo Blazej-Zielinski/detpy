@@ -170,9 +170,7 @@ def constraint_functions(chromosomes: list, derivative_method: DerivativeMethod,
     equality_constraints = ([h(chromosomes) for h in h_funcs])
     return np.concatenate((inequality_constraints, equality_constraints))
 
-
-def calculate_delta_x(chromosomes: list[float], derivative_method: DerivativeMethod, g_funcs: list, h_funcs: list,
-                      epsilon_constrain: float):
+def calculate_delta_x(chromosomes : list[float], derivative_method : DerivativeMethod, g_funcs : list, h_funcs : list):
     if DerivativeMethod.NUMERIC == derivative_method:
         gradient_constraint = derivative_numeric(chromosomes, g_funcs, h_funcs)
     elif DerivativeMethod.SYMBOLIC == derivative_method:
@@ -187,7 +185,16 @@ def calculate_delta_x(chromosomes: list[float], derivative_method: DerivativeMet
 
     inv_gradient_constraint = inverse_gradient_constraints(gradient_constraint)
 
-    return -np.dot(-inv_gradient_constraint, epsilon_constrain)
+    return -inv_gradient_constraint @ calculate_delta_constraints(chromosomes, g_funcs, h_funcs)
+
+def calculate_delta_constraints(chromosomes : list[float], g_funcs : list, h_funcs : list):
+    delta_constraints = []
+    for g in g_funcs:
+        delta_constraints.append(max(0, g(chromosomes)))
+    for h in h_funcs:
+        delta_constraints.append(h(chromosomes))
+
+    return np.array(delta_constraints).reshape(-1, 1)
 
 
 def gradient_mutation(pop_population: Population, number_of_repeating_mutation: int, gradient_base_mutation_rate: float,
@@ -203,8 +210,7 @@ def gradient_mutation(pop_population: Population, number_of_repeating_mutation: 
                 epsilon_constrain = epsilon_constrained_method(member.get_chromosomes(), g_funcs, h_funcs,
                                                                penalty_power, tolerance_h)
                 while h < number_of_repeating_mutation and epsilon_constrain > 0:
-                    delta_x = calculate_delta_x(member.get_chromosomes(), derivative_method, g_funcs, h_funcs,
-                                                epsilon_constrain)
+                    delta_x = calculate_delta_x(member.get_chromosomes(), derivative_method, g_funcs, h_funcs)
 
                     for j in range(member.args_num):
                         member.chromosomes[j].real_value = member.chromosomes[j].real_value + delta_x.item(j)
