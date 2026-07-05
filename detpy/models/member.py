@@ -59,7 +59,7 @@ class Member:
         return self.fitness_value < other.fitness_value
 
     def __eq__(self, other):
-        return self.fitness_value == other.fitness_value
+        return np.isclose(self.fitness_value, other.fitness_value)
 
     def __gt__(self, other):
         return self.fitness_value > other.fitness_value
