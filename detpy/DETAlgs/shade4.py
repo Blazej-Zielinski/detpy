@@ -20,8 +20,8 @@ class SHADE4(BaseAlg):
     """
     SHADE4: Success-History Based Adaptive Differential Evolution with Competing Strategies
 
-    References:
-
+    References: Petr Bujok, Josef Tvrdık, Radka Polakova Department of Computer Science
+    University of Ostrava,
     """
 
     # Strategy
@@ -382,7 +382,6 @@ class SHADE4(BaseAlg):
         print("\n" + "=" * 80)
         print("STRATEGY STATISTICS FOR SHADE4")
         print("=" * 80)
-        print("\nNote: All strategies share common M_F and M_CR memory (base version)")
         print("-" * 80)
 
         print("\n{:<25} {:>12} {:>15} {:>15} {:>12}".format(
