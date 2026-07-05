@@ -229,6 +229,20 @@ class LShadeEpsinData(BaseData):
     f_sin_freq: float = 0.1  # Base frequency of the sinusoidal oscillation controlling the scaling factor F during the early exploration phase.
     population_reduction_strategy: PopulationSizeReductionStrategy = LinearPopulationSizeReduction()
 
+@dataclass
+class LShadeCnEpsinData(BaseData):
+    minimum_population_size: int = 4  # NP_min (paper: 4).
+    memory_size: int = 5  # H (paper: 5).
+    best_member_percentage: float = 0.2
+    f_sin_freq: float = 0.5  # freq for non-adaptive sinusoidal decreasing adjustment (paper: 0.5).
+    population_reduction_strategy: PopulationSizeReductionStrategy = LinearPopulationSizeReduction()
+    covariance_probability: float = 0.4  # Probability pc of applying covariance matrix learning based crossover (paper: 0.4).
+    neighborhood_proportion: float = 0.5  # Proportion ps of individuals used to build the Euclidean neighborhood (paper: 0.5).
+    learning_period: int = 50  # LP – number of generations before sinusoidal probabilities start adapting (Eqs. 7-8).
+
+
+
+
 
 @dataclass
 class EPSDEData(BaseData):
