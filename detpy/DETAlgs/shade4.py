@@ -382,7 +382,6 @@ class SHADE4(BaseAlg):
         print("\n" + "=" * 80)
         print("STRATEGY STATISTICS FOR SHADE4")
         print("=" * 80)
-        print("-" * 80)
 
         print("\n{:<25} {:>12} {:>15} {:>15} {:>12}".format(
             "Strategy", "Avg Prob %", "Total Success", "Usage %", "Final Prob %"
