@@ -306,6 +306,7 @@ class EPSRDEData(BaseData):
     g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
     h_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
 
+
 @dataclass
 class EPSDEwDCData(BaseData):
     mutation_factor: float = 0.7
@@ -317,3 +318,11 @@ class EPSDEwDCData(BaseData):
     control_generations: int = 150
     g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
     h_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
+
+
+@dataclass
+class SHADE4Data(BaseData):
+    memory_size: int = 5
+    best_member_percentage: float = 0.2
+    smoothing_constant: int = 2  # Smoothing factor, must be > 1 (higher = stronger smoothing)
+    reset_threshold: float = 0.05  # All probability values qk are reset to starting uniformly distributed values if any qk decreases below reset_threshold (reset_threshold > 0)
