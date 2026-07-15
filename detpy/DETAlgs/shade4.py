@@ -469,11 +469,3 @@ class SHADE4(BaseAlg):
 
         return report
 
-    def reset_strategy_statistics(self):
-        """
-        Resets strategy statistics.
-        """
-        self._strategy_usage_stats = []
-        self._strategy_success_stats = []
-        self._strategy_probabilities = np.full(self._K, 1.0 / self._K)
-        self._strategy_success_counts = np.zeros(self._K)

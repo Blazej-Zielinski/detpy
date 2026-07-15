@@ -323,6 +323,16 @@ class EPSDEwDCData(BaseData):
 @dataclass
 class SHADE4Data(BaseData):
     memory_size: int = 5
+    smoothing_constant: int = 2  # Smoothing factor, must be > 1 (higher = stronger smoothing)
+    reset_threshold: float = 0.05  # All probability values qk are reset to starting uniformly distributed values if any qk decreases below reset_threshold (reset_threshold > 0)
+
+@dataclass
+class LSHADE44Data(BaseData):
+    memory_size: int = 5
     best_member_percentage: float = 0.2
     smoothing_constant: int = 2  # Smoothing factor, must be > 1 (higher = stronger smoothing)
     reset_threshold: float = 0.05  # All probability values qk are reset to starting uniformly distributed values if any qk decreases below reset_threshold (reset_threshold > 0)
+    population_reduction_strategy: PopulationSizeReductionStrategy = LinearPopulationSizeReduction()
+    minimum_population_size: int = 5
+    archive_size: int = 100
+    pm_to_cr_table_size: int = 100
