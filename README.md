@@ -60,6 +60,8 @@ The following variants have been implemented:
 | 29  | SHADE 1.1 (Success-History Based Parameter Adaptation for Differential Evolution) [16]                                          | 2014 |
 | 30  | EPSDEwDC (Epsilon Constrained Differential Evolution with Dynamic ε-Level Control) [28]                                         | 2012 |
 | 31  | SHADE4 Evaluating the Performance of SHADE with Competing Strategies on CEC 2014 Single-Parameter Test Suit [29]                | 2016 |
+| 32  | LSHADE44 L-SHADE with Competing Strategies Applied to CEC2015 Learning-based Test Suite [30]                                    | 2016 |
+
 # Installation
 ```
 pip install detpy
@@ -167,6 +169,7 @@ Test functions prepared based on https://gitlab.com/luca.baronti/python_benchmar
 27. Tetsuyuki Takahama and Setsuko Sakai, *Efficient Constrained Optimization by the ε Constrained Rank-Based Differential Evolution*. IEEE Congress on Evolutionary Computation, 2012
 28. Tetsuyuki Takahama and Setsuko Sakai, *Epsilon Constrained Differential Evolution with Dynamic ε-Level Control*. Chakraborty, U.K. (eds) Advances in Differential Evolution. Studies in Computational Intelligence, vol 143. Springer, Berlin, Heidelberg, 2008
 29. Petr Bujok, Josef Tvrdík, Radka Poláková *Evaluating the performance of SHADE with competing strategies on CEC 2014 single-parameter test suite* IEEE Congress on Evolutionary Computation, 2016 
+30. Petr Bujok, Josef Tvrdík, Radka Poláková *L-SHADE with Competing Strategies Applied to CEC2015 Learning-based Test Suite* IEEE Congress on Evolutionary Computation, 2016 
 # Documentation
 Full documentation is available: https://blazej-zielinski.github.io/detpy/
 
