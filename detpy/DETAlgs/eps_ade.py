@@ -9,6 +9,7 @@ from detpy.DETAlgs.methods.methods_eps_de import calculate_epsilon_constrained, 
     epsilon_constrained_method
 from detpy.DETAlgs.methods.methods_eps_deag import calculate_epsilon_level
 from detpy.DETAlgs.methods.methods_eps_deg import calculate_init_epsilon_level
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.basevectorschema import BaseVectorSchema
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 from detpy.models.enums.crossingtype import CrossingType
@@ -31,6 +32,62 @@ class EPSADE(BaseAlg):
 
     def __init__(self, params: EPSADEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(EPSADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+
+        ParameterValidator.float_between(
+            params.init_mutation_factor, 0.0, 1.0, "init_mutation_factor"
+        )
+
+        ParameterValidator.float_between(
+            params.init_crossover_rate, 0.0, 1.0, "init_crossover_rate"
+        )
+
+        ParameterValidator.non_negative(
+            params.mutation_factor_perturbation_width,
+            "mutation_factor_perturbation_width"
+        )
+
+        ParameterValidator.non_negative(
+            params.crossover_rate_perturbation_width,
+            "crossover_rate_perturbation_width"
+        )
+
+        ParameterValidator.float_between(
+            params.weight_of_update, 0.0, 1.0, "weight_of_update"
+        )
+
+        ParameterValidator.positive_int(
+            params.penalty_power,
+            "penalty_power"
+        )
+
+        if params.theta is not None:
+            ParameterValidator.positive_int(
+                params.theta,
+                "theta"
+            )
+
+        ParameterValidator.non_negative(
+            params.tolerance_h,
+            "tolerance_h"
+        )
+
+        ParameterValidator.positive_int(
+            params.epsilon_scaling_factor,
+            "epsilon_scaling_factor"
+        )
+
+        ParameterValidator.positive_int(
+            params.control_generations,
+            "control_generations"
+        )
+
+        ParameterValidator.float_between(
+            params.truncation_mechanism_factory,
+            0.0, 1.0,
+            "truncation_mechanism_factory"
+        )
+
+
         self.init_mutation_factor = params.init_mutation_factor  # F
         self.init_crossover_rate = params.init_crossover_rate  # Cr
         self.mu_mutation_factory = self.init_mutation_factor

@@ -2,6 +2,7 @@ from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import COMDEData
 from detpy.DETAlgs.methods.methods_comde import calculate_cr, comde_mutation
 from detpy.DETAlgs.methods.methods_de import selection, crossing
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 
 
@@ -21,7 +22,13 @@ class COMDE(BaseAlg):
     def __init__(self, params: COMDEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(COMDE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
 
-        self.mutation_factor = params.mutation_factor  # F
+        ParameterValidator.float_between(
+            params.crossover_rate,
+            0.0,
+            1.0,
+            "Crossover rate"
+        )
+
         self.crossover_rate = params.crossover_rate  # Cr
         self.crossing_type = params.crossing_type
 

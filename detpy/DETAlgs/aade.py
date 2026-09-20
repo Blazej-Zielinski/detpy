@@ -2,6 +2,7 @@ from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import AADEData
 from detpy.DETAlgs.methods.methods_aade import aade_mutation, aade_crossing, aade_selection, \
     aade_adapat_parameters
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 
 
@@ -20,6 +21,16 @@ class AADE(BaseAlg):
 
     def __init__(self, params: AADEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(AADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+
+        ParameterValidator.positive_float(
+            params.mutation_factor,
+            "Mutation factor"
+        )
+
+        ParameterValidator.positive_float(
+            params.crossover_rate,
+            "Crossover rate"
+        )
 
         self.mutation_factors = [[params.mutation_factor, False] for _ in range(params.population_size)]
         self.crossover_rates = [[params.crossover_rate, False] for _ in range(params.population_size)]

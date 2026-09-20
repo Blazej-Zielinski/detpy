@@ -2,6 +2,7 @@ from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import OppBasedData
 from detpy.DETAlgs.methods.methods_opposition_based import opp_based_generation_jumping
 from detpy.DETAlgs.methods.methods_de import mutation, selection, crossing
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 
 
@@ -27,8 +28,41 @@ class OppBasedDE(BaseAlg):
         self.y = params.y
         self.base_vector_schema = params.base_vector_schema
         self.nfc = 0  # number of function calls
-        self.max_nfc = params.max_nfc
         self.jumping_rate = params.jumping_rate
+
+        ParameterValidator.float_between(
+            params.mutation_factor,
+            0.0,
+            2.0,
+            "Mutation factor"
+        )
+
+        ParameterValidator.float_between(
+            params.crossover_rate,
+            0.0,
+            1.0,
+            "Crossover rate"
+        )
+
+        ParameterValidator.int_min(
+            params.y,
+            1,
+            "Y"
+        )
+
+        ParameterValidator.float_between(
+            params.jumping_rate,
+            0.0,
+            1.0,
+            "Jumping rate"
+        )
+
+        ParameterValidator.int_times_leq(
+            params.y,
+            2,
+            params.population_size,
+            "Y"
+        )
 
     def next_epoch(self):
         # New population after mutation

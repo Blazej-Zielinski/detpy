@@ -2,6 +2,7 @@ from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import MGDEData
 from detpy.DETAlgs.methods.methods_de import selection, crossing
 from detpy.DETAlgs.methods.methods_mgde import mgde_mutation, mgde_adapt_threshold
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 
 
@@ -19,6 +20,33 @@ class MGDE(BaseAlg):
 
     def __init__(self, params: MGDEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(MGDE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+
+        ParameterValidator.positive_float(
+            params.mutation_factor_f,
+            "Mutation factor F"
+        )
+
+        ParameterValidator.positive_float(
+            params.mutation_factor_k,
+            "Mutation factor K"
+        )
+
+        ParameterValidator.float_between(
+            params.crossover_rate,
+            0.0,
+            1.0,
+            "Crossover rate"
+        )
+
+        ParameterValidator.positive_float(
+            params.threshold,
+            "Threshold"
+        )
+
+        ParameterValidator.positive_float(
+            params.mu,
+            "Mu"
+        )
 
         self.mutation_factor_f = params.mutation_factor_f
         self.mutation_factor_k = params.mutation_factor_k

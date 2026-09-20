@@ -4,6 +4,7 @@ from detpy.DETAlgs.methods.methods_de import crossing, mutation
 from detpy.DETAlgs.methods.methods_eps_de import calculate_epsilon_constrained, selection
 from detpy.DETAlgs.methods.methods_eps_deag import calculate_epsilon_level
 from detpy.DETAlgs.methods.methods_eps_deg import gradient_mutation, calculate_init_epsilon_level
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.basevectorschema import BaseVectorSchema
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints, BoundaryFixing
 from detpy.models.enums.crossingtype import CrossingType
@@ -26,6 +27,54 @@ class EPSDEG(BaseAlg):
 
     def __init__(self, params: EPSDEGData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(EPSDEG.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+
+        ParameterValidator.float_between(
+            params.mutation_factor,
+            0.0,
+            1.0,
+            "mutation_factor"
+        )
+
+        ParameterValidator.float_between(
+            params.crossover_rate,
+            0.0,
+            1.0,
+            "crossover_rate"
+        )
+
+        ParameterValidator.float_between(
+            params.gradient_base_mutation_rate,
+            0.0,
+            1.0,
+            "gradient_base_mutation_rate"
+        )
+
+        ParameterValidator.non_negative(
+            params.tolerance_h,
+            "tolerance_h"
+        )
+
+        if params.theta is not None:
+            ParameterValidator.positive_int(
+                params.theta,
+                "theta"
+            )
+
+        ParameterValidator.positive_int(
+            params.penalty_power,
+            "penalty_power"
+        )
+
+        ParameterValidator.positive_int(
+            params.control_generations,
+            "control_generations"
+        )
+
+        ParameterValidator.positive_int(
+            params.gradient_mutation_interval,
+            "gradient_mutation_interval"
+        )
+
         self.derivative_method = params.derivative_method
         self.mutation_factor = params.mutation_factor  # F
         self.crossover_rate = params.crossover_rate  # Cr

@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Optional, Callable
+from typing import Optional, Callable, List
 
 from detpy.DETAlgs.population_reduction.linear_population_size_reduction import LinearPopulationSizeReduction
 from detpy.DETAlgs.population_reduction.population_size_reduction_strategy import PopulationSizeReductionStrategy
@@ -42,14 +42,12 @@ class DEData(BaseData):
 
 @dataclass
 class COMDEData(BaseData):
-    mutation_factor: float = 0.1
     crossover_rate: float = 0.1
     crossing_type: CrossingType = CrossingType.BINOMIAL
 
 
 @dataclass
 class DERLData(BaseData):
-    mutation_factor: float = 0.1
     crossover_rate: float = 0.1
     crossing_type: CrossingType = CrossingType.BINOMIAL
 
@@ -93,7 +91,6 @@ class OppBasedData(BaseData):
     crossing_type: CrossingType = CrossingType.BINOMIAL
     y: int = 1
     base_vector_schema: BaseVectorSchema = BaseVectorSchema.CURRENT
-    max_nfc: float = 0.1
     jumping_rate: float = 0.1
 
 
@@ -103,7 +100,6 @@ class DEGLData(BaseData):
     crossover_rate: float = 0.1
     crossing_type: CrossingType = CrossingType.BINOMIAL
     radius: int = 10  # neighborhood size, 2k + 1 <= NP, at least k=2
-    weight: float = 0.1  # controls the balance between the exploration and exploitation
 
 
 @dataclass
@@ -148,7 +144,6 @@ class MGDEData(BaseData):
 class FiADEData(BaseData):
     mutation_factor: float = 0.5
     crossover_rate: float = 0.5
-    adaptive: bool = True
 
 
 @dataclass
@@ -165,7 +160,6 @@ class ShadeData(BaseData):
 @dataclass
 class Shade_1_1_Data(BaseData):
     memory_size: int = 5
-    best_member_percentage: float = 0.2
 
 
 @dataclass
@@ -235,8 +229,14 @@ class ALSHADEData(BaseData):
 
 @dataclass
 class DETCRData(BaseData):
-    triangular_distribution_for_crossover_rate = [0.2, 0.5, 1.0]
-    triangular_distribution_for_mutation_factory = [0.3, 0.4, 0.5]
+    triangular_distribution_for_crossover_rate: List[float] = field(
+        default_factory=lambda: [0.2, 0.5, 1.0]
+    )
+
+    triangular_distribution_for_mutation_factory: List[float] = field(
+        default_factory=lambda: [0.3, 0.4, 0.5]
+    )
+
     number_of_success_crossover_rate: int = 15
     lineal_recombination_factor: float = 0.75
     gamma_var: int = 3
@@ -276,7 +276,7 @@ class EPSDEAGData(BaseData):
     number_of_repeating_mutation: int = 3
     number_of_repeating_de_operations: int = 2
     gradient_mutation_interval: int = 5
-    derivative_method = DerivativeMethod.NUMERIC
+    derivative_method: DerivativeMethod = DerivativeMethod.NUMERIC
     g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
     h_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
 
@@ -291,7 +291,7 @@ class EPSDEGData(BaseData):
     penalty_power: int = 2
     control_generations: int = 150
     gradient_mutation_interval: int = 5
-    derivative_method = DerivativeMethod.NUMERIC
+    derivative_method: DerivativeMethod = DerivativeMethod.NUMERIC
     g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
     h_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
 
@@ -323,10 +323,14 @@ class EPSRDEData(BaseData):
     penalty_power: int = 2
     control_generations: int = 150
     epsilon_scaling_factor: int = 5
-    theta: int = None
+    theta: int | None = None
     tolerance_h: float = 1e-3
-    g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
-    h_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
+    g_funcs: list[Callable[[list[float]], float]] = field(
+        default_factory=list
+    )
+    h_funcs: list[Callable[[list[float]], float]] = field(
+        default_factory=list
+    )
 
 
 @dataclass
@@ -334,9 +338,9 @@ class EPSDEwDCData(BaseData):
     mutation_factor: float = 0.7
     crossover_rate: float = 0.9
     penalty_power: int = 2
-    theta = None
+    theta: int | None = None
     tolerance_h: float = 1e-3
-    eta = 2
+    eta: int = 2
     control_generations: int = 150
     g_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
     h_funcs: list[Callable[[list[float]], float]] = field(default_factory=list)
@@ -355,6 +359,7 @@ class SHADE4Data(BaseData):
     memory_size: int = 5
     smoothing_constant: int = 2  # Smoothing factor, must be > 1 (higher = stronger smoothing)
     reset_threshold: float = 0.05  # All probability values qk are reset to starting uniformly distributed values if any qk decreases below reset_threshold (reset_threshold > 0)
+
 
 @dataclass
 class LSHADE44Data(BaseData):

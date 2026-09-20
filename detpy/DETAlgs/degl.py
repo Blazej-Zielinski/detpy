@@ -2,6 +2,7 @@ from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import DEGLData
 from detpy.DETAlgs.methods.methods_de import selection, crossing
 from detpy.DETAlgs.methods.methods_degl import degl_mutation, degl_adapt_weight
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 
 
@@ -21,6 +22,33 @@ class DEGL(BaseAlg):
 
     def __init__(self, params: DEGLData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(DEGL.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+
+        ParameterValidator.float_between(
+            params.mutation_factor,
+            0.0,
+            2.0,
+            "Mutation factor"
+        )
+
+        ParameterValidator.float_between(
+            params.crossover_rate,
+            0.0,
+            1.0,
+            "Crossover rate"
+        )
+
+        ParameterValidator.int_min(
+            params.radius,
+            1,
+            "Radius"
+        )
+
+        ParameterValidator.int_times_leq(
+            params.radius,
+            2,
+            params.population_size - 1,
+            "Radius"
+        )
 
         self.mutation_factor = params.mutation_factor  # F
         self.crossover_rate = params.crossover_rate  # Cr

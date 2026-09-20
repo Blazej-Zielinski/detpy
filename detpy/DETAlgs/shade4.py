@@ -11,6 +11,7 @@ from detpy.DETAlgs.mutation_methods.current_to_pbest_1 import MutationCurrentToP
 from detpy.DETAlgs.mutation_methods.mutation_randrl_1 import MutationRandrl1
 from detpy.DETAlgs.random.index_generator import IndexGenerator
 from detpy.DETAlgs.random.random_value_generator import RandomValueGenerator
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints_with_parent
 from detpy.models.enums.optimization import OptimizationType
 from detpy.models.population import Population
@@ -47,12 +48,30 @@ class SHADE4(BaseAlg):
     def __init__(self, params: SHADE4Data, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(SHADE4.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
 
-        MIN_POP_SIZE_FOR_PBEST = 10
-        if self.population_size < MIN_POP_SIZE_FOR_PBEST:
-            raise ValueError(
-                "SHADE requires population_size >= 10 "
-                "because p is sampled from [2/NP, 0.2]."
-            )
+        ParameterValidator.min(
+            params.population_size,
+            10,  # Min population size for SHADE
+            "Population size"
+        )
+
+        ParameterValidator.int_min(
+            params.memory_size,
+            1,
+            "Memory size"
+        )
+
+        ParameterValidator.int_min(
+            params.smoothing_constant,
+            2,
+            "Smoothing constant"
+        )
+
+        ParameterValidator.float_between(
+            params.reset_threshold,
+            0.0,
+            1.0,
+            "Reset threshold"
+        )
 
         self._H = params.memory_size  # Memory size for f and cr adaptation
         self._archive_size = self.population_size  # Size of the archive is the same as population

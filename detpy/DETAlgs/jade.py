@@ -3,6 +3,7 @@ from detpy.DETAlgs.data.alg_data import JADEData
 from detpy.DETAlgs.methods.methods_jade import jade_adapt_mutation_factors, jade_binomial_crossing, \
     jade_adapt_crossover_rates, jade_mutation, jade_selection, jade_reduce_archive, draw_norm_dist_within_bounds, \
     draw_cauchy_dist_within_bounds
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 
 
@@ -21,6 +22,70 @@ class JADE(BaseAlg):
 
     def __init__(self, params: JADEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(JADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+
+        ParameterValidator.int_min(
+            params.archive_size,
+            0,
+            "Archive size"
+        )
+
+        ParameterValidator.float_between(
+            params.mutation_factor_mean,
+            0.0,
+            2.0,
+            "Mutation factor mean"
+        )
+
+        ParameterValidator.positive_float(
+            params.mutation_factor_std,
+            "Mutation factor std"
+        )
+
+        ParameterValidator.float_between(
+            params.crossover_rate_mean,
+            0.0,
+            1.0,
+            "Crossover rate mean"
+        )
+
+        ParameterValidator.positive_float(
+            params.crossover_rate_std,
+            "Crossover rate std"
+        )
+
+        ParameterValidator.float_between(
+            params.crossover_rate_low,
+            0.0,
+            1.0,
+            "Crossover rate low"
+        )
+
+        ParameterValidator.float_between(
+            params.crossover_rate_high,
+            0.0,
+            1.0,
+            "Crossover rate high"
+        )
+
+        ParameterValidator.min_max(
+            params.crossover_rate_low,
+            params.crossover_rate_high,
+            "Crossover rate"
+        )
+
+        ParameterValidator.float_between(
+            params.c,
+            0.0,
+            1.0,
+            "C"
+        )
+
+        ParameterValidator.float_between(
+            params.p,
+            0.0,
+            1.0,
+            "P"
+        )
 
         self.archive_size = params.archive_size
         self.archive = []

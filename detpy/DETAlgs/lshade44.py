@@ -12,6 +12,7 @@ from detpy.DETAlgs.mutation_methods.current_to_pbest_1 import MutationCurrentToP
 from detpy.DETAlgs.mutation_methods.mutation_randrl_1 import MutationRandrl1
 from detpy.DETAlgs.random.index_generator import IndexGenerator
 from detpy.DETAlgs.random.random_value_generator import RandomValueGenerator
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints_with_parent
 from detpy.models.enums.optimization import OptimizationType
 from detpy.models.population import Population
@@ -52,12 +53,63 @@ class LSHADE44(BaseAlg):
     def __init__(self, params: LSHADE44Data, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(LSHADE44.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
 
-        MIN_POP_SIZE_FOR_PBEST = 10
-        if self.population_size < MIN_POP_SIZE_FOR_PBEST:
-            raise ValueError(
-                "LSHADE44 requires population_size >= 10 "
-                "because p is sampled from [2/NP, 0.2]."
-            )
+        ParameterValidator.int_min(
+            params.population_size,
+            10,
+            "population_size"
+        )
+
+        ParameterValidator.positive_int(
+            params.memory_size,
+            "memory_size"
+        )
+
+        ParameterValidator.float_between(
+            params.best_member_percentage,
+            0.0,
+            1.0,
+            "best_member_percentage"
+        )
+
+        ParameterValidator.float_times_geq(
+            params.best_member_percentage,
+            params.population_size,
+            1,
+            "best_member_percentage"
+        )
+
+        ParameterValidator.int_min(
+            params.smoothing_constant,
+            2,
+            "smoothing_constant"
+        )
+
+        ParameterValidator.positive_float(
+            params.reset_threshold,
+            "reset_threshold"
+        )
+
+        ParameterValidator.positive_int(
+            params.minimum_population_size,
+            "minimum_population_size"
+        )
+
+        ParameterValidator.int_times_leq(
+            params.minimum_population_size,
+            1,
+            params.population_size,
+            "minimum_population_size"
+        )
+
+        ParameterValidator.positive_int(
+            params.archive_size,
+            "archive_size"
+        )
+
+        ParameterValidator.positive_int(
+            params.pm_to_cr_table_size,
+            "pm_to_cr_table_size"
+        )
 
         self._H = params.memory_size  # Memory size for F and CR adaptation (per strategy)
         self._K = 4  # Number of strategies

@@ -10,6 +10,7 @@ from colorama import Fore, Style
 from tqdm import tqdm
 import numpy as np
 
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.database.database_connector import SQLiteConnector
 from detpy.DETAlgs.data.alg_data import BaseData
 from detpy.helpers.database_helper import get_table_name, format_individuals
@@ -92,6 +93,39 @@ class BaseAlg(ABC):
             raise ValueError(
                 "max_nfe must be greater than or equal to population_size"
             )
+        if len(self.lb) != params.dimension:
+            raise ValueError(
+                f"Lower bounds length ({len(self.lb)}) "
+                f"must equal dimension ({params.dimension})."
+            )
+
+        if len(self.ub) != params.dimension:
+            raise ValueError(
+                f"Upper bounds length ({len(self.ub)}) "
+                f"must equal dimension ({params.dimension})."
+            )
+
+        for i, (lb, ub) in enumerate(zip(self.lb, self.ub)):
+            if lb >= ub:
+                raise ValueError(
+                    f"lb[{i}] must be < ub[{i}], got {lb} >= {ub}."
+                )
+
+        ParameterValidator.int_min(
+            params.population_size,
+            4,
+            "Population size"
+        )
+
+        ParameterValidator.positive_int(
+            params.dimension,
+            "Dimension"
+        )
+
+        ParameterValidator.positive_int(
+            params.max_nfe,
+            "Max NFE"
+        )
 
         self._initialize()
 

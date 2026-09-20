@@ -2,6 +2,7 @@ from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import IDEData
 from detpy.DETAlgs.methods.methods_de import selection, mutation
 from detpy.DETAlgs.methods.methods_ide import ide_get_f, ide_get_cr, ide_binomial_crossing
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 
 
@@ -20,6 +21,19 @@ class IDE(BaseAlg):
 
     def __init__(self, params: IDEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(IDE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+
+        ParameterValidator.int_min(
+            params.y,
+            1,
+            "Y"
+        )
+
+        ParameterValidator.int_times_leq(
+            params.y,
+            2,
+            params.population_size,
+            "Y"
+        )
         self.base_vector_schema = params.base_vector_schema
         self.y = params.y
 

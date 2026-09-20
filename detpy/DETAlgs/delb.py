@@ -2,6 +2,7 @@ from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import DELBData
 from detpy.DETAlgs.methods.methods_delb import delb_mutation, delb_selection
 from detpy.DETAlgs.methods.methods_de import crossing
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 
 
@@ -19,6 +20,20 @@ class DELB(BaseAlg):
 
     def __init__(self, params: DELBData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(DELB.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+
+        ParameterValidator.float_between(
+            params.crossover_rate,
+            0.0,
+            1.0,
+            "Crossover rate"
+        )
+
+        ParameterValidator.float_between(
+            params.w_factor,
+            0.0,
+            1.0,
+            "W factor"
+        )
 
         self.crossover_rate = params.crossover_rate  # Cr
         self.w_factor = params.w_factor  # w

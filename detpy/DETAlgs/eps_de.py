@@ -2,6 +2,7 @@ from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import EPSDEData
 from detpy.DETAlgs.methods.methods_de import mutation, crossing
 from detpy.DETAlgs.methods.methods_eps_de import selection, calculate_epsilon_constrained
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.basevectorschema import BaseVectorSchema
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 from detpy.models.enums.crossingtype import CrossingType
@@ -23,6 +24,36 @@ class EPSDE(BaseAlg):
 
     def __init__(self, params: EPSDEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(EPSDE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+
+        ParameterValidator.float_between(
+            params.mutation_factor,
+            0.0,
+            1.0,
+            "mutation_factor"
+        )
+
+        ParameterValidator.float_between(
+            params.crossover_rate,
+            0.0,
+            1.0,
+            "crossover_rate"
+        )
+
+        ParameterValidator.non_negative(
+            params.epsilon_level,
+            "epsilon_level"
+        )
+
+        ParameterValidator.positive_int(
+            params.penalty_power,
+            "penalty_power"
+        )
+
+        ParameterValidator.non_negative(
+            params.tolerance_h,
+            "tolerance_h"
+        )
+
         self.mutation_factor = params.mutation_factor  # F
         self.crossover_rate = params.crossover_rate  # Cr
         self.g_funcs = params.g_funcs  # Inequality constraints functions

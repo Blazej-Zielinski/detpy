@@ -11,6 +11,7 @@ from random import randint
 from detpy.DETAlgs.methods.methods_lshadersp import archive_reduction, rank_selection
 from detpy.DETAlgs.mutation_methods.current_to_pbest_r import MutationCurrentToPBestR
 from detpy.DETAlgs.random.random_value_generator import RandomValueGenerator
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.math_functions.lehmer_mean import LehmerMean
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints_with_parent
 from detpy.models.enums.optimization import OptimizationType
@@ -31,8 +32,33 @@ class LSHADERSP(BaseAlg):
         Volume 1, pages 149-155
     """
 
-    def __init__(self, params: LSHADERSPData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
+    def __init__(self, params: LSHADERSPData, db_conn=None, db_auto_write=False, db_writing_interval=5000,
+                 verbose=False):
         super().__init__(LSHADERSP.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+
+        ParameterValidator.positive_float(
+            params.scaling_factor_for_rank_selection,
+            "Scaling factor for rank selection"
+        )
+
+        ParameterValidator.int_min(
+            params.memory_size,
+            2,
+            "Memory size"
+        )
+
+        ParameterValidator.int_min(
+            params.minimum_population_size,
+            4,
+            "Minimum population size"
+        )
+
+        ParameterValidator.min_max(
+            params.minimum_population_size,
+            params.population_size,
+            "Population size"
+        )
+
         self._k = params.scaling_factor_for_rank_selection  # Scaling factor for rank selection
         self._H = params.memory_size  # Memory size for f and cr adaptation
         self._memory_F = np.full(self._H, 0.3)  # Initial memory for F
