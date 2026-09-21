@@ -11,6 +11,7 @@ from detpy.DETAlgs.data.alg_data import LShadeEpsinData
 from detpy.DETAlgs.mutation_methods.current_to_pbest_1 import MutationCurrentToPBest1
 from detpy.DETAlgs.random.index_generator import IndexGenerator
 from detpy.DETAlgs.random.random_value_generator import RandomValueGenerator
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints_with_parent
 from detpy.models.enums.optimization import OptimizationType
 from detpy.models.population import Population
@@ -32,6 +33,38 @@ class LShadeEpsin(BaseAlg):
 
     def __init__(self, params: LShadeEpsinData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(LShadeEpsin.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+
+        ParameterValidator.int_min(
+            params.memory_size,
+            1,
+            "memory_size"
+        )
+
+        ParameterValidator.float_between(
+            params.best_member_percentage,
+            0.0,
+            1.0,
+            "best_member_percentage"
+        )
+
+        ParameterValidator.non_negative(
+            params.f_sin_freq,
+            "f_sin_freq"
+        )
+
+        ParameterValidator.int_times_leq(
+            params.minimum_population_size,
+            1,
+            params.population_size,
+            "minimum_population_size"
+        )
+
+        ParameterValidator.float_times_geq(
+            params.best_member_percentage,
+            params.population_size,
+            1,
+            "best_member_percentage"
+        )
 
         self._H = params.memory_size
         self._memory_F = np.full(self._H, 0.5)

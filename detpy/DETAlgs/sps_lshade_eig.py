@@ -12,6 +12,7 @@ from detpy.DETAlgs.methods.methods_sps_lshade_eig import calculate_best_member_c
     mutation_internal
 from detpy.DETAlgs.random.index_generator import IndexGenerator
 from detpy.DETAlgs.random.random_value_generator import RandomValueGenerator
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints_with_parent
 
 from detpy.models.enums.optimization import OptimizationType
@@ -33,8 +34,93 @@ class SPS_LSHADE_EIG(BaseAlg):
      Evolutionary Computation (CEC). IEEE. https://doi.org/10.1109/cec.2015.7256999
      """
 
-    def __init__(self, params: SPSLShadeEIGDATA, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
+    def __init__(self, params: SPSLShadeEIGDATA, db_conn=None, db_auto_write=False, db_writing_interval=5000,
+                 verbose=False):
         super().__init__(SPS_LSHADE_EIG.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+
+        ParameterValidator.int_min(
+            params.memory_size,
+            1,
+            "Memory size"
+        )
+
+        ParameterValidator.int_min(
+            params.q,
+            1,
+            "Q"
+        )
+
+        ParameterValidator.float_between(
+            params.f_init,
+            0.0,
+            1.0,
+            "Initial F"
+        )
+
+        ParameterValidator.float_between(
+            params.cr_init,
+            0.0,
+            1.0,
+            "Initial CR"
+        )
+
+        ParameterValidator.float_between(
+            params.er_init,
+            0.0,
+            1.0,
+            "Initial ER"
+        )
+
+        ParameterValidator.float_between(
+            params.cr_min,
+            0.0,
+            1.0,
+            "CR minimum"
+        )
+
+        ParameterValidator.float_between(
+            params.cr_max,
+            0.0,
+            1.0,
+            "CR maximum"
+        )
+
+        ParameterValidator.min_max(
+            params.cr_min,
+            params.cr_max,
+            "CR"
+        )
+
+        ParameterValidator.float_between(
+            params.learning_rate_init,
+            0.0,
+            1.0,
+            "Initial learning rate"
+        )
+
+        ParameterValidator.float_between(
+            params.p_best_fraction,
+            0.0,
+            1.0,
+            "P-best fraction"
+        )
+
+        ParameterValidator.positive_float(
+            params.w_er,
+            "W ER"
+        )
+
+        ParameterValidator.positive_float(
+            params.w_cr,
+            "W CR"
+        )
+
+        ParameterValidator.positive_float(
+            params.w_f,
+            "W F"
+        )
+
+
 
         self._h = params.memory_size
         self._memory_F = np.full(self._h, params.f_init)
@@ -53,8 +139,6 @@ class SPS_LSHADE_EIG(BaseAlg):
         self._archive_size_sps = self.population_size
         self._archive_sps = list(copy.deepcopy(self._pop.members))
         self._archive = []
-
-        self._w_ext = params.w_ext
 
         self._memory_Er = np.full(self._h, params.er_init)
         self._success_history_idx = 0

@@ -9,6 +9,7 @@ from scipy.stats import iqr
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import DETCRData
 from detpy.DETAlgs.methods.methods_de import selection
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints, get_boundary_constraints_fun
 from detpy.models.enums.optimization import OptimizationType
 from detpy.models.member import Member
@@ -32,6 +33,33 @@ class DETCR(BaseAlg):
     def __init__(self, params: DETCRData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(DETCR.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
 
+        ParameterValidator.positive_int(
+            params.number_of_success_crossover_rate,
+            "number_of_success_crossover_rate"
+        )
+
+        ParameterValidator.float_between(
+            params.lineal_recombination_factor,
+            0.0,
+            1.0,
+            "lineal_recombination_factor"
+        )
+
+        ParameterValidator.positive_int(
+            params.gamma_var,
+            "gamma_var"
+        )
+
+        self._validate_triangular_distribution(
+            params.triangular_distribution_for_crossover_rate,
+            "triangular_distribution_for_crossover_rate"
+        )
+
+        self._validate_triangular_distribution(
+            params.triangular_distribution_for_mutation_factory,
+            "triangular_distribution_for_mutation_factory"
+        )
+
         self.rate_ls = 1 - (1 / (100 * self.nr_of_args))
 
         # Adaptive mechanism
@@ -53,6 +81,36 @@ class DETCR(BaseAlg):
         self.lineal_recombination_factor = params.lineal_recombination_factor
         self.optimization_bounds = np.column_stack((self.lb, self.ub))
 
+    @staticmethod
+    def _validate_triangular_distribution(values, name):
+        if not isinstance(values, (list, tuple)):
+            raise ValueError(
+                f"{name} must be a list or tuple, got {type(values).__name__}."
+            )
+
+        if len(values) != 3:
+            raise ValueError(
+                f"{name} must contain exactly 3 values, got {len(values)}."
+            )
+
+        for value in values:
+            if isinstance(value, bool) or not isinstance(value, (int, float)):
+                raise ValueError(
+                    f"{name} values must be numbers, got {value!r}."
+                )
+
+            if not 0.0 <= value <= 1.0:
+                raise ValueError(
+                    f"{name} values must be in [0.0, 1.0], got {value!r}."
+                )
+
+        minimum, middle, maximum = values
+
+        if not minimum <= middle <= maximum:
+            raise ValueError(
+                f"{name} must satisfy min <= median <= max, "
+                f"got {values!r}."
+            )
     def mutation_ind(self, base_member: Member, member1: Member, member2: Member, f):
         new_member = copy.deepcopy(base_member)
         new_member.chromosomes = base_member.chromosomes + (member1.chromosomes - member2.chromosomes) * f

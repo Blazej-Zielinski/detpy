@@ -1,5 +1,6 @@
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.methods.methods_fiade import mutation, selection, adapt_parameters, fiade_crossing
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 from detpy.DETAlgs.data.alg_data import FiADEData
 
@@ -20,6 +21,18 @@ class FiADE(BaseAlg):
 
     def __init__(self, params: FiADEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(FiADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+
+        ParameterValidator.positive_float(
+            params.mutation_factor,
+            "Mutation factor"
+        )
+
+        ParameterValidator.float_between(
+            params.crossover_rate,
+            0.0,
+            1.0,
+            "Crossover rate"
+        )
 
         # Initialize mutation factors and crossover rates for the population
         self.mutation_factors = [[params.mutation_factor, False] for _ in range(params.population_size)]

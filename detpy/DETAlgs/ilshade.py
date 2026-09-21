@@ -11,6 +11,7 @@ from detpy.DETAlgs.math.math_functions import MathFunctions
 from detpy.DETAlgs.mutation_methods.current_to_pbest_1 import MutationCurrentToPBest1
 from detpy.DETAlgs.random.index_generator import IndexGenerator
 from detpy.DETAlgs.random.random_value_generator import RandomValueGenerator
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints_with_parent
 from detpy.models.enums.ilshade_p_update import ILShadePUpdateStrategy
 from detpy.models.enums.optimization import OptimizationType
@@ -32,6 +33,50 @@ class ILSHADE(BaseAlg):
 
     def __init__(self, params: ILShadeData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(ILSHADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+
+        ParameterValidator.int_min(
+            params.minimum_population_size,
+            4,
+            "Minimum population size"
+        )
+
+        ParameterValidator.min_max(
+            params.minimum_population_size,
+            params.population_size,
+            "Population size"
+        )
+
+        ParameterValidator.int_min(
+            params.memory_size,
+            2,
+            "Memory size"
+        )
+
+        ParameterValidator.float_between(
+            params.p_min,
+            0.0,
+            1.0,
+            "P min"
+        )
+
+        ParameterValidator.float_between(
+            params.p_max,
+            0.0,
+            1.0,
+            "P max"
+        )
+
+        ParameterValidator.min_max(
+            params.p_min,
+            params.p_max,
+            "P"
+        )
+
+        ParameterValidator.max(
+            params.p_min,
+            1.0 / params.minimum_population_size,
+            "P min"
+        )
 
         self._H = params.memory_size
         self._memory_F = np.full(self._H, 0.5)

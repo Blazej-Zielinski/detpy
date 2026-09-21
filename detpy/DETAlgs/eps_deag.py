@@ -10,6 +10,7 @@ from detpy.DETAlgs.methods.methods_de import crossing
 from detpy.DETAlgs.methods.methods_eps_de import calculate_epsilon_constrained
 from detpy.DETAlgs.methods.methods_eps_deag import mutation, selection, calculate_init_epsilon_level, \
     epsilon_constrained_comparator, gradient_mutation, calculate_epsilon_level
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 from detpy.models.enums.crossingtype import CrossingType
 from detpy.models.population import Population
@@ -31,6 +32,68 @@ class EPSDEAG(BaseAlg):
 
     def __init__(self, params: EPSDEAGData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(EPSDEAG.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+
+        ParameterValidator.float_between(
+            params.init_mutation_factor,
+            0.0,
+            1.0,
+            "init_mutation_factor"
+        )
+
+        ParameterValidator.float_between(
+            params.init_crossover_rate,
+            0.0,
+            1.0,
+            "init_crossover_rate"
+        )
+
+        ParameterValidator.positive_float(
+            params.theta,
+            "theta"
+        )
+
+        ParameterValidator.non_negative(
+            params.tolerance_h,
+            "tolerance_h"
+        )
+
+        ParameterValidator.positive_int(
+            params.penalty_power,
+            "penalty_power"
+        )
+
+        ParameterValidator.positive_int(
+            params.control_generations,
+            "control_generations"
+        )
+
+        ParameterValidator.positive_int(
+            params.archive_size,
+            "archive_size"
+        )
+
+        ParameterValidator.float_between(
+            params.gradient_base_mutation_rate,
+            0.0,
+            1.0,
+            "gradient_base_mutation_rate"
+        )
+
+        ParameterValidator.positive_int(
+            params.number_of_repeating_mutation,
+            "number_of_repeating_mutation"
+        )
+
+        ParameterValidator.positive_int(
+            params.number_of_repeating_de_operations,
+            "number_of_repeating_de_operations"
+        )
+
+        ParameterValidator.positive_int(
+            params.gradient_mutation_interval,
+            "gradient_mutation_interval"
+        )
+
         self.number_of_repeating_de_operations = params.number_of_repeating_de_operations
         self.gradient_mutation_interval = params.gradient_mutation_interval
         self.derivative_method = params.derivative_method

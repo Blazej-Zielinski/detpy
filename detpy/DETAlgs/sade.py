@@ -2,6 +2,7 @@ import numpy as np
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import SADEData
 from detpy.DETAlgs.methods.methods_sade import sade_mutation, sade_binomial_crossing, sade_selection
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 
 
@@ -20,6 +21,20 @@ class SADE(BaseAlg):
 
     def __init__(self, params: SADEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(SADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+
+        ParameterValidator.float_between(
+            params.prob_f,
+            0.0,
+            1.0,
+            "Probability F"
+        )
+
+        ParameterValidator.float_between(
+            params.prob_cr,
+            0.0,
+            1.0,
+            "Probability CR"
+        )
 
         # class specific
         self._f_arr = np.random.uniform(size=self.population_size)

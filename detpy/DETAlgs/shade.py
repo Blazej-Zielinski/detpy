@@ -11,6 +11,7 @@ from detpy.DETAlgs.math.math_functions import MathFunctions
 from detpy.DETAlgs.mutation_methods.current_to_pbest_1 import MutationCurrentToPBest1
 from detpy.DETAlgs.random.index_generator import IndexGenerator
 from detpy.DETAlgs.random.random_value_generator import RandomValueGenerator
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 from detpy.models.enums.optimization import OptimizationType
@@ -33,6 +34,18 @@ class SHADE(BaseAlg):
 
     def __init__(self, params: ShadeData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(SHADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+
+        ParameterValidator.min(
+            params.population_size,
+            10,  # Min population size for SHADE
+            "Population size"
+        )
+
+        ParameterValidator.int_min(
+            params.memory_size,
+            1,
+            "Memory size"
+        )
 
         self._H = params.memory_size  # Memory size for f and cr adaptation
         self._memory_F = np.full(self._H, 0.5)  # Initial memory for F

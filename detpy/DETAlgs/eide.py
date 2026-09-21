@@ -3,6 +3,7 @@ from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import EIDEData
 from detpy.DETAlgs.methods.methods_de import mutation, selection, crossing
 from detpy.DETAlgs.methods.methods_eide import eide_adopt_parameters
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 
 
@@ -20,6 +21,33 @@ class EIDE(BaseAlg):
 
     def __init__(self, params: EIDEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(EIDE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+
+        ParameterValidator.float_between(
+            params.crossover_rate_min, 0.0, 1.0, "Crossover rate min"
+        )
+
+        ParameterValidator.float_between(
+            params.crossover_rate_max, 0.0, 1.0, "Crossover rate max"
+        )
+
+        ParameterValidator.min_max(
+            params.crossover_rate_min,
+            params.crossover_rate_max,
+            "Crossover rate"
+        )
+
+        ParameterValidator.int_min(
+            params.y,
+            1,
+            "Y"
+        )
+
+        ParameterValidator.int_times_leq(
+            params.y,
+            2,
+            params.population_size,
+            "Y"
+        )
 
         self.mutation_factor = random.uniform(0, 0.6)
         self.crossover_rate = params.crossover_rate_min

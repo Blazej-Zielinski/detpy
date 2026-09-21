@@ -9,6 +9,7 @@ from detpy.DETAlgs.mutation_methods.current_to_pbest_1 import MutationCurrentToP
 from detpy.DETAlgs.mutation_methods.current_to_xamean import MutationCurrentToXamean
 from detpy.DETAlgs.random.index_generator import IndexGenerator
 from detpy.DETAlgs.random.random_value_generator import RandomValueGenerator
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.math_functions.lehmer_mean import LehmerMean
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints_with_parent
 from detpy.models.enums.optimization import OptimizationType
@@ -31,6 +32,38 @@ class ALSHADE(BaseAlg):
 
     def __init__(self, params: ALSHADEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(ALSHADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+
+        ParameterValidator.int_min(
+            params.minimum_population_size,
+            4,
+            "Minimum population size"
+        )
+
+        ParameterValidator.int_min(
+            params.memory_size,
+            2,
+            "Memory size"
+        )
+
+        ParameterValidator.int_min(
+            params.archive_size,
+            1,
+            "Archive size"
+        )
+
+        ParameterValidator.float_between(
+            params.elite_factor,
+            0.0,
+            1.0,
+            "Elite factor"
+        )
+
+        ParameterValidator.float_between(
+            params.init_probability_mutation_strategy,
+            0.0,
+            1.0,
+            "Initial probability of mutation strategy"
+        )
 
         self._lehmer_mean = LehmerMean()
 

@@ -6,6 +6,7 @@ from detpy.DETAlgs.methods.methods_eps_deag import calculate_epsilon_level
 from detpy.DETAlgs.methods.methods_eps_deg import calculate_init_epsilon_level
 from detpy.DETAlgs.methods.methods_eps_rde import mutation, crossing, create_ranks, calculate_mutation_factors, calculate_crossover_rates
 from detpy.DETAlgs.random.index_generator import IndexGenerator
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 
 
@@ -25,6 +26,72 @@ class EPSRDE(BaseAlg):
 
     def __init__(self, params: EPSRDEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(EPSRDE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+        ParameterValidator.float_between(
+            params.min_mutation_factor,
+            0.0,
+            1.0,
+            "min_mutation_factor"
+        )
+
+        ParameterValidator.float_between(
+            params.max_mutation_factor,
+            0.0,
+            1.0,
+            "max_mutation_factor"
+        )
+
+        ParameterValidator.min_max(
+            params.min_mutation_factor,
+            params.max_mutation_factor,
+            "mutation_factor"
+        )
+
+        ParameterValidator.float_between(
+            params.min_crossover_rate,
+            0.0,
+            1.0,
+            "min_crossover_rate"
+        )
+
+        ParameterValidator.float_between(
+            params.max_crossover_rate,
+            0.0,
+            1.0,
+            "max_crossover_rate"
+        )
+
+        ParameterValidator.min_max(
+            params.min_crossover_rate,
+            params.max_crossover_rate,
+            "crossover_rate"
+        )
+
+        ParameterValidator.positive_int(
+            params.penalty_power,
+            "penalty_power"
+        )
+
+        ParameterValidator.positive_int(
+            params.control_generations,
+            "control_generations"
+        )
+
+        ParameterValidator.positive_int(
+            params.epsilon_scaling_factor,
+            "epsilon_scaling_factor"
+        )
+
+        if params.theta is not None:
+            ParameterValidator.positive_int(
+                params.theta,
+                "theta"
+            )
+
+        ParameterValidator.non_negative(
+            params.tolerance_h,
+            "tolerance_h"
+        )
+
         self.crossing_type = params.crossing_type
         self.min_mutation_factor = params.min_mutation_factor  # min F
         self.max_mutation_factor = params.max_mutation_factor  # max F

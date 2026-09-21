@@ -3,6 +3,7 @@ from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import NMDEData
 from detpy.DETAlgs.methods.methods_nmde import nmde_mutation, nmde_selection, nmde_calculate_fm_crm, \
     nmde_binomial_crossing, nmde_update_f_cr
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 
 
@@ -21,6 +22,22 @@ class NMDE(BaseAlg):
 
     def __init__(self, params: NMDEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(NMDE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+
+        ParameterValidator.positive_float(
+            params.delta_f,
+            "Delta F"
+        )
+
+        ParameterValidator.positive_float(
+            params.delta_cr,
+            "Delta CR"
+        )
+
+        ParameterValidator.int_min(
+            params.sp,
+            1,
+            "SP"
+        )
 
         self.delta_f = params.delta_f
         self.delta_cr = params.delta_cr

@@ -11,6 +11,7 @@ from detpy.DETAlgs.math.math_functions import MathFunctions
 from detpy.DETAlgs.mutation_methods.current_to_pbest_1 import MutationCurrentToPBest1
 from detpy.DETAlgs.random.index_generator import IndexGenerator
 from detpy.DETAlgs.random.random_value_generator import RandomValueGenerator
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints_with_parent
 from detpy.models.enums.optimization import OptimizationType
 
@@ -30,8 +31,46 @@ class LSHADE(BaseAlg):
         Evolutionary Computation (CEC). IEEE. https://doi.org/10.1109/cec.2014.6900380
     """
 
-    def __init__(self, params: LShadeData, db_conn=None, db_auto_write=True,db_writing_interval=5000,verbose=False):
+    def __init__(self, params: LShadeData, db_conn=None, db_auto_write=True, db_writing_interval=5000, verbose=False):
         super().__init__(LSHADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+
+        ParameterValidator.int_min(
+            params.memory_size,
+            1,
+            "Memory size"
+        )
+
+        ParameterValidator.int_min(
+            params.population_size,
+            2,
+            "Population size"
+        )
+
+        ParameterValidator.int_min(
+            params.minimum_population_size,
+            2,
+            "Minimum population size"
+        )
+
+        if params.minimum_population_size > params.population_size:
+            raise ValueError(
+                "Minimum population size must be <= population size, "
+                f"got {params.minimum_population_size} > {params.population_size}."
+            )
+
+        ParameterValidator.float_between(
+            params.best_member_percentage,
+            0.0,
+            1.0,
+            "Best member percentage"
+        )
+
+        ParameterValidator.int_times_geq(
+            params.population_size,
+            params.best_member_percentage,
+            1,
+            "Population size"
+        )
 
         self._H = params.memory_size  # Memory size for f and cr adaptation
         self._memory_F = np.full(self._H, 0.5)  # Initial memory for F

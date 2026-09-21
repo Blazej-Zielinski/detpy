@@ -7,6 +7,7 @@ from detpy.DETAlgs.methods.methods_fdde import (
     fdde_mutation,
 )
 from detpy.DETAlgs.methods.methods_de import crossing, selection
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 from detpy.models.enums.ranking_type import RankingType
 
@@ -26,6 +27,20 @@ class FDDE(BaseAlg):
 
     def __init__(self, params: FDDEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(FDDE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+
+        ParameterValidator.float_between(
+            params.mutation_factor,
+            0.0,
+            1.0,
+            "mutation_factor"
+        )
+
+        ParameterValidator.float_between(
+            params.crossover_rate,
+            0.0,
+            1.0,
+            "crossover_rate"
+        )
 
         self.mutation_factor = params.mutation_factor
         self.crossover_rate = params.crossover_rate

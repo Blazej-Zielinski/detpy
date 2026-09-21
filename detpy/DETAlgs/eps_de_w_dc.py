@@ -3,6 +3,7 @@ from detpy.DETAlgs.data.alg_data import EPSDEwDCData
 from detpy.DETAlgs.methods.methods_de import mutation, crossing
 from detpy.DETAlgs.methods.methods_eps_de import selection, calculate_epsilon_constrained
 from detpy.DETAlgs.methods.methods_eps_de_w_dc import calculate_t_prime, epsilon_dynamic_control
+from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.basevectorschema import BaseVectorSchema
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 from detpy.models.enums.crossingtype import CrossingType
@@ -24,6 +25,45 @@ class EPSDEwDC(BaseAlg):
 
     def __init__(self, params: EPSDEwDCData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
         super().__init__(EPSDEwDC.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+        ParameterValidator.float_between(
+            params.mutation_factor,
+            0.0,
+            1.0,
+            "mutation_factor"
+        )
+
+        ParameterValidator.float_between(
+            params.crossover_rate,
+            0.0,
+            1.0,
+            "crossover_rate"
+        )
+
+        ParameterValidator.positive_int(
+            params.penalty_power,
+            "penalty_power"
+        )
+
+        if params.theta is not None:
+            ParameterValidator.positive_int(
+                params.theta,
+                "theta"
+            )
+
+        ParameterValidator.non_negative(
+            params.tolerance_h,
+            "tolerance_h"
+        )
+
+        ParameterValidator.positive_int(
+            params.eta,
+            "eta"
+        )
+
+        ParameterValidator.positive_int(
+            params.control_generations,
+            "control_generations"
+        )
         self.mutation_factor = params.mutation_factor  # F
         self.crossover_rate = params.crossover_rate  # Cr
         self.g_funcs = params.g_funcs  # Inequality constraints functions
