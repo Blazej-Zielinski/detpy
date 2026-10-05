@@ -20,8 +20,8 @@ class NMDE(BaseAlg):
         https://doi.org/10.1016/j.camwa.2011.01.029
     """
 
-    def __init__(self, params: NMDEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
-        super().__init__(NMDE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+    def __init__(self, params: NMDEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False, monitor=None):
+        super().__init__(NMDE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.positive_float(
             params.delta_f,

@@ -35,8 +35,8 @@ class SPS_LSHADE_EIG(BaseAlg):
      """
 
     def __init__(self, params: SPSLShadeEIGDATA, db_conn=None, db_auto_write=False, db_writing_interval=5000,
-                 verbose=False):
-        super().__init__(SPS_LSHADE_EIG.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+                 verbose=False, monitor=None):
+        super().__init__(SPS_LSHADE_EIG.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.int_min(
             params.memory_size,

@@ -31,8 +31,8 @@ class LShadeEpsin(BaseAlg):
      https://doi.org/10.1109/cec.2016.7744163
      """
 
-    def __init__(self, params: LShadeEpsinData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
-        super().__init__(LShadeEpsin.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+    def __init__(self, params: LShadeEpsinData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False, monitor=None):
+        super().__init__(LShadeEpsin.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.int_min(
             params.memory_size,

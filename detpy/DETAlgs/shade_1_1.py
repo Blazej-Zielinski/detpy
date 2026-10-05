@@ -33,8 +33,8 @@ class SHADE_1_1(BaseAlg):
     """
 
     def __init__(self, params: Shade_1_1_Data, db_conn=None, db_auto_write=False, db_writing_interval=5000,
-                 verbose=False):
-        super().__init__(SHADE_1_1.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+                 verbose=False, monitor=None):
+        super().__init__(SHADE_1_1.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.min(
             params.population_size,

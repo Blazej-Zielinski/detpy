@@ -4,7 +4,7 @@ import traceback
 import uuid
 from abc import ABC, abstractmethod
 import datetime
-from statistics import mean, stdev
+from typing import Optional
 
 from colorama import Fore, Style
 from tqdm import tqdm
@@ -19,13 +19,14 @@ from detpy.models.algorithm_result import AlgorithmResult
 from detpy.models.fitness_function import FitnessFunctionWrapper, FitnessFunction
 from detpy.models.population import Population
 from detpy.helpers.logger import Logger
+from detpy.monitoring.monitor import EpochData, Monitor
 
 
 def example_function(x1, x2, x3, x4, x5, x6, x7, x8, x9, x10):
     return (x1 - 1) ** 2 + (x2 - 2) ** 2 + (x3 - 3) ** 2 + \
-           (x4 - 4) ** 2 + (x5 - 5) ** 2 + (x6 - 6) ** 2 + \
-           (x7 - 7) ** 2 + (x8 - 8) ** 2 + (x9 - 9) ** 2 + \
-           (x10 - 10) ** 2
+        (x4 - 4) ** 2 + (x5 - 5) ** 2 + (x6 - 6) ** 2 + \
+        (x7 - 7) ** 2 + (x8 - 8) ** 2 + (x9 - 9) ** 2 + \
+        (x10 - 10) ** 2
 
 
 class BaseAlg(ABC):
@@ -37,7 +38,8 @@ class BaseAlg(ABC):
             db_conn=None,
             db_auto_write=False,
             db_writing_interval=5000,
-            verbose=False
+            verbose=False,
+            monitor: Optional[Monitor] = None
     ):
         self.name = name
 
@@ -78,6 +80,13 @@ class BaseAlg(ABC):
 
         # Use Logger for output control
         self.logger = Logger(verbose)
+
+        if monitor is not None and not isinstance(monitor, Monitor):
+            raise TypeError(
+                "monitor must be an instance of detpy.monitoring.Monitor"
+            )
+
+        self.monitor = monitor
 
         if self.db_writing_interval <= 0:
             raise ValueError("db_writing_interval must be positive")
@@ -128,6 +137,99 @@ class BaseAlg(ABC):
         )
 
         self._initialize()
+
+    def _calculate_population_diversity(self):
+        population_array = np.array([
+            member.get_chromosomes()
+            for member in self._pop.members
+        ], dtype=float)
+
+        if population_array.size == 0:
+            return 0.0
+
+        if population_array.ndim != 2:
+            return 0.0
+
+        if len(population_array) <= 1:
+            return 0.0
+
+        bounds_range = np.asarray(self.ub, dtype=float) - np.asarray(
+            self.lb,
+            dtype=float
+        )
+
+        if np.any(bounds_range <= 0):
+            return 0.0
+
+        normalized_population = (
+                                        population_array - np.asarray(self.lb, dtype=float)
+                                ) / bounds_range
+
+        coordinate_std = np.std(
+            normalized_population,
+            axis=0,
+            ddof=0
+        )
+
+        return float(np.mean(coordinate_std))
+
+    def _close_monitor(self):
+        if self.monitor is None:
+            return
+
+        try:
+            self.monitor.close()
+        except Exception as e:
+            self.logger.log(
+                f"Monitoring close error: {e}"
+            )
+
+    def get_monitor_metrics(self) -> dict:
+        """
+        Return algorithm-specific metrics for monitoring.
+
+        Algorithms can override this method to expose
+        additional metrics to Monitor implementations.
+        """
+        return {}
+
+    def _log_monitor_epoch(self, monitor_data: EpochData):
+        if self.monitor is None:
+            return
+
+        try:
+            self.monitor.log_epoch(
+                monitor_data,
+                metrics=self.get_monitor_metrics()
+            )
+        except Exception as e:
+            self.logger.log(
+                f"Monitoring error: {e}"
+            )
+    def _build_epoch_data(
+            self,
+            epoch,
+            nfe,
+            best_fitness,
+            mean_fitness,
+            std_fitness,
+            epoch_time,
+            population_fitnesses,
+            evaluations_per_second=None
+    ):
+        return EpochData(
+            algorithm_name=self.name,
+            epoch=epoch,
+            nfe=nfe,
+            best_fitness=best_fitness,
+            mean_fitness=mean_fitness,
+            std_fitness=std_fitness,
+            epoch_time=epoch_time,
+            population_diversity=self._calculate_population_diversity(),
+            population_min_fitness=min(population_fitnesses),
+            population_max_fitness=max(population_fitnesses),
+            evaluations_per_second=evaluations_per_second
+        )
 
     @abstractmethod
     def next_epoch(self):
@@ -205,6 +307,37 @@ class BaseAlg(ABC):
 
         epoch_metrics.append(epoch_metric)
 
+        initial_best_member = self._pop.get_best_members(1)[0]
+
+        best_fitness_values.append(
+            initial_best_member.fitness_value
+        )
+
+        nfe_numbers.append(
+            self.nfe
+        )
+
+        initial_fitnesses = [
+            member.fitness_value
+            for member in self._pop.members
+        ]
+
+        self._log_monitor_epoch(
+            self._build_epoch_data(
+                epoch=0,
+                nfe=self.nfe,
+                best_fitness=initial_best_member.fitness_value,
+                mean_fitness=np.mean(initial_fitnesses),
+                std_fitness=(
+                    np.std(initial_fitnesses)
+                    if len(initial_fitnesses) > 1
+                    else 0.0
+                ),
+                epoch_time=self._total_init_time,
+                population_fitnesses=initial_fitnesses
+            )
+        )
+
         total_start_time = time.time()
 
         # Index of the first metric that has not yet been saved
@@ -220,7 +353,7 @@ class BaseAlg(ABC):
         # Since NFE can jump over the exact value, e.g.
         # 882 -> 1156, the write happens at 1156.
         next_db_write_nfe = self.db_writing_interval
-
+        previous_nfe = self.nfe
         # Epoch 0 - metrics after init
         if (
                 self._database is not None
@@ -268,19 +401,9 @@ class BaseAlg(ABC):
                     )
                     break
 
-                best_member = self._pop.get_best_members(1)[0]
-
-                best_fitness_values.append(
-                    best_member.fitness_value
-                )
-
-                nfe_numbers.append(
-                    self._function.evaluation_count
-                )
-
                 # Update progress bar
                 progress_difference = (
-                    self._function.evaluation_count - pbar.n
+                        self._function.evaluation_count - pbar.n
                 )
                 pbar.update(progress_difference)
 
@@ -289,46 +412,134 @@ class BaseAlg(ABC):
 
                     self._epoch_number += 1
 
+                    # -----------------------------------------
                     # Execute next epoch
+                    # -----------------------------------------
+
                     self.next_epoch()
 
-                    # Calculate metrics
+                    # -----------------------------------------
+                    # Current state AFTER epoch
+                    # -----------------------------------------
+
+                    current_nfe = self._function.evaluation_count
+
+                    best_member = self._pop.get_best_members(1)[0]
+
+                    best_fitness = best_member.fitness_value
+
+                    # -----------------------------------------
+                    # Epoch timing
+                    # -----------------------------------------
+
+                    epoch_time = time.time() - epoch_start_time
+
+                    # -----------------------------------------
+                    # Fitness statistics
+                    # -----------------------------------------
+
+                    population_fitnesses = [
+                        member.fitness_value
+                        for member in self._pop.members
+                    ]
+
+                    avg_fitness = float(
+                        np.mean(population_fitnesses)
+                    )
+
+                    if len(population_fitnesses) > 1:
+                        std_fitness = float(
+                            np.std(population_fitnesses, ddof=0)
+                        )
+                    else:
+                        std_fitness = 0.0
+
+                    # -----------------------------------------
+                    # Store values for plotting
+                    # -----------------------------------------
+
+                    best_fitness_values.append(
+                        best_fitness
+                    )
+
+                    nfe_numbers.append(
+                        current_nfe
+                    )
+
+                    avg_fitness_values.append(
+                        avg_fitness
+                    )
+
+                    std_fitness_values.append(
+                        std_fitness
+                    )
+
+                    # -----------------------------------------
+                    # Metrics
+                    # -----------------------------------------
+
                     epoch_metric = MetricHelper.calculate_metrics(
                         self._pop,
                         epoch_start_time,
                         self._epoch_number,
-                        self._function.evaluation_count,
+                        current_nfe,
                         self.log_population
                     )
 
-                    epoch_metrics.append(epoch_metric)
-
-                    avg_fitness = mean(
-                        member.fitness_value
-                        for member in self._pop.members
+                    epoch_metrics.append(
+                        epoch_metric
                     )
 
-                    avg_fitness_values.append(avg_fitness)
+                    # -----------------------------------------
+                    # Performance
+                    # -----------------------------------------
 
-                    std_fitness = stdev(
-                        member.fitness_value
-                        for member in self._pop.members
+                    evaluations = (
+                            current_nfe - previous_nfe
                     )
 
-                    std_fitness_values.append(std_fitness)
+                    evaluations_per_second = (
+                        evaluations / epoch_time
+                        if epoch_time > 0
+                        else 0.0
+                    )
+
+                    previous_nfe = current_nfe
+
+                    # -----------------------------------------
+                    # Console logger
+                    # -----------------------------------------
 
                     self.logger.log(
-                        f"NFE {self._function.evaluation_count}/"
+                        f"NFE {current_nfe}/"
                         f"{self.nfe_max}, "
-                        f"Best Fitness: {best_member.fitness_value}, "
+                        f"Best Fitness: {best_fitness}, "
                         f"Best Individual: "
                         f"{[member.real_value for member in best_member.chromosomes]}, "
                         f"Avg: {avg_fitness}, "
                         f"Std: {std_fitness}"
                     )
 
+                    # -----------------------------------------
+                    # Monitor
+                    # -----------------------------------------
+
+                    self._log_monitor_epoch(
+                        self._build_epoch_data(
+                            epoch=self._epoch_number,
+                            nfe=current_nfe,
+                            best_fitness=best_fitness,
+                            mean_fitness=avg_fitness,
+                            std_fitness=std_fitness,
+                            epoch_time=epoch_time,
+                            population_fitnesses=population_fitnesses,
+                            evaluations_per_second=evaluations_per_second
+                        )
+                    )
+
+                    # -----------------------------------------
                     # Database auto write
-                    current_nfe = self._function.evaluation_count
+                    # -----------------------------------------
 
                     if (
                             self._database is not None
@@ -359,6 +570,7 @@ class BaseAlg(ABC):
                         f"{e}"
                     )
 
+                    self._close_monitor()
                     return epoch_metrics
 
             # Ensure the progress bar finishes even if stopped early
@@ -376,8 +588,18 @@ class BaseAlg(ABC):
             f"Execution time: {round(execution_time, 2)} seconds"
         )
 
-        avg_fitness = np.mean(best_fitness_values)
-        std_fitness = np.std(best_fitness_values)
+        final_population_fitnesses = [
+            member.fitness_value
+            for member in self._pop.members
+        ]
+
+        avg_fitness = float(
+            np.mean(final_population_fitnesses)
+        )
+
+        std_fitness = float(
+            np.std(final_population_fitnesses, ddof=0)
+        )
 
         best_solution = self._pop.get_best_members(1)[0]
 
@@ -389,7 +611,6 @@ class BaseAlg(ABC):
         self.logger.log(
             f"Best Solution: {best_solution}"
         )
-
 
         # FINAL DATABASE WRITE
         # If db_auto_write=False:
@@ -455,6 +676,8 @@ class BaseAlg(ABC):
                 std_fitness_values,
                 method_name=self.name
             )
+
+        self._close_monitor()
 
         return result
 

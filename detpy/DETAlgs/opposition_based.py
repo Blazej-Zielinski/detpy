@@ -19,8 +19,8 @@ class OppBasedDE(BaseAlg):
         doi: 10.1109/TEVC.2007.894200.
     """
 
-    def __init__(self, params: OppBasedData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
-        super().__init__(OppBasedDE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+    def __init__(self, params: OppBasedData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False, monitor=None):
+        super().__init__(OppBasedDE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         self.mutation_factor = params.mutation_factor  # F
         self.crossover_rate = params.crossover_rate  # Cr

@@ -19,8 +19,8 @@ class SADE(BaseAlg):
         , Xiamen, 2008, pp. 524-527, doi: 10.1109/ISKE.2008.4730987.
     """
 
-    def __init__(self, params: SADEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
-        super().__init__(SADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+    def __init__(self, params: SADEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False, monitor=None):
+        super().__init__(SADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.float_between(
             params.prob_f,

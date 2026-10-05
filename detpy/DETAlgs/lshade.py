@@ -31,8 +31,8 @@ class LSHADE(BaseAlg):
         Evolutionary Computation (CEC). IEEE. https://doi.org/10.1109/cec.2014.6900380
     """
 
-    def __init__(self, params: LShadeData, db_conn=None, db_auto_write=True, db_writing_interval=5000, verbose=False):
-        super().__init__(LSHADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+    def __init__(self, params: LShadeData, db_conn=None, db_auto_write=True, db_writing_interval=5000, verbose=False, monitor=None):
+        super().__init__(LSHADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.int_min(
             params.memory_size,

@@ -30,8 +30,8 @@ class EPSADE(BaseAlg):
           18-23 July 2010, Barcelona, Spain doi: 10.1109/CEC.2010.5586545.
     """
 
-    def __init__(self, params: EPSADEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
-        super().__init__(EPSADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+    def __init__(self, params: EPSADEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False, monitor=None):
+        super().__init__(EPSADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.float_between(
             params.init_mutation_factor, 0.0, 1.0, "init_mutation_factor"

@@ -19,8 +19,8 @@ class EMDE(BaseAlg):
         Int. J. Mach. Learn. & Cyber. 8, 989–1007 (2017). https://doi.org/10.1007/s13042-015-0479-6
     """
 
-    def __init__(self, params: EMDEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
-        super().__init__(EMDE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+    def __init__(self, params: EMDEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False, monitor=None):
+        super().__init__(EMDE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.float_between(
             params.crossover_rate,

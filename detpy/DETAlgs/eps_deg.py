@@ -25,8 +25,8 @@ class EPSDEG(BaseAlg):
            E. Mezura-Montes, Ed. Springer-Verlag, 2009, pp. 51–72.
     """
 
-    def __init__(self, params: EPSDEGData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
-        super().__init__(EPSDEG.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+    def __init__(self, params: EPSDEGData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False, monitor=None):
+        super().__init__(EPSDEG.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.float_between(
             params.mutation_factor,

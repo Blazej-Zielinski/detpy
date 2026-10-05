@@ -22,8 +22,8 @@ class EPSDE(BaseAlg):
           08-11 October 2006, Taipei,Taiwan doi: 10.1109/ICSMC.2006.385209.
     """
 
-    def __init__(self, params: EPSDEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
-        super().__init__(EPSDE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+    def __init__(self, params: EPSDEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False, monitor=None):
+        super().__init__(EPSDE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.float_between(
             params.mutation_factor,

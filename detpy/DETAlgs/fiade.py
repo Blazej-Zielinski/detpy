@@ -19,8 +19,8 @@ class FiADE(BaseAlg):
         doi: 10.1016/j.ins.2011.03.010
     """
 
-    def __init__(self, params: FiADEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
-        super().__init__(FiADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+    def __init__(self, params: FiADEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False, monitor=None):
+        super().__init__(FiADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.positive_float(
             params.mutation_factor,
