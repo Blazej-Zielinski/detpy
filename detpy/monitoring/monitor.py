@@ -87,3 +87,6 @@ class Monitor(ABC):
         """
         pass
 
+    def log_final(self, monitor_data, metrics):
+        pass
+

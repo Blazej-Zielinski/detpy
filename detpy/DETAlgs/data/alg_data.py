@@ -176,6 +176,7 @@ class LShadeData(BaseData):
     minimum_population_size: int = 5
     memory_size: int = 5
     best_member_percentage: float = 0.2
+    archive_ratio: float = 1.0
 
 
 @dataclass

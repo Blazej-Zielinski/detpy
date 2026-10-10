@@ -322,6 +322,16 @@ class BaseAlg(ABC):
             for member in self._pop.members
         ]
 
+        avg_fitness_values.append(
+            float(np.mean(initial_fitnesses))
+        )
+
+        std_fitness_values.append(
+            float(np.std(initial_fitnesses, ddof=0))
+            if len(initial_fitnesses) > 1
+            else 0.0
+        )
+
         self._log_monitor_epoch(
             self._build_epoch_data(
                 epoch=0,
@@ -677,9 +687,40 @@ class BaseAlg(ABC):
                 method_name=self.name
             )
 
+        if self.monitor is not None:
+            try:
+                final_fitnesses = [
+                    member.fitness_value
+                    for member in self._pop.members
+                ]
+
+                final_best = self._pop.get_best_members(1)[0]
+
+                final_monitor_data = self._build_epoch_data(
+                    epoch=self._epoch_number,
+                    nfe=self.nfe,
+                    best_fitness=final_best.fitness_value,
+                    mean_fitness=float(np.mean(final_fitnesses)),
+                    std_fitness=float(np.std(final_fitnesses, ddof=0)),
+                    epoch_time=execution_time,
+                    population_fitnesses=final_fitnesses
+                )
+
+                if hasattr(self.monitor, "log_final"):
+                    self.monitor.log_final(
+                        final_monitor_data,
+                        metrics=self.get_monitor_metrics()
+                    )
+                else:
+                    self._log_monitor_epoch(final_monitor_data)
+
+            except Exception as e:
+                self.logger.log(f"Final monitoring error: {e}")
+
         self._close_monitor()
 
         return result
+
 
     def write_results_to_database(self, results_data):
         self.logger.log(

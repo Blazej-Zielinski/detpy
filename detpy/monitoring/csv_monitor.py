@@ -1,322 +1,290 @@
 import csv
-import numbers
+import logging
+import os
+from dataclasses import asdict
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Any, Optional
 
 from detpy.monitoring.monitor import Monitor, EpochData
 
 
 class CSVMonitor(Monitor):
     """
-    CSV monitor for DETPy optimization algorithms.
+    Monitors optimization progress by writing data to two CSV files:
+      - general_metrics.csv
+      - specific_metrics.csv
 
-    Standard metrics are stored as regular CSV columns.
-
-    Algorithm-specific metrics are stored under:
-
-        algorithm_metrics/<metric_name>
+    Parameters:
+        log_dir: Base output directory.
+        experiment_name: Name of the experiment.
+        every_nfe: Minimum number of additional function evaluations
+                   between logged data points.
+        flush_every: Number of logged points between disk synchronizations;
+                     1 means synchronizing after every point.
     """
-
-    BASE_FIELDS = [
-        "epoch",
-        "nfe",
-        "best_fitness",
-        "mean_fitness",
-        "std_fitness",
-        "population_min_fitness",
-        "population_max_fitness",
-        "population_diversity",
-        "epoch_time",
-        "evaluations_per_second",
-    ]
 
     def __init__(
         self,
-        log_dir="runs",
-        experiment_name=None,
-        filename="metrics.csv",
-        every_epochs=None,
-        every_nfe=None,
-        flush_every=1,
+        log_dir: str = "runs",
+        experiment_name: str = "experiment",
+        every_nfe: int = 100,
+        flush_every: int = 1,
     ):
-        if every_epochs is not None and every_epochs < 1:
-            raise ValueError(
-                "every_epochs must be >= 1"
-            )
+        super().__init__()
 
-        if every_nfe is not None and every_nfe < 1:
-            raise ValueError(
-                "every_nfe must be >= 1"
-            )
+        if every_nfe < 1:
+            raise ValueError("every_nfe must be >= 1")
 
         if flush_every < 1:
-            raise ValueError(
-                "flush_every must be >= 1"
-            )
+            raise ValueError("flush_every must be >= 1")
 
-        if (
-            every_epochs is None
-            and every_nfe is None
-        ):
-            every_epochs = 1
+        self.log_dir = Path(log_dir) / experiment_name
+        self.log_dir.mkdir(parents=True, exist_ok=True)
 
-        self.every_epochs = every_epochs
+        self.general_path = self.log_dir / "general_metrics.csv"
+        self.specific_path = self.log_dir / "specific_metrics.csv"
+
         self.every_nfe = every_nfe
         self.flush_every = flush_every
 
-        self._next_nfe = (
-            every_nfe
-            if every_nfe is not None
-            else None
+        self._last_logged_nfe: Optional[int] = None
+        self._last_logged_epoch: Optional[int] = None
+        self._rows_since_flush = 0
+        self._closed = False
+
+        self._general_rows: list[dict[str, Any]] = []
+        self._specific_rows: list[dict[str, Any]] = []
+
+        self._general_fields: list[str] = []
+        self._specific_fields: list[str] = []
+
+        # Create the files immediately so they are available
+        # before the first monitoring point is recorded.
+        self._initialize_file(self.general_path)
+        self._initialize_file(self.specific_path)
+
+        logging.info(
+            "CSVMonitor is writing data to: %s",
+            self.log_dir.resolve(),
         )
 
-        self._logged_since_flush = 0
+    @staticmethod
+    def _initialize_file(path: Path) -> None:
+        """Create an empty CSV file if it does not already exist."""
+        if not path.exists():
+            with path.open("w", newline="", encoding="utf-8") as file:
+                file.flush()
+                os.fsync(file.fileno())
 
-        self.log_dir = Path(log_dir)
+    @staticmethod
+    def _ordered_fields(
+        existing: list[str],
+        row: dict[str, Any],
+    ) -> list[str]:
+        """Return the existing field names extended with any new keys."""
+        fields = list(existing)
 
-        if experiment_name:
-            self.log_dir = (
-                self.log_dir / experiment_name
-            )
+        for key in row:
+            if key not in fields:
+                fields.append(key)
 
-        self.log_dir.mkdir(
-            parents=True,
-            exist_ok=True,
+        return fields
+
+    def _sync_file(self, path: Path) -> None:
+        """Force the file contents to be synchronized with the disk."""
+        with path.open("a", encoding="utf-8") as file:
+            file.flush()
+            os.fsync(file.fileno())
+
+    def _write_csv(
+        self,
+        path: Path,
+        row: dict[str, Any],
+        rows: list[dict[str, Any]],
+        fields: list[str],
+    ) -> list[str]:
+        """
+        Write a record to the CSV file immediately.
+
+        If new metrics appear, extend the header and rewrite the file
+        while preserving all previously recorded rows.
+        """
+        new_fields = self._ordered_fields(fields, row)
+
+        if new_fields != fields:
+            # New columns require the CSV header to be rewritten.
+            rows.append(dict(row))
+
+            with path.open(
+                "w",
+                newline="",
+                encoding="utf-8",
+            ) as file:
+                writer = csv.DictWriter(
+                    file,
+                    fieldnames=new_fields,
+                    extrasaction="ignore",
+                )
+                writer.writeheader()
+                writer.writerows(rows)
+
+                file.flush()
+                os.fsync(file.fileno())
+
+            return new_fields
+
+        needs_header = (
+            not path.exists()
+            or path.stat().st_size == 0
         )
 
-        self.filepath = (
-            self.log_dir / filename
-        )
-
-        self.file = self.filepath.open(
-            mode="w",
+        with path.open(
+            "a",
             newline="",
             encoding="utf-8",
-        )
+        ) as file:
+            writer = csv.DictWriter(
+                file,
+                fieldnames=new_fields,
+                extrasaction="ignore",
+            )
 
-        self.writer = None
-        self._fieldnames = None
+            if needs_header:
+                writer.writeheader()
 
-        # Rows received before the CSV schema
-        # can be determined.
-        self._pending_rows = []
+            writer.writerow(row)
+            file.flush()
 
-    def _should_log(
-        self,
-        data: EpochData,
-    ) -> bool:
-        """
-        Determine whether the current epoch
-        should be logged.
-        """
+            # flush_every=1 means synchronizing after every logged point.
+            # For larger values, synchronization occurs after the
+            # configured number of writes.
+            self._rows_since_flush += 1
 
-        if (
-            self.every_epochs is not None
-            and data.epoch % self.every_epochs == 0
-        ):
-            return True
+            if self._rows_since_flush >= self.flush_every:
+                os.fsync(file.fileno())
+                self._rows_since_flush = 0
 
-        if (
-            self._next_nfe is not None
-            and data.nfe >= self._next_nfe
-        ):
-            return True
+        rows.append(dict(row))
+        return new_fields
 
-        return False
-
-    def _update_nfe_threshold(
-        self,
-        data: EpochData,
-    ):
-        """
-        Move the NFE threshold forward.
-        """
-
-        if self._next_nfe is None:
-            return
-
-        while data.nfe >= self._next_nfe:
-            self._next_nfe += self.every_nfe
-
-    def _build_row(
-        self,
-        data: EpochData,
-        metrics: Optional[Dict[str, float]],
-    ) -> dict:
-        """
-        Build one CSV row.
-        """
-
-        row = {
-            "epoch": data.epoch,
-            "nfe": data.nfe,
-            "best_fitness": data.best_fitness,
-            "mean_fitness": data.mean_fitness,
-            "std_fitness": data.std_fitness,
-            "population_min_fitness": (
-                data.population_min_fitness
-            ),
-            "population_max_fitness": (
-                data.population_max_fitness
-            ),
-            "population_diversity": (
-                data.population_diversity
-            ),
-            "epoch_time": data.epoch_time,
-            "evaluations_per_second": (
-                data.evaluations_per_second
-            ),
-        }
-
-        if metrics:
-            for name, value in metrics.items():
-                if value is None:
-                    continue
-
-                if not isinstance(
-                    value,
-                    numbers.Real,
-                ):
-                    continue
-
-                row[
-                    f"algorithm_metrics/{name}"
-                ] = float(value)
-
-        return row
-
-    def _initialize_writer(
-        self,
-        rows: list,
-    ):
-        """
-        Initialize CSV writer from buffered rows.
-        """
-
-        fieldnames = []
-
-        for row in rows:
-            for field in row:
-                if field not in fieldnames:
-                    fieldnames.append(field)
-
-        self._fieldnames = fieldnames
-
-        self.writer = csv.DictWriter(
-            self.file,
-            fieldnames=self._fieldnames,
-            extrasaction="ignore",
-        )
-
-        self.writer.writeheader()
-
-        for row in rows:
-            self.writer.writerow(row)
-
-        self.file.flush()
-
-        self._logged_since_flush = len(rows)
+    def _flush(self) -> None:
+        """Perform an additional synchronization of both CSV files."""
+        self._sync_file(self.general_path)
+        self._sync_file(self.specific_path)
+        self._rows_since_flush = 0
 
     def log_epoch(
         self,
         data: EpochData,
-        metrics: Optional[Dict[str, float]] = None,
-    ):
+        metrics: Optional[dict[str, Any]] = None,
+        force: bool = False,
+    ) -> None:
         """
-        Log one optimization epoch to CSV.
-        """
+        Log a monitoring point if any of the following conditions apply:
+          - This is the first monitoring point.
+          - At least every_nfe additional function evaluations have
+            occurred since the previous logged point.
+          - force=True.
 
-        if not self._should_log(data):
+        Duplicate points with the same epoch and NFE values are skipped.
+        """
+        if self._closed:
             return
 
-        row = self._build_row(
-            data=data,
-            metrics=metrics,
+        if isinstance(data, EpochData):
+            general_row = asdict(data)
+        elif isinstance(data, dict):
+            general_row = dict(data)
+        else:
+            raise TypeError(
+                "data must be an EpochData instance or a dictionary"
+            )
+
+        metrics = metrics or {}
+
+        epoch = int(general_row.get("epoch", 0))
+        nfe = int(general_row.get("nfe", 0))
+
+        specific_row = {
+            "epoch": epoch,
+            "nfe": nfe,
+            **metrics,
+        }
+
+        # Always log the first monitoring point.
+        if self._last_logged_nfe is None:
+            should_log = True
+        else:
+            should_log = (
+                nfe - self._last_logged_nfe >= self.every_nfe
+            )
+
+        if force:
+            should_log = True
+
+        # Do not log the exact same point more than once.
+        if (
+            self._last_logged_epoch == epoch
+            and self._last_logged_nfe == nfe
+        ):
+            return
+
+        if not should_log:
+            return
+
+        self._general_fields = self._write_csv(
+            self.general_path,
+            general_row,
+            self._general_rows,
+            self._general_fields,
         )
 
-        # -------------------------------------------------
-        # CSV schema is not known yet.
-        #
-        # Keep initial rows in memory until we receive
-        # algorithm-specific metrics.
-        # -------------------------------------------------
+        self._specific_fields = self._write_csv(
+            self.specific_path,
+            specific_row,
+            self._specific_rows,
+            self._specific_fields,
+        )
 
-        if self.writer is None:
+        self._last_logged_epoch = epoch
+        self._last_logged_nfe = nfe
 
-            self._pending_rows.append(row)
+        logging.debug(
+            "CSVMonitor: logged epoch=%s, nfe=%s",
+            epoch,
+            nfe,
+        )
 
-            has_algorithm_metrics = any(
-                key.startswith(
-                    "algorithm_metrics/"
-                )
-                for key in row
-            )
+    def log_final(
+        self,
+        monitor_data: EpochData,
+        metrics: Optional[dict[str, Any]] = None,
+    ) -> None:
+        """Force the final monitoring point to be logged."""
+        self.log_epoch(
+            monitor_data,
+            metrics=metrics,
+            force=True,
+        )
 
-            if has_algorithm_metrics:
-                self._initialize_writer(
-                    self._pending_rows
-                )
-
-                self._pending_rows.clear()
-
-            self._update_nfe_threshold(data)
-
+    def close(self) -> None:
+        """Synchronize both files and close the monitor."""
+        if self._closed:
             return
 
-        # -------------------------------------------------
-        # Writer already initialized.
-        # -------------------------------------------------
-
-        new_fields = [
-            field
-            for field in row
-            if field not in self._fieldnames
-        ]
-
-        if new_fields:
-            raise ValueError(
-                "CSVMonitor received new metric "
-                "fields after the CSV header was "
-                "created: "
-                f"{new_fields}"
+        try:
+            self._sync_file(self.general_path)
+            self._sync_file(self.specific_path)
+        except OSError:
+            logging.exception(
+                "Failed to synchronize CSV files"
             )
+        finally:
+            self._closed = True
 
-        self.writer.writerow(row)
+    def __enter__(self):
+        return self
 
-        self._logged_since_flush += 1
-
-        self._update_nfe_threshold(data)
-
-        if (
-            self._logged_since_flush
-            >= self.flush_every
-        ):
-            self.file.flush()
-            self._logged_since_flush = 0
-
-    def close(self):
-        """
-        Flush and close the CSV file.
-
-        If no algorithm-specific metrics were
-        ever received, pending rows are still
-        written using only the standard schema.
-        """
-
-        if self.file.closed:
-            return
-
-        # No algorithm-specific metrics were ever
-        # received. Write pending standard rows.
-        if (
-            self.writer is None
-            and self._pending_rows
-        ):
-            self._initialize_writer(
-                self._pending_rows
-            )
-
-            self._pending_rows.clear()
-
-        self.file.flush()
-        self.file.close()
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+        return False

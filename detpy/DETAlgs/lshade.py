@@ -14,6 +14,7 @@ from detpy.DETAlgs.random.random_value_generator import RandomValueGenerator
 from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints_with_parent
 from detpy.models.enums.optimization import OptimizationType
+from detpy.models.member import Member
 
 from detpy.models.population import Population
 
@@ -31,7 +32,8 @@ class LSHADE(BaseAlg):
         Evolutionary Computation (CEC). IEEE. https://doi.org/10.1109/cec.2014.6900380
     """
 
-    def __init__(self, params: LShadeData, db_conn=None, db_auto_write=True, db_writing_interval=5000, verbose=False, monitor=None):
+    def __init__(self, params: LShadeData, db_conn=None, db_auto_write=True, db_writing_interval=5000, verbose=False,
+                 monitor=None):
         super().__init__(LSHADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.int_min(
@@ -72,6 +74,15 @@ class LSHADE(BaseAlg):
             "Population size"
         )
 
+        ParameterValidator.float_between(
+            params.archive_ratio,
+            0.0,
+            1000.0,
+            "Archive ratio"
+        )
+
+        self._archive_ratio = params.archive_ratio
+
         self._H = params.memory_size  # Memory size for f and cr adaptation
         self._memory_F = np.full(self._H, 0.5)  # Initial memory for F
         self._memory_Cr = np.full(self._H, 0.5)  # Initial memory for Cr
@@ -84,8 +95,10 @@ class LSHADE(BaseAlg):
 
         self._min_the_best_percentage = 2 / self.population_size  # Minimal percentage of the best members to consider
 
-        self._archive_size = self.population_size  # Size of the archive
-        self._archive = []  # Archive for storing the members from old populations
+        self._archive_size = round(
+            self._archive_ratio * self.population_size
+        )
+        self._archive: list[Member] = []  # Archive for storing the members from old populations
 
         self._min_pop_size = params.minimum_population_size  # Minimal population size
 
@@ -103,6 +116,26 @@ class LSHADE(BaseAlg):
         self._random_value_gen = RandomValueGenerator()
         self._binomial_crossing = BinomialCrossover()
         self._archive_reduction = ArchiveReduction()
+
+        self._successful_mutations_last_epoch = 0
+        self._population_size_last_epoch = self.population_size
+
+    def get_monitor_metrics(self) -> dict:
+        """Return LSHADE-specific metrics for monitoring."""
+        return {
+            "population_size": self._pop.size,
+            "memory_f_mean": float(np.mean(self._memory_F)),
+            "memory_cr_mean": float(
+                np.nanmean(self._memory_Cr)
+            ) if np.any(~np.isnan(self._memory_Cr)) else 0.0,
+            "successful_mutations": self._successful_mutations_last_epoch,
+            "successful_mutations_rate": (
+                self._successful_mutations_last_epoch / self._population_size_last_epoch
+                if self._population_size_last_epoch > 0
+                else 0.0
+            ),
+            "archive_size": len(self._archive)
+        }
 
     def update_population_size(self, nfe: int, total_nfe: int, start_pop_size: int, min_pop_size: int):
         """
@@ -223,11 +256,17 @@ class LSHADE(BaseAlg):
         - success_cr (List[float]): List of crossover rates that led to better trial vectors.
         - difference_fitness_success (List[float]): List of differences in objective function values (|f(u_k, G) - f(x_k, G)|).
         """
+
+        self._successful_mutations_last_epoch = len(self._successF)
+
         if len(success_f) > 0 and len(success_cr) > 0:
             total = np.sum(difference_fitness_success)
             weights = difference_fitness_success / total
 
-            if np.isclose(total, 0.0, atol=self._EPSILON):
+            if (
+                    np.isnan(self._memory_Cr[self._k_index])
+                    or max(success_cr) == 0
+            ):
                 self._memory_Cr[self._k_index] = self._TERMINAL
 
             else:
@@ -278,7 +317,10 @@ class LSHADE(BaseAlg):
             f_table.append(f)
             cr_table.append(cr)
 
-            the_best_to_possible_select = int(self.population_size * self._p)
+            the_best_to_possible_select = max(
+                1,
+                int(self._pop.size * self._p),
+            )
 
             the_bests_to_select.append(the_best_to_possible_select)
 
@@ -289,6 +331,8 @@ class LSHADE(BaseAlg):
         Perform the next epoch of the SHADE algorithm.
         """
         f_table, cr_table, the_bests_to_select = self.initialize_parameters_for_epoch()
+
+        self._population_size_last_epoch = self._pop.size
 
         mutant = self.mutate(self._pop, the_bests_to_select, f_table)
 
@@ -303,11 +347,6 @@ class LSHADE(BaseAlg):
         # Selection step
         new_pop = self._selection(self._pop, trial, f_table, cr_table)
 
-        # Archive management
-        self._archive_size = self.population_size
-
-        self._archive = self._archive_reduction.reduce_archive(self._archive, self._archive_size, self.population_size)
-
         # Update the population
         self._pop = new_pop
 
@@ -316,3 +355,12 @@ class LSHADE(BaseAlg):
 
         self.update_population_size(self.nfe, self.nfe_max, self._start_population_size,
                                     self._min_pop_size)
+
+        # Archive management
+        self._archive_size = round(self._archive_ratio * self._pop.size)
+
+        # Randomly remove excess archive members
+        self._archive = self._archive_reduction.reduce_archive(
+            self._archive,
+            self._archive_size,
+        )
