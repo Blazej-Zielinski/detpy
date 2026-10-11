@@ -24,9 +24,9 @@ from detpy.monitoring.monitor import EpochData, Monitor
 
 def example_function(x1, x2, x3, x4, x5, x6, x7, x8, x9, x10):
     return (x1 - 1) ** 2 + (x2 - 2) ** 2 + (x3 - 3) ** 2 + \
-        (x4 - 4) ** 2 + (x5 - 5) ** 2 + (x6 - 6) ** 2 + \
-        (x7 - 7) ** 2 + (x8 - 8) ** 2 + (x9 - 9) ** 2 + \
-        (x10 - 10) ** 2
+           (x4 - 4) ** 2 + (x5 - 5) ** 2 + (x6 - 6) ** 2 + \
+           (x7 - 7) ** 2 + (x8 - 8) ** 2 + (x9 - 9) ** 2 + \
+           (x10 - 10) ** 2
 
 
 class BaseAlg(ABC):
@@ -138,6 +138,26 @@ class BaseAlg(ABC):
 
         self._initialize()
 
+    def _calculate_population_fitness_statistics(self):
+        fitness_values = np.asarray(
+            [
+                member.fitness_value
+                for member in self._pop.members
+            ],
+            dtype=float
+        )
+
+        if fitness_values.size == 0:
+            return 0.0, 0.0
+
+        if not np.all(np.isfinite(fitness_values)):
+            return 0.0, 0.0
+
+        avg_fitness = float(np.mean(fitness_values))
+        std_fitness = float(np.std(fitness_values, ddof=0))
+
+        return avg_fitness, std_fitness
+
     def _calculate_population_diversity(self):
         population_array = np.array([
             member.get_chromosomes()
@@ -173,6 +193,54 @@ class BaseAlg(ABC):
 
         return float(np.mean(coordinate_std))
 
+    def _monitor_population(
+            self,
+            epoch,
+            epoch_time,
+            best_member=None,
+            evaluations_per_second=None,
+            final=False
+    ):
+        if self.monitor is None:
+            return
+
+        if len(self._pop.members) == 0:
+            return
+
+        fitness_values = [
+            member.fitness_value
+            for member in self._pop.members
+        ]
+
+        if best_member is None:
+            best_member = self._pop.get_best_members(1)[0]
+
+        avg_fitness, std_fitness = (
+            self._calculate_population_fitness_statistics()
+        )
+
+        monitor_data = self._build_epoch_data(
+            epoch=epoch,
+            nfe=self.nfe,
+            best_fitness=best_member.fitness_value,
+            mean_fitness=avg_fitness,
+            std_fitness=std_fitness,
+            epoch_time=epoch_time,
+            population_fitnesses=fitness_values,
+            evaluations_per_second=evaluations_per_second
+        )
+
+        if final and hasattr(self.monitor, "log_final"):
+            try:
+                self.monitor.log_final(
+                    monitor_data,
+                    metrics=self.get_monitor_metrics()
+                )
+            except Exception as e:
+                self.logger.log(f"Final monitoring error: {e}")
+        else:
+            self._log_monitor_epoch(monitor_data)
+
     def _close_monitor(self):
         if self.monitor is None:
             return
@@ -206,6 +274,7 @@ class BaseAlg(ABC):
             self.logger.log(
                 f"Monitoring error: {e}"
             )
+
     def _build_epoch_data(
             self,
             epoch,
@@ -317,35 +386,18 @@ class BaseAlg(ABC):
             self.nfe
         )
 
-        initial_fitnesses = [
-            member.fitness_value
-            for member in self._pop.members
-        ]
-
-        avg_fitness_values.append(
-            float(np.mean(initial_fitnesses))
+        avg_fitness, std_fitness = (
+            self._calculate_population_fitness_statistics()
         )
 
-        std_fitness_values.append(
-            float(np.std(initial_fitnesses, ddof=0))
-            if len(initial_fitnesses) > 1
-            else 0.0
-        )
 
-        self._log_monitor_epoch(
-            self._build_epoch_data(
-                epoch=0,
-                nfe=self.nfe,
-                best_fitness=initial_best_member.fitness_value,
-                mean_fitness=np.mean(initial_fitnesses),
-                std_fitness=(
-                    np.std(initial_fitnesses)
-                    if len(initial_fitnesses) > 1
-                    else 0.0
-                ),
-                epoch_time=self._total_init_time,
-                population_fitnesses=initial_fitnesses
-            )
+        avg_fitness_values.append(avg_fitness)
+        std_fitness_values.append(std_fitness)
+
+        self._monitor_population(
+            epoch=0,
+            epoch_time=self._total_init_time,
+            best_member=initial_best_member
         )
 
         total_start_time = time.time()
@@ -448,21 +500,9 @@ class BaseAlg(ABC):
                     # Fitness statistics
                     # -----------------------------------------
 
-                    population_fitnesses = [
-                        member.fitness_value
-                        for member in self._pop.members
-                    ]
-
-                    avg_fitness = float(
-                        np.mean(population_fitnesses)
+                    avg_fitness, std_fitness = (
+                        self._calculate_population_fitness_statistics()
                     )
-
-                    if len(population_fitnesses) > 1:
-                        std_fitness = float(
-                            np.std(population_fitnesses, ddof=0)
-                        )
-                    else:
-                        std_fitness = 0.0
 
                     # -----------------------------------------
                     # Store values for plotting
@@ -534,17 +574,11 @@ class BaseAlg(ABC):
                     # Monitor
                     # -----------------------------------------
 
-                    self._log_monitor_epoch(
-                        self._build_epoch_data(
-                            epoch=self._epoch_number,
-                            nfe=current_nfe,
-                            best_fitness=best_fitness,
-                            mean_fitness=avg_fitness,
-                            std_fitness=std_fitness,
-                            epoch_time=epoch_time,
-                            population_fitnesses=population_fitnesses,
-                            evaluations_per_second=evaluations_per_second
-                        )
+                    self._monitor_population(
+                        epoch=self._epoch_number,
+                        epoch_time=epoch_time,
+                        best_member=best_member,
+                        evaluations_per_second=evaluations_per_second
                     )
 
                     # -----------------------------------------
@@ -598,17 +632,8 @@ class BaseAlg(ABC):
             f"Execution time: {round(execution_time, 2)} seconds"
         )
 
-        final_population_fitnesses = [
-            member.fitness_value
-            for member in self._pop.members
-        ]
-
-        avg_fitness = float(
-            np.mean(final_population_fitnesses)
-        )
-
-        std_fitness = float(
-            np.std(final_population_fitnesses, ddof=0)
+        avg_fitness, std_fitness = (
+            self._calculate_population_fitness_statistics()
         )
 
         best_solution = self._pop.get_best_members(1)[0]
@@ -687,40 +712,16 @@ class BaseAlg(ABC):
                 method_name=self.name
             )
 
-        if self.monitor is not None:
-            try:
-                final_fitnesses = [
-                    member.fitness_value
-                    for member in self._pop.members
-                ]
-
-                final_best = self._pop.get_best_members(1)[0]
-
-                final_monitor_data = self._build_epoch_data(
-                    epoch=self._epoch_number,
-                    nfe=self.nfe,
-                    best_fitness=final_best.fitness_value,
-                    mean_fitness=float(np.mean(final_fitnesses)),
-                    std_fitness=float(np.std(final_fitnesses, ddof=0)),
-                    epoch_time=execution_time,
-                    population_fitnesses=final_fitnesses
-                )
-
-                if hasattr(self.monitor, "log_final"):
-                    self.monitor.log_final(
-                        final_monitor_data,
-                        metrics=self.get_monitor_metrics()
-                    )
-                else:
-                    self._log_monitor_epoch(final_monitor_data)
-
-            except Exception as e:
-                self.logger.log(f"Final monitoring error: {e}")
+        self._monitor_population(
+            epoch=self._epoch_number,
+            epoch_time=execution_time,
+            best_member=best_solution,
+            final=True
+        )
 
         self._close_monitor()
 
         return result
-
 
     def write_results_to_database(self, results_data):
         self.logger.log(
