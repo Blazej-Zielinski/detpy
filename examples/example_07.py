@@ -6,8 +6,6 @@ from detpy.DETAlgs.lshade import LSHADE
 from detpy.DETAlgs.data.alg_data import LShadeData
 from detpy.models.fitness_function import FitnessFunctionOpfunu
 from detpy.models.enums import optimization, boundary_constrain
-from detpy.monitoring import TensorBoardMonitor
-from detpy.monitoring.csv_monitor import CSVMonitor
 
 fitness_fun_opf = FitnessFunctionOpfunu(
     func_type=F12014,
@@ -16,7 +14,7 @@ fitness_fun_opf = FitnessFunctionOpfunu(
 
 if __name__ == "__main__":
     # Define parameters
-    num_of_nfe = 100_000
+    num_of_nfe = 10_000
     population_size = 100
     dimension = 10
 
@@ -27,24 +25,18 @@ if __name__ == "__main__":
         dimension=dimension,
         lb=[-100] * dimension,
         ub=[100] * dimension,
-        show_plots=False,
+        show_plots=True,
         # We want the plots to be rendered (Best fitness per NFE, Average fitness per NFE, Standard deviation per NFE)
         optimization_type=optimization.OptimizationType.MINIMIZATION,
         boundary_constraints_fun=boundary_constrain.BoundaryFixing.RANDOM,
         function=fitness_fun_opf,
         log_population=True,
-        parallel_processing=['thread', 1],
-        archive_ratio=1.1
-
+        parallel_processing=['thread', 1]
     )
 
     # Initialize and run LSHADE
     start_time = time.time()
-    monitor_csv = CSVMonitor("lshade_results", "lshade9", every_nfe=100, flush_every=1)
-    tensorboard_monitor = TensorBoardMonitor("tb_results", "run_14", 10,
-                                             every_nfe=1000)  # Replace with TensorBoardMonitor if needed
-
-    lshade = LSHADE(params_lshade, db_conn=None, db_auto_write=False, verbose=True, monitor=tensorboard_monitor)
+    lshade = LSHADE(params_lshade, db_conn='DE.db', db_auto_write=False)
     results = lshade.run()
     elapsed_time = time.time() - start_time
 
