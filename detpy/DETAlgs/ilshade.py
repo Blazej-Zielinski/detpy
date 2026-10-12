@@ -337,7 +337,7 @@ class ILSHADE(BaseAlg):
         new_pop = self._selection(self._pop, trial, f_table, cr_table)
 
         self._archive_size = self.population_size
-        self._archive = self._archive_reduction.reduce_archive(self._archive, self._archive_size, self.population_size)
+        self._archive = self._archive_reduction.reduce_archive(self._archive, self._archive_size)
 
         self._pop = new_pop
         self.update_memory(self._successF, self._successCr, self._difference_fitness_success)

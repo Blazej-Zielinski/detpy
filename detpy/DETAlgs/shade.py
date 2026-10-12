@@ -251,7 +251,7 @@ class SHADE(BaseAlg):
         new_pop = self._selection(self._pop, trial, f_table, cr_table)
 
         # Archive management
-        self._archive = self._archive_reduction.reduce_archive(self._archive, self._archive_size, self.population_size)
+        self._archive = self._archive_reduction.reduce_archive(self._archive, self._archive_size)
 
         # Update the population
         self._pop = new_pop

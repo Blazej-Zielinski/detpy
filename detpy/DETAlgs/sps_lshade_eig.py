@@ -438,8 +438,7 @@ class SPS_LSHADE_EIG(BaseAlg):
 
         self._pop = self._selection(self._pop, trial, f_table, cr_table, er_table)
 
-        self._archive = self._archive_reduction.reduce_archive(self._archive, self.population_size,
-                                                               self.population_size)
+        self._archive = self._archive_reduction.reduce_archive(self._archive, self.population_size)
         self._update_covariance_matrix()
 
         self._update_population_size(self.nfe, self.nfe_max, self._start_population_size,

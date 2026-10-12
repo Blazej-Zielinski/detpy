@@ -394,7 +394,7 @@ class LShadeEpsin(BaseAlg):
         trial.update_fitness_values(self._function.eval, self.parallel_processing)
 
         self._pop = self._selection(self._pop, trial, f_table, cr_table, freg_values)
-        self._archive = self._archive_reduction.reduce_archive(self._archive, self._archive_size, self.population_size)
+        self._archive = self._archive_reduction.reduce_archive(self._archive, self._archive_size)
         self._update_memory(self._success_f, self._success_cr, self._success_freg, self._difference_fitness_success,
                             self._difference_fitness_success_freg)
 

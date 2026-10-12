@@ -390,7 +390,6 @@ class BaseAlg(ABC):
             self._calculate_population_fitness_statistics()
         )
 
-
         avg_fitness_values.append(avg_fitness)
         std_fitness_values.append(std_fitness)
 
@@ -474,40 +473,25 @@ class BaseAlg(ABC):
 
                     self._epoch_number += 1
 
-                    # -----------------------------------------
                     # Execute next epoch
-                    # -----------------------------------------
-
                     self.next_epoch()
 
-                    # -----------------------------------------
                     # Current state AFTER epoch
-                    # -----------------------------------------
-
                     current_nfe = self._function.evaluation_count
 
                     best_member = self._pop.get_best_members(1)[0]
 
                     best_fitness = best_member.fitness_value
 
-                    # -----------------------------------------
                     # Epoch timing
-                    # -----------------------------------------
-
                     epoch_time = time.time() - epoch_start_time
 
-                    # -----------------------------------------
                     # Fitness statistics
-                    # -----------------------------------------
-
                     avg_fitness, std_fitness = (
                         self._calculate_population_fitness_statistics()
                     )
 
-                    # -----------------------------------------
                     # Store values for plotting
-                    # -----------------------------------------
-
                     best_fitness_values.append(
                         best_fitness
                     )
@@ -524,10 +508,7 @@ class BaseAlg(ABC):
                         std_fitness
                     )
 
-                    # -----------------------------------------
                     # Metrics
-                    # -----------------------------------------
-
                     epoch_metric = MetricHelper.calculate_metrics(
                         self._pop,
                         epoch_start_time,
@@ -540,10 +521,7 @@ class BaseAlg(ABC):
                         epoch_metric
                     )
 
-                    # -----------------------------------------
                     # Performance
-                    # -----------------------------------------
-
                     evaluations = (
                             current_nfe - previous_nfe
                     )
@@ -556,10 +534,7 @@ class BaseAlg(ABC):
 
                     previous_nfe = current_nfe
 
-                    # -----------------------------------------
                     # Console logger
-                    # -----------------------------------------
-
                     self.logger.log(
                         f"NFE {current_nfe}/"
                         f"{self.nfe_max}, "
@@ -570,10 +545,7 @@ class BaseAlg(ABC):
                         f"Std: {std_fitness}"
                     )
 
-                    # -----------------------------------------
                     # Monitor
-                    # -----------------------------------------
-
                     self._monitor_population(
                         epoch=self._epoch_number,
                         epoch_time=epoch_time,
@@ -581,10 +553,7 @@ class BaseAlg(ABC):
                         evaluations_per_second=evaluations_per_second
                     )
 
-                    # -----------------------------------------
                     # Database auto write
-                    # -----------------------------------------
-
                     if (
                             self._database is not None
                             and self.db_auto_write

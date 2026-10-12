@@ -311,7 +311,7 @@ class SHADE4(BaseAlg):
         new_pop = self._selection(self._pop, trial_pop, f_table, cr_table, strategy_indices)
 
         self._archive = self._archive_reduction.reduce_archive(
-            self._archive, self._archive_size, self.population_size
+            self._archive, self._archive_size
         )
 
         self._pop = new_pop

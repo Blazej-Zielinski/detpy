@@ -326,7 +326,7 @@ class ALSHADE(BaseAlg):
         trial.update_fitness_values(self._function.eval, self.parallel_processing)
 
         self._pop = self._selection(self._pop, trial, f_table, cr_table)
-        self._archive = self._archive_reduction.reduce_archive(self._archive, self._archive_size, self.population_size)
+        self._archive = self._archive_reduction.reduce_archive(self._archive, self._archive_size)
         self._update_memory(self._successF, self._successCr, self._difference_fitness_success)
         self._update_population_size(self.nfe, self.nfe_max, self._start_population_size,
                                      self._min_pop_size)

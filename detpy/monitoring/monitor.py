@@ -39,8 +39,6 @@ class Monitor(ABC):
     Concrete implementations can send metrics to:
     - TensorBoard
     - CSV
-    - MLflow
-    - W&B
     - custom dashboards
 
     `EpochData` contains metrics shared by all algorithms.
@@ -51,9 +49,9 @@ class Monitor(ABC):
 
     @abstractmethod
     def log_epoch(
-        self,
-        data: EpochData,
-        metrics: Optional[Dict[str, float]] = None,
+            self,
+            data: EpochData,
+            metrics: Optional[Dict[str, float]] = None,
     ):
         """
         Called after every completed epoch.
@@ -88,5 +86,7 @@ class Monitor(ABC):
         pass
 
     def log_final(self, monitor_data, metrics):
+        """
+        Log final metrics after the optimization run is complete.
+        """
         pass
-

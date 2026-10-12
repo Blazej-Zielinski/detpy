@@ -74,10 +74,9 @@ class LSHADE(BaseAlg):
             "Population size"
         )
 
-        ParameterValidator.float_between(
+        ParameterValidator.min(
             params.archive_ratio,
             0.0,
-            1000.0,
             "Archive ratio"
         )
 
