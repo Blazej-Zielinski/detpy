@@ -21,6 +21,7 @@ from detpy.DETAlgs.ide import IDE
 from detpy.DETAlgs.improved_de import ImprovedDE
 from detpy.DETAlgs.jade import JADE
 from detpy.DETAlgs.lshade import LSHADE
+from detpy.DETAlgs.lshade_cnepsin import LSHADECnEpSin
 from detpy.DETAlgs.lshade_epsin import LShadeEpsin
 from detpy.DETAlgs.lshadersp import LSHADERSP
 from detpy.DETAlgs.mgde import MGDE
@@ -30,7 +31,6 @@ from detpy.DETAlgs.sade import SADE
 from detpy.DETAlgs.shade import SHADE
 from detpy.DETAlgs.shade_1_1 import SHADE_1_1
 from detpy.DETAlgs.sps_lshade_eig import SPS_LSHADE_EIG
-from detpy.DETAlgs.lshade_cnepsin import LSHADECnEpSin
 
 from detpy.models.fitness_function import FitnessFunctionOpfunu
 from detpy.models.enums import optimization, boundary_constrain
@@ -130,6 +130,7 @@ if __name__ == "__main__":
     params_lshade = LShadeData(**params_common)
     params_lshadersp = LSHADERSPData(**params_common)
     params_lshadeepsin = LShadeEpsinData(**params_common)
+    params_lshadecnepsin = LShadeCnEpsinData(**params_common)
     params_alshade = ALSHADEData(**params_common)
 
     algorithms = {
@@ -141,6 +142,7 @@ if __name__ == "__main__":
         'SHADE1.1': SHADE_1_1,
         'SHADE': SHADE,
         'LSHADEEPSIN': LShadeEpsin,
+        'LSHADECNEPSIN': LSHADECnEpSin,
         'LSHADE': LSHADE,
         'AADE': AADE,
         'DE': DE,
@@ -156,7 +158,6 @@ if __name__ == "__main__":
         'ImprovedDE': ImprovedDE,
         'LSHADERSP': LSHADERSP,
         'SPS_LSHADE_EIG': SPS_LSHADE_EIG,
-        'LSHADE_CNEPSIN': LSHADECnEpSin,
     }
 
     algorithms_params = {
@@ -178,12 +179,12 @@ if __name__ == "__main__":
         'MGDE': params_mgde,
         'OppBased': params_opposition_based,
         'LSHADEEPSIN': params_lshadeepsin,
+        'LSHADECNEPSIN': params_lshadecnepsin,
         'SHADE': params_shade,
         'LSHADERSP': params_lshadersp,
         'ALSHADE': params_alshade,
         'SPS_LSHADE_EIG': SPSLShadeEIGDATA(**params_common),
         'SHADE1.1': params_shade11,
-        'LSHADE_CNEPSIN': LShadeCnEpsinData(**params_common),
     }
 
     avg_fitness_results = []
