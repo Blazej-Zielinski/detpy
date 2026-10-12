@@ -8,7 +8,8 @@ from detpy.DETAlgs.al_shade import ALSHADE
 from detpy.DETAlgs.comde import COMDE
 from detpy.DETAlgs.data.alg_data import COMDEData, DEData, SADEData, FiADEData, ImprovedDEData, AADEData, DEGLData, \
     DELBData, DERLData, EIDEData, EMDEData, IDEData, JADEData, MGDEData, NMDEData, OppBasedData, \
-    LSHADERSPData, ShadeData, LShadeData, ALSHADEData, SPSLShadeEIGDATA, LShadeEpsinData, Shade_1_1_Data
+    LSHADERSPData, ShadeData, LShadeData, ALSHADEData, SPSLShadeEIGDATA, LShadeEpsinData, Shade_1_1_Data, \
+    LShadeCnEpsinData
 from detpy.DETAlgs.de import DE
 from detpy.DETAlgs.degl import DEGL
 from detpy.DETAlgs.delb import DELB
@@ -29,6 +30,7 @@ from detpy.DETAlgs.sade import SADE
 from detpy.DETAlgs.shade import SHADE
 from detpy.DETAlgs.shade_1_1 import SHADE_1_1
 from detpy.DETAlgs.sps_lshade_eig import SPS_LSHADE_EIG
+from detpy.DETAlgs.lshade_cnepsin import LSHADECnEpSin
 
 from detpy.models.fitness_function import FitnessFunctionOpfunu
 from detpy.models.enums import optimization, boundary_constrain
@@ -154,6 +156,7 @@ if __name__ == "__main__":
         'ImprovedDE': ImprovedDE,
         'LSHADERSP': LSHADERSP,
         'SPS_LSHADE_EIG': SPS_LSHADE_EIG,
+        'LSHADE_CNEPSIN': LSHADECnEpSin,
     }
 
     algorithms_params = {
@@ -179,7 +182,8 @@ if __name__ == "__main__":
         'LSHADERSP': params_lshadersp,
         'ALSHADE': params_alshade,
         'SPS_LSHADE_EIG': SPSLShadeEIGDATA(**params_common),
-        'SHADE1.1': params_shade11
+        'SHADE1.1': params_shade11,
+        'LSHADE_CNEPSIN': LShadeCnEpsinData(**params_common),
     }
 
     avg_fitness_results = []

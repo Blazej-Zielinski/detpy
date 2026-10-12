@@ -371,3 +371,18 @@ class LSHADE44Data(BaseData):
     minimum_population_size: int = 5
     archive_size: int = 100
     pm_to_cr_table_size: int = 100
+
+
+@dataclass
+class LShadeCnEpsinData(BaseData):
+    minimum_population_size: int = 4
+    memory_size: int = 5
+    best_member_percentage: float = 0.11
+    f_init: float = 0.5
+    cr_init: float = 0.5
+    freq_init: float = 0.5
+    freq_decreasing: float = 0.5
+    covariance_probability: float = 0.4
+    neighborhood_fraction: float = 0.5
+    learning_period: int = 20
+    population_reduction_strategy: PopulationSizeReductionStrategy = LinearPopulationSizeReduction()
