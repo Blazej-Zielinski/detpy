@@ -20,8 +20,8 @@ class DEGL(BaseAlg):
         doi: 10.1109/TEVC.2008.2009457.
     """
 
-    def __init__(self, params: DEGLData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
-        super().__init__(DEGL.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+    def __init__(self, params: DEGLData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False, monitor=None):
+        super().__init__(DEGL.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.float_between(
             params.mutation_factor,

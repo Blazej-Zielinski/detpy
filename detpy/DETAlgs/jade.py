@@ -20,8 +20,8 @@ class JADE(BaseAlg):
         doi: 10.1109/TEVC.2009.2014613.
     """
 
-    def __init__(self, params: JADEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
-        super().__init__(JADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+    def __init__(self, params: JADEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False, monitor=None):
+        super().__init__(JADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.int_min(
             params.archive_size,

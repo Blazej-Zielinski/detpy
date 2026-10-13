@@ -50,8 +50,8 @@ class LSHADE44(BaseAlg):
     CROSSOVER_BINOMIAL = 0
     CROSSOVER_EXPONENTIAL = 1
 
-    def __init__(self, params: LSHADE44Data, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
-        super().__init__(LSHADE44.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+    def __init__(self, params: LSHADE44Data, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False, monitor=None):
+        super().__init__(LSHADE44.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.int_min(
             params.population_size,

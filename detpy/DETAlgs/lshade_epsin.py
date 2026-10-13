@@ -31,8 +31,8 @@ class LShadeEpsin(BaseAlg):
      https://doi.org/10.1109/cec.2016.7744163
      """
 
-    def __init__(self, params: LShadeEpsinData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
-        super().__init__(LShadeEpsin.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+    def __init__(self, params: LShadeEpsinData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False, monitor=None):
+        super().__init__(LShadeEpsin.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.int_min(
             params.memory_size,
@@ -394,7 +394,7 @@ class LShadeEpsin(BaseAlg):
         trial.update_fitness_values(self._function.eval, self.parallel_processing)
 
         self._pop = self._selection(self._pop, trial, f_table, cr_table, freg_values)
-        self._archive = self._archive_reduction.reduce_archive(self._archive, self._archive_size, self.population_size)
+        self._archive = self._archive_reduction.reduce_archive(self._archive, self._archive_size)
         self._update_memory(self._success_f, self._success_cr, self._success_freg, self._difference_fitness_success,
                             self._difference_fitness_success_freg)
 

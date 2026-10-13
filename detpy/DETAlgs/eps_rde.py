@@ -24,8 +24,8 @@ class EPSRDE(BaseAlg):
           10-15 June 2012, Brisbane, QLD, Australia doi: 10.1109/CEC.2012.6256111.
     """
 
-    def __init__(self, params: EPSRDEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
-        super().__init__(EPSRDE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+    def __init__(self, params: EPSRDEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False, monitor=None):
+        super().__init__(EPSRDE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
         ParameterValidator.float_between(
             params.min_mutation_factor,
             0.0,

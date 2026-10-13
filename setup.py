@@ -13,8 +13,8 @@ setuptools.setup(
     package_data={
         "detpy": ["functions/functions_info/*.json"],
     },
-    version="1.0.11",
-    author="Szymon Ściegienny, Błażej Zieliński, Hubert Orlicki, Wojciech Książek",
+    version="3.0.1",
+    author="Szymon Ściegienny, Błażej Zieliński, Hubert Orlicki, Wojciech Książek, Damian Golonka, Konrad Groń, Jakub Opaliński",
     author_email="wojciech.ksiazek@pk.edu.pl",
     description="DetPy (Differential Evolution Tools): A Python toolbox for solving optimization problems "
                 "using differential evolution",
@@ -51,6 +51,19 @@ setuptools.setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Utilities",
     ],
-    install_requires=["numpy", "opfunu", "matplotlib", "tqdm", "scipy", "sympy", "autograd", "pandas"],
+    install_requires=[
+        "numpy",
+        "opfunu",
+        "matplotlib",
+        "tqdm",
+        "scipy",
+        "sympy",
+        "autograd",
+        "pandas",
+        "colorama",
+    ],
+    extras_require={
+        "tensorboard": ["tensorboard"],
+    },
     python_requires='>=3.7',
 )

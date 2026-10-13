@@ -19,8 +19,8 @@ class AADE(BaseAlg):
         Erode, India, 2019, pp. 958-963, doi: 10.1109/ICCMC.2019.8819749.
     """
 
-    def __init__(self, params: AADEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
-        super().__init__(AADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+    def __init__(self, params: AADEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False, monitor=None):
+        super().__init__(AADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.positive_float(
             params.mutation_factor,

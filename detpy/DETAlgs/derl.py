@@ -18,8 +18,8 @@ class DERL(BaseAlg):
         European Journal of Operational Research. 169. 1176-1184. 10.1016/j.ejor.2004.08.047.
     """
 
-    def __init__(self, params: DERLData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
-        super().__init__(DERL.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+    def __init__(self, params: DERLData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False, monitor=None):
+        super().__init__(DERL.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.float_between(
             params.crossover_rate,

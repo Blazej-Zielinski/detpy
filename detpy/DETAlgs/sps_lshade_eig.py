@@ -35,8 +35,8 @@ class SPS_LSHADE_EIG(BaseAlg):
      """
 
     def __init__(self, params: SPSLShadeEIGDATA, db_conn=None, db_auto_write=False, db_writing_interval=5000,
-                 verbose=False):
-        super().__init__(SPS_LSHADE_EIG.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+                 verbose=False, monitor=None):
+        super().__init__(SPS_LSHADE_EIG.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.int_min(
             params.memory_size,
@@ -438,8 +438,7 @@ class SPS_LSHADE_EIG(BaseAlg):
 
         self._pop = self._selection(self._pop, trial, f_table, cr_table, er_table)
 
-        self._archive = self._archive_reduction.reduce_archive(self._archive, self.population_size,
-                                                               self.population_size)
+        self._archive = self._archive_reduction.reduce_archive(self._archive, self.population_size)
         self._update_covariance_matrix()
 
         self._update_population_size(self.nfe, self.nfe_max, self._start_population_size,

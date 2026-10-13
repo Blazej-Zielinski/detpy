@@ -19,8 +19,8 @@ class IDE(BaseAlg):
         Journal of Computer and Communications, 7, 107-120. doi: 10.4236/jcc.2019.711008.
     """
 
-    def __init__(self, params: IDEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
-        super().__init__(IDE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+    def __init__(self, params: IDEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False, monitor=None):
+        super().__init__(IDE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.int_min(
             params.y,

@@ -45,8 +45,8 @@ class SHADE4(BaseAlg):
         3: 're'
     }
 
-    def __init__(self, params: SHADE4Data, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
-        super().__init__(SHADE4.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+    def __init__(self, params: SHADE4Data, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False, monitor=None):
+        super().__init__(SHADE4.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.min(
             params.population_size,
@@ -311,7 +311,7 @@ class SHADE4(BaseAlg):
         new_pop = self._selection(self._pop, trial_pop, f_table, cr_table, strategy_indices)
 
         self._archive = self._archive_reduction.reduce_archive(
-            self._archive, self._archive_size, self.population_size
+            self._archive, self._archive_size
         )
 
         self._pop = new_pop

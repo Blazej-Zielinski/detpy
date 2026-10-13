@@ -30,8 +30,8 @@ class ALSHADE(BaseAlg):
         https://doi.org/10.1016/j.ins.2022.05.058
     """
 
-    def __init__(self, params: ALSHADEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False):
-        super().__init__(ALSHADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose)
+    def __init__(self, params: ALSHADEData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False, monitor=None):
+        super().__init__(ALSHADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.int_min(
             params.minimum_population_size,
@@ -326,7 +326,7 @@ class ALSHADE(BaseAlg):
         trial.update_fitness_values(self._function.eval, self.parallel_processing)
 
         self._pop = self._selection(self._pop, trial, f_table, cr_table)
-        self._archive = self._archive_reduction.reduce_archive(self._archive, self._archive_size, self.population_size)
+        self._archive = self._archive_reduction.reduce_archive(self._archive, self._archive_size)
         self._update_memory(self._successF, self._successCr, self._difference_fitness_success)
         self._update_population_size(self.nfe, self.nfe_max, self._start_population_size,
                                      self._min_pop_size)
