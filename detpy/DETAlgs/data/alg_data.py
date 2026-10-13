@@ -386,3 +386,25 @@ class LShadeCnEpsinData(BaseData):
     neighborhood_fraction: float = 0.5
     learning_period: int = 20
     population_reduction_strategy: PopulationSizeReductionStrategy = LinearPopulationSizeReduction()
+
+
+@dataclass
+class DShadeData(BaseData):
+    """
+    D-SHADE control parameters.
+
+    Table VI tuned settings from Tanabe and Fukunaga (CEC 2014) are the defaults.
+    Those tuned values are the settings used for D-SHADE in the paper.
+    N_init in the paper is round(D * r_n_init). The running population size is
+    ``population_size``, the same entry point as the other algorithms.
+    """
+
+    # Table VI, tuned settings.
+    r_n_init: int = 18
+    r_arc: float = 2.5
+    best_member_percentage: float = 0.11
+    memory_size: int = 9
+    reduction_frequency: int = 7
+    minimum_population_size: int = 4
+    # Eq. (4) repairs an infeasible mutant toward its parent.
+    boundary_constraints_fun: BoundaryFixing = BoundaryFixing.WITH_PARENT

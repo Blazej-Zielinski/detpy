@@ -9,7 +9,7 @@ from detpy.DETAlgs.comde import COMDE
 from detpy.DETAlgs.data.alg_data import COMDEData, DEData, SADEData, FiADEData, ImprovedDEData, AADEData, DEGLData, \
     DELBData, DERLData, EIDEData, EMDEData, IDEData, JADEData, MGDEData, NMDEData, OppBasedData, \
     LSHADERSPData, ShadeData, LShadeData, ALSHADEData, SPSLShadeEIGDATA, LShadeEpsinData, Shade_1_1_Data, \
-    LShadeCnEpsinData
+    LShadeCnEpsinData, DShadeData
 from detpy.DETAlgs.de import DE
 from detpy.DETAlgs.degl import DEGL
 from detpy.DETAlgs.delb import DELB
@@ -20,6 +20,7 @@ from detpy.DETAlgs.fiade import FiADE
 from detpy.DETAlgs.ide import IDE
 from detpy.DETAlgs.improved_de import ImprovedDE
 from detpy.DETAlgs.jade import JADE
+from detpy.DETAlgs.dshade import DSHADE
 from detpy.DETAlgs.lshade import LSHADE
 from detpy.DETAlgs.lshade_cnepsin import LSHADECnEpSin
 from detpy.DETAlgs.lshade_epsin import LShadeEpsin
@@ -128,6 +129,7 @@ if __name__ == "__main__":
     params_shade = ShadeData(**params_common)
     params_shade11 = Shade_1_1_Data(**params_common)
     params_lshade = LShadeData(**params_common)
+    params_dshade = DShadeData(**params_common)
     params_lshadersp = LSHADERSPData(**params_common)
     params_lshadeepsin = LShadeEpsinData(**params_common)
     params_lshadecnepsin = LShadeCnEpsinData(**params_common)
@@ -144,6 +146,7 @@ if __name__ == "__main__":
         'LSHADEEPSIN': LShadeEpsin,
         'LSHADECNEPSIN': LSHADECnEpSin,
         'LSHADE': LSHADE,
+        'DSHADE': DSHADE,
         'AADE': AADE,
         'DE': DE,
         'DEGL': DEGL,
@@ -165,6 +168,7 @@ if __name__ == "__main__":
         'DERL': params_derl,
         'COMDE': params_comde,
         'LSHADE': params_lshade,
+        'DSHADE': params_dshade,
         'AADE': params_aade,
         'SADE': params_sade,
         'DE': params_de,
