@@ -54,7 +54,6 @@ class DSHADE(BaseAlg):
         ParameterValidator.non_negative(params.r_arc, "r_arc")
         ParameterValidator.float_between(params.best_member_percentage, 0.0, 1.0, "best_member_percentage")
 
-        # Figure 1 and Algorithm 2, line 3: historical memory M_CR, M_F.
         self._H = params.memory_size
         self._memory_F = np.full(self._H, 0.5, dtype=float)
         self._memory_Cr = np.full(self._H, 0.5, dtype=float)
@@ -68,7 +67,6 @@ class DSHADE(BaseAlg):
         self._min_pop_size = params.minimum_population_size
         self._start_population_size = self.population_size
 
-        # Algorithm 2, line 1: external archive starts empty.
         self._archive = []
         self._success_cr = []
         self._success_f = []
@@ -79,30 +77,25 @@ class DSHADE(BaseAlg):
         self._binomial_crossing = BinomialCrossover()
 
     def _sample_cr(self, memory_index: int) -> float:
-        """Eq. (1). A terminal memory entry locks CR at 0. Otherwise sample N(M_CR, 0.1) and clip to [0, 1]."""
         entry = self._memory_Cr[memory_index]
         if np.isnan(entry):
             return 0.0
         return float(self._random_value_gen.generate_normal(entry, 0.1, 0.0, 1.0))
 
     def _sample_f(self, memory_index: int) -> float:
-        """Eq. (2). Sample Cauchy(M_F, 0.1). Values <= 0 are resampled and values > 1 are truncated to 1."""
         return float(self._random_value_gen.generate_cauchy_greater_than_zero(
             self._memory_F[memory_index], 0.1, 0.0, 1.0
         ))
 
     def _pbest_count(self) -> int:
-        """Eq. (3): p-best is drawn from the top N * p members."""
         return max(1, int(round(self._pop.size * self._p)))
 
     def _trim_archive(self):
-        """Keep the archive at |A| = round(N * r_arc) by deleting random entries."""
         capacity = archive_capacity(self.population_size, self._r_arc)
         while len(self._archive) > capacity:
             self._archive.pop(randrange(len(self._archive)))
 
     def _mutate(self, f_table) -> Population:
-        """Eq. (3): current-to-pbest/1. r2 is taken from the union of the population and the archive."""
         new_members = []
         pool = np.concatenate((self._pop.members, np.array(self._archive, dtype=object)))
         pbest_count = self._pbest_count()
@@ -125,12 +118,6 @@ class DSHADE(BaseAlg):
         return Population.with_new_members(self._pop, new_members)
 
     def _selection(self, trial: Population, f_table, cr_table) -> Population:
-        """
-        Algorithm 2, lines 11-18.
-
-        The trial survives when it is at least as good as the parent.
-        The parent enters the archive, and CR/F are stored, only on a strict improvement.
-        """
         minimization = self._pop.optimization == OptimizationType.MINIMIZATION
         new_members = []
 
@@ -158,7 +145,6 @@ class DSHADE(BaseAlg):
         return Population.with_new_members(self._pop, new_members)
 
     def _update_memory(self):
-        """Algorithm 1. An empty success set leaves the memory untouched. A terminal CR entry stays terminal."""
         success_cr = self._success_cr
         success_f = self._success_f
         deltas = self._difference_fitness_success
@@ -175,12 +161,6 @@ class DSHADE(BaseAlg):
         self._k_index = (slot + 1) % self._H
 
     def _apply_dpsr(self):
-        """
-        Algorithm 2, lines 21-24, with LPSR replaced by DPSR.
-
-        The population is halved at the end of each equal slice of the evaluation
-        budget. The archive capacity is then resized to the new population.
-        """
         stage = dpsr_stage(self.nfe, self.nfe_max, self._rfreq)
         target = population_size_after_reductions(self._start_population_size, stage, self._min_pop_size)
         if target < self._pop.size:
@@ -193,14 +173,11 @@ class DSHADE(BaseAlg):
         self._trim_archive()
 
     def next_epoch(self):
-        """One generation of Algorithm 2, using DPSR in place of Eqs. (10) / lines 21-24."""
-        # Algorithm 2, line 5.
         self._success_cr = []
         self._success_f = []
         self._difference_fitness_success = []
         self.population_size = self._pop.size
 
-        # Algorithm 2, lines 6-9: assign CR_i and F_i from the historical memory.
         f_table = []
         cr_table = []
         for _ in range(self._pop.size):
@@ -208,16 +185,13 @@ class DSHADE(BaseAlg):
             cr_table.append(self._sample_cr(memory_index))
             f_table.append(self._sample_f(memory_index))
 
-        # Algorithm 2, line 10, and Eqs. (3)-(5).
         mutant = self._mutate(f_table)
         fix_boundary_constraints_with_parent(self._pop, mutant, self.boundary_constraints_fun)
         trial = self._binomial_crossing.crossover_population(self._pop, mutant, cr_table)
         trial.update_fitness_values(self._function.eval, self.parallel_processing)
 
-        # Algorithm 2, lines 11-19.
         self._pop = self._selection(trial, f_table, cr_table)
         self._trim_archive()
 
-        # Algorithm 2, line 20, then DPSR.
         self._update_memory()
         self._apply_dpsr()
