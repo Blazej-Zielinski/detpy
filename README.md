@@ -64,6 +64,7 @@ The following variants have been implemented:
 | 33  | FDDE (Fitness-Diversity Differential Evolution) [31]                                                                            | 2021 |
 | 34  | iL-SHADE (Improved L-SHADE Algorithm for Single Objective Real-Parameter Optimization) [32]                                     | 2016 |
 | 35  | jSO (Single Objective Real-Parameter Optimization: Algorithm jSO) [33]                                                          | 2017 |
+| 36  | LSHADE-cnEpSin (Ensemble Sinusoidal Covariance Matrix Adaptation with Euclidean Neighborhood) [34]                              | 2017 |
 
 # Installation
 ```
@@ -176,6 +177,7 @@ Test functions prepared based on https://gitlab.com/luca.baronti/python_benchmar
 31. Cheng, J., Pan, Z., Liang, H., Gao, Z., Gao, J. *Differential evolution algorithm with fitness and diversity ranking-based mutation operator*. Swarm and Evolutionary Computation, vol. 61, 100816, 2021.
 32. Janez Brest, Mirjam Sepesy Maučec, Borko Boškovič. *iL-SHADE: Improved L-SHADE algorithm for single objective real-parameter optimization*. IEEE Congress on Evolutionary Computation (CEC), 2016.
 33. Janez Brest, Mirjam Sepesy Maučec, Borko Boškovič. *Single objective real-parameter optimization: Algorithm jSO*. IEEE Congress on Evolutionary Computation (CEC), 2017.
+34. Awad, Noor H., Ali, Mostafa Z., Suganthan, Ponnuthurai N. *Ensemble sinusoidal differential covariance matrix adaptation with Euclidean neighborhood for solving CEC2017 benchmark problems*. IEEE Congress on Evolutionary Computation (CEC), 2017.
 # Documentation
 Full documentation is available: https://blazej-zielinski.github.io/detpy/
 

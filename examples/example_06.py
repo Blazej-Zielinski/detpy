@@ -8,7 +8,8 @@ from detpy.DETAlgs.al_shade import ALSHADE
 from detpy.DETAlgs.comde import COMDE
 from detpy.DETAlgs.data.alg_data import COMDEData, DEData, SADEData, FiADEData, ImprovedDEData, AADEData, DEGLData, \
     DELBData, DERLData, EIDEData, EMDEData, IDEData, JADEData, MGDEData, NMDEData, OppBasedData, \
-    LSHADERSPData, ShadeData, LShadeData, ALSHADEData, SPSLShadeEIGDATA, LShadeEpsinData, Shade_1_1_Data
+    LSHADERSPData, ShadeData, LShadeData, ALSHADEData, SPSLShadeEIGDATA, LShadeEpsinData, Shade_1_1_Data, \
+    LShadeCnEpsinData
 from detpy.DETAlgs.de import DE
 from detpy.DETAlgs.degl import DEGL
 from detpy.DETAlgs.delb import DELB
@@ -20,6 +21,7 @@ from detpy.DETAlgs.ide import IDE
 from detpy.DETAlgs.improved_de import ImprovedDE
 from detpy.DETAlgs.jade import JADE
 from detpy.DETAlgs.lshade import LSHADE
+from detpy.DETAlgs.lshade_cnepsin import LSHADECnEpSin
 from detpy.DETAlgs.lshade_epsin import LShadeEpsin
 from detpy.DETAlgs.lshadersp import LSHADERSP
 from detpy.DETAlgs.mgde import MGDE
@@ -128,6 +130,7 @@ if __name__ == "__main__":
     params_lshade = LShadeData(**params_common)
     params_lshadersp = LSHADERSPData(**params_common)
     params_lshadeepsin = LShadeEpsinData(**params_common)
+    params_lshadecnepsin = LShadeCnEpsinData(**params_common)
     params_alshade = ALSHADEData(**params_common)
 
     algorithms = {
@@ -139,6 +142,7 @@ if __name__ == "__main__":
         'SHADE1.1': SHADE_1_1,
         'SHADE': SHADE,
         'LSHADEEPSIN': LShadeEpsin,
+        'LSHADECNEPSIN': LSHADECnEpSin,
         'LSHADE': LSHADE,
         'AADE': AADE,
         'DE': DE,
@@ -175,11 +179,12 @@ if __name__ == "__main__":
         'MGDE': params_mgde,
         'OppBased': params_opposition_based,
         'LSHADEEPSIN': params_lshadeepsin,
+        'LSHADECNEPSIN': params_lshadecnepsin,
         'SHADE': params_shade,
         'LSHADERSP': params_lshadersp,
         'ALSHADE': params_alshade,
         'SPS_LSHADE_EIG': SPSLShadeEIGDATA(**params_common),
-        'SHADE1.1': params_shade11
+        'SHADE1.1': params_shade11,
     }
 
     avg_fitness_results = []
