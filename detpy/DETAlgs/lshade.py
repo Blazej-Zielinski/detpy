@@ -124,9 +124,11 @@ class LSHADE(BaseAlg):
         return {
             "population_size": self._pop.size,
             "memory_f_mean": float(np.mean(self._memory_F)),
+            "memory_f_std": float(np.std(self._memory_F)),
             "memory_cr_mean": float(
                 np.nanmean(self._memory_Cr)
             ) if np.any(~np.isnan(self._memory_Cr)) else 0.0,
+            "memory_cr_std": float(np.std(self._memory_Cr[~np.isnan(self._memory_Cr)])) if np.any(~np.isnan(self._memory_Cr)) else 0.0,
             "successful_mutations": self._successful_mutations_last_epoch,
             "successful_mutations_rate": (
                 self._successful_mutations_last_epoch / self._population_size_last_epoch

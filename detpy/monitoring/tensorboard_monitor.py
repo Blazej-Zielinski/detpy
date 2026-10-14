@@ -7,7 +7,7 @@ from detpy.monitoring.monitor import Monitor, EpochData
 
 class TensorBoardMonitor(Monitor):
     """
-    TensorBoard monitor for DETPy optimization algorithms.
+    TensorBoard monitor for DetPy optimization algorithms.
 
     Requires only the `tensorboard` package.
 
@@ -261,10 +261,7 @@ class TensorBoardMonitor(Monitor):
         if self._initial_baseline_logged:
             return
 
-        # ---------------------------------------------------------
         # Fitness
-        # ---------------------------------------------------------
-
         self._add_scalar(
             "fitness/best",
             data.best_fitness,
@@ -283,10 +280,7 @@ class TensorBoardMonitor(Monitor):
             0
         )
 
-        # ---------------------------------------------------------
         # Population
-        # ---------------------------------------------------------
-
         if data.population_diversity is not None:
             self._add_scalar(
                 "population/diversity",
@@ -308,10 +302,7 @@ class TensorBoardMonitor(Monitor):
                 0
             )
 
-        # ---------------------------------------------------------
         # Performance
-        # ---------------------------------------------------------
-
         self._add_scalar(
             "performance/epoch_time",
             0.0,
@@ -325,10 +316,7 @@ class TensorBoardMonitor(Monitor):
                 0
             )
 
-        # ---------------------------------------------------------
         # Algorithm
-        # ---------------------------------------------------------
-
         self._add_scalar(
             "algorithm/epoch",
             0,
@@ -380,10 +368,7 @@ class TensorBoardMonitor(Monitor):
         # NFE is used as the global TensorBoard step.
         step = data.nfe
 
-        # ---------------------------------------------------------
         # Fitness
-        # ---------------------------------------------------------
-
         self._add_scalar(
             "fitness/best",
             data.best_fitness,
@@ -402,10 +387,7 @@ class TensorBoardMonitor(Monitor):
             step
         )
 
-        # ---------------------------------------------------------
         # Population
-        # ---------------------------------------------------------
-
         if data.population_diversity is not None:
             self._add_scalar(
                 "population/diversity",
@@ -427,10 +409,7 @@ class TensorBoardMonitor(Monitor):
                 step
             )
 
-        # ---------------------------------------------------------
         # Performance
-        # ---------------------------------------------------------
-
         self._add_scalar(
             "performance/epoch_time",
             data.epoch_time,
@@ -444,20 +423,14 @@ class TensorBoardMonitor(Monitor):
                 step
             )
 
-        # ---------------------------------------------------------
         # Algorithm
-        # ---------------------------------------------------------
-
         self._add_scalar(
             "algorithm/epoch",
             data.epoch,
             step
         )
 
-        # ---------------------------------------------------------
         # Algorithm-specific metrics
-        # ---------------------------------------------------------
-
         self._log_metrics(
             metrics=metrics,
             step=step,
