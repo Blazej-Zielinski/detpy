@@ -32,7 +32,8 @@ class SHADE(BaseAlg):
         (CEC). IEEE. https://doi.org/10.1109/cec.2013.6557555
     """
 
-    def __init__(self, params: ShadeData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False, monitor=None):
+    def __init__(self, params: ShadeData, db_conn=None, db_auto_write=False, db_writing_interval=5000, verbose=False,
+                 monitor=None):
         super().__init__(SHADE.__name__, params, db_conn, db_auto_write, db_writing_interval, verbose, monitor)
 
         ParameterValidator.min(
@@ -66,6 +67,8 @@ class SHADE(BaseAlg):
         self._random_value_gen = RandomValueGenerator()
         self._binomial_crossing = BinomialCrossover()
         self._archive_reduction = ArchiveReduction()
+
+        self._successful_mutations_last_epoch = 0
 
     def _mutate(self,
                 population: Population,
@@ -151,6 +154,7 @@ class SHADE(BaseAlg):
                 # Retain the original member if it is better or equal
                 new_members.append(copy.deepcopy(orig))
                 continue
+            self._successful_mutations_last_epoch += 1
 
             # If the modified member is better, update the archive and success metrics
             self._archive.append(copy.deepcopy(orig))
@@ -247,6 +251,8 @@ class SHADE(BaseAlg):
         # Evaluate fitness values for the trial population
         trial.update_fitness_values(self._function.eval, self.parallel_processing)
 
+        self._successful_mutations_last_epoch = 0
+
         # Selection step
         new_pop = self._selection(self._pop, trial, f_table, cr_table)
 
@@ -258,3 +264,14 @@ class SHADE(BaseAlg):
 
         # Update the memory for CR and F
         self._update_memory(self._successF, self._successCr, self._difference_fitness_success)
+
+    def get_monitor_metrics(self) -> dict:
+        """Return SHADE-specific metrics for monitoring."""
+
+        return {
+            "memory_f_mean": float(np.mean(self._memory_F)),
+            "memory_f_std": float(np.std(self._memory_F)),
+            "memory_cr_mean": float(np.mean(self._memory_Cr)),
+            "memory_cr_std": float(np.std(self._memory_Cr)),
+            "successful_mutations": self._successful_mutations_last_epoch,
+        }

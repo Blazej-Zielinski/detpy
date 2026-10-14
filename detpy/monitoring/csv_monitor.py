@@ -24,11 +24,11 @@ class CSVMonitor(Monitor):
     """
 
     def __init__(
-        self,
-        log_dir: str = "runs",
-        experiment_name: str = "experiment",
-        every_nfe: int = 100,
-        flush_every: int = 1,
+            self,
+            log_dir: str = "runs",
+            experiment_name: str = "experiment",
+            every_nfe: int = 1000,
+            flush_every: int = 1,
     ):
         super().__init__()
 
@@ -78,8 +78,8 @@ class CSVMonitor(Monitor):
 
     @staticmethod
     def _ordered_fields(
-        existing: list[str],
-        row: dict[str, Any],
+            existing: list[str],
+            row: dict[str, Any],
     ) -> list[str]:
         """Return the existing field names extended with any new keys."""
         fields = list(existing)
@@ -97,11 +97,11 @@ class CSVMonitor(Monitor):
             os.fsync(file.fileno())
 
     def _write_csv(
-        self,
-        path: Path,
-        row: dict[str, Any],
-        rows: list[dict[str, Any]],
-        fields: list[str],
+            self,
+            path: Path,
+            row: dict[str, Any],
+            rows: list[dict[str, Any]],
+            fields: list[str],
     ) -> list[str]:
         """
         Write a record to the CSV file immediately.
@@ -116,9 +116,9 @@ class CSVMonitor(Monitor):
             rows.append(dict(row))
 
             with path.open(
-                "w",
-                newline="",
-                encoding="utf-8",
+                    "w",
+                    newline="",
+                    encoding="utf-8",
             ) as file:
                 writer = csv.DictWriter(
                     file,
@@ -134,14 +134,14 @@ class CSVMonitor(Monitor):
             return new_fields
 
         needs_header = (
-            not path.exists()
-            or path.stat().st_size == 0
+                not path.exists()
+                or path.stat().st_size == 0
         )
 
         with path.open(
-            "a",
-            newline="",
-            encoding="utf-8",
+                "a",
+                newline="",
+                encoding="utf-8",
         ) as file:
             writer = csv.DictWriter(
                 file,
@@ -174,10 +174,10 @@ class CSVMonitor(Monitor):
         self._rows_since_flush = 0
 
     def log_epoch(
-        self,
-        data: EpochData,
-        metrics: Optional[dict[str, Any]] = None,
-        force: bool = False,
+            self,
+            data: EpochData,
+            metrics: Optional[dict[str, Any]] = None,
+            force: bool = False,
     ) -> None:
         """
         Log a monitoring point if any of the following conditions apply:
@@ -216,7 +216,7 @@ class CSVMonitor(Monitor):
             should_log = True
         else:
             should_log = (
-                nfe - self._last_logged_nfe >= self.every_nfe
+                    nfe - self._last_logged_nfe >= self.every_nfe
             )
 
         if force:
@@ -224,8 +224,8 @@ class CSVMonitor(Monitor):
 
         # Do not log the exact same point more than once.
         if (
-            self._last_logged_epoch == epoch
-            and self._last_logged_nfe == nfe
+                self._last_logged_epoch == epoch
+                and self._last_logged_nfe == nfe
         ):
             return
 
@@ -256,9 +256,9 @@ class CSVMonitor(Monitor):
         )
 
     def log_final(
-        self,
-        monitor_data: EpochData,
-        metrics: Optional[dict[str, Any]] = None,
+            self,
+            monitor_data: EpochData,
+            metrics: Optional[dict[str, Any]] = None,
     ) -> None:
         """Force the final monitoring point to be logged."""
         self.log_epoch(
