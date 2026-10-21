@@ -72,7 +72,7 @@ class DLSHADE(BaseAlg):
 
         ParameterValidator.int_min(
             params.minimum_population_size,
-            2,
+            4,
             "Minimum population size"
         )
 
@@ -216,6 +216,9 @@ class DLSHADE(BaseAlg):
 
         self._pop.members = np.asarray(members[:half], dtype=object).copy()
         self._pop.size = half
+        self.population_size = half
+        self._archive_size = half
+        self._archive = self._archive_reduction.reduce_archive(self._archive, half, half)
 
     def _apply_due_population_reductions(self):
         if self._reduction_cursor >= len(self._reduction_epochs):
@@ -393,7 +396,7 @@ class DLSHADE(BaseAlg):
             f_table.append(f)
             cr_table.append(cr)
 
-            the_best_to_possible_select = int(self.population_size * self._p)
+            the_best_to_possible_select = max(1, int(self.population_size * self._p))
 
             the_bests_to_select.append(the_best_to_possible_select)
 
