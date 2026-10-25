@@ -1,3 +1,4 @@
+import threading
 from typing import Callable
 from abc import ABC, abstractmethod
 
@@ -58,7 +59,9 @@ class FitnessFunctionWrapper(FitnessFunctionBase):
             raise TypeError("The wrapped function must be an instance of FitnessFunctionBase.")
         super().__init__()
         self._func = func
+        self._inner_eval = func.eval  # Cache bound method for stable identity in pool caching
         self._evaluation_count = 0
+        self._lock = threading.Lock()
 
     def eval(self, *args, **kwargs) -> float:
         """
@@ -68,8 +71,29 @@ class FitnessFunctionWrapper(FitnessFunctionBase):
         :param kwargs: Keyword arguments for the fitness function.
         :return: The result of the fitness function.
         """
-        self._evaluation_count += 1
+        with self._lock:
+            self._evaluation_count += 1
         return self._func.eval(*args, **kwargs)
+
+    def get_inner_eval(self):
+        """
+        Get the inner (unwrapped) eval function for use in process-based parallelism.
+        The inner function does not increment the evaluation counter.
+
+        :return: The eval method of the inner fitness function.
+        """
+        return self._inner_eval
+
+    def add_evaluations(self, count: int) -> None:
+        """
+        Manually add to the evaluation counter.
+        Used after process-based parallel evaluation where each process
+        has its own copy of the function and cannot share the counter.
+
+        :param count: Number of evaluations to add.
+        """
+        with self._lock:
+            self._evaluation_count += count
 
     @property
     def evaluation_count(self) -> int:
@@ -84,7 +108,8 @@ class FitnessFunctionWrapper(FitnessFunctionBase):
         """
         Reset the evaluation count to zero.
         """
-        self._evaluation_count = 0
+        with self._lock:
+            self._evaluation_count = 0
 
     def get_name(self) -> str:
         """
