@@ -2,15 +2,27 @@
 
 ## 📖 Citation
 
-If you use **DetPy** in your research, please cite:
+If you use **DetPy** in your research, please cite the relevant publications:
 
-**Zieliński, B., Ściegienny, S., Orlicki, H., & Książek, W. (2025).**  
-*DetPy (Differential Evolution Tools): A Python toolbox for solving optimization problems using differential evolution.*  
-**SoftwareX**, 29, 102014.  
-https://doi.org/10.1016/j.softx.2024.102014
+**Version 2.0.0 (2026)**
+
+Groń, K., Golonka, D., & Książek, W. (2026). *Version [2.0.0] - DetPy (Differential evolution tools): A Python toolbox for solving optimization problems using differential evolution.* **SoftwareX**. https://doi.org/10.1016/j.softx.2026.102509
+
+**Original publication (2025)**
+
+Zieliński, B., Ściegienny, S., Orlicki, H., & Książek, W. (2025). *DetPy (Differential Evolution Tools): A Python toolbox for solving optimization problems using differential evolution.* **SoftwareX, 29**, 102014. https://doi.org/10.1016/j.softx.2024.102014
 
 ### BibTeX
+
 ```bibtex
+@article{Gron2026DetPy,
+  title   = {Version [2.0.0] - DetPy (Differential evolution tools): A Python toolbox for solving optimization problems using differential evolution},
+  author  = {Groń, Konrad and Golonka, Damian and Książek, Wojciech},
+  journal = {SoftwareX},
+  year    = {2026},
+  doi     = {10.1016/j.softx.2026.102509},
+}
+
 @article{Zielinski2025DetPy,
   title   = {DetPy (Differential Evolution Tools): A Python toolbox for solving optimization problems using differential evolution},
   author  = {Zieliński, Błażej and Ściegienny, Szymon and Orlicki, Hubert and Książek, Wojciech},
