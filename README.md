@@ -64,6 +64,7 @@ The following variants have been implemented:
 | 33  | FDDE (Fitness-Diversity Differential Evolution) [31]                                                                            | 2021 |
 | 34  | iL-SHADE (Improved L-SHADE Algorithm for Single Objective Real-Parameter Optimization) [32]                                     | 2016 |
 | 35  | jSO (Single Objective Real-Parameter Optimization: Algorithm jSO) [33]                                                          | 2017 |
+| 36  | D-SHADE (L-SHADE with dynamic population size reduction) [18, 34]                                                               | 2014 |
 
 # Installation
 ```
@@ -176,6 +177,7 @@ Test functions prepared based on https://gitlab.com/luca.baronti/python_benchmar
 31. Cheng, J., Pan, Z., Liang, H., Gao, Z., Gao, J. *Differential evolution algorithm with fitness and diversity ranking-based mutation operator*. Swarm and Evolutionary Computation, vol. 61, 100816, 2021.
 32. Janez Brest, Mirjam Sepesy Maučec, Borko Boškovič. *iL-SHADE: Improved L-SHADE algorithm for single objective real-parameter optimization*. IEEE Congress on Evolutionary Computation (CEC), 2016.
 33. Janez Brest, Mirjam Sepesy Maučec, Borko Boškovič. *Single objective real-parameter optimization: Algorithm jSO*. IEEE Congress on Evolutionary Computation (CEC), 2017.
+34. D-SHADE combines L-SHADE [18] with Janez Brest, Mirjam Sepesy Maučec. *Population size reduction for the differential evolution algorithm*. Applied Intelligence, vol. 29, no. 3, pp. 228–247, 2008. https://doi.org/10.1007/s10489-007-0091-x
 # Documentation
 Full documentation is available: https://blazej-zielinski.github.io/detpy/
 
