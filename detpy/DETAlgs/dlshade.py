@@ -20,7 +20,7 @@ from detpy.models.population import Population
 
 class DLSHADE(BaseAlg):
     """
-        DLSHADE
+        D-SHADE
 
         L-SHADE whose linear population-size reduction is replaced by the dynamic
         reduction of Brest and Sepesy Maučec (2008). Mutation,
@@ -96,6 +96,12 @@ class DLSHADE(BaseAlg):
             "Population size"
         )
 
+        ParameterValidator.int_min(
+            params.pmax,
+            1,
+            "pmax"
+        )
+
         self._H = params.memory_size  # Memory size for f and cr adaptation
         self._memory_F = np.full(self._H, 0.5)  # Initial memory for F
         self._memory_Cr = np.full(self._H, 0.5)  # Initial memory for Cr
@@ -150,8 +156,6 @@ class DLSHADE(BaseAlg):
         generations still run at the final size until maxnfeval is reached.
 
         """
-        ParameterValidator.int_min(self._pmax, 1, "pmax")
-
         sizes = [self._start_population_size]
         for _ in range(self._pmax - 1):
             current = sizes[-1]
@@ -217,8 +221,22 @@ class DLSHADE(BaseAlg):
         self._pop.members = np.asarray(members[:half], dtype=object).copy()
         self._pop.size = half
         self.population_size = half
-        self._archive_size = half
-        self._archive = self._archive_reduction.reduce_archive(self._archive, half, half)
+        self._reduce_archive_to_population_size()
+
+    def _reduce_archive_to_population_size(self):
+        """
+        Trim the SHADE external archive to the current population size.
+
+        This is the SHADE archive policy: extra members are dropped at random
+        until the archive is at most as large as the population. It is not the
+        dynNP pairwise population cut.
+        """
+        self._archive_size = self.population_size
+        self._archive = self._archive_reduction.reduce_archive(
+            self._archive,
+            self._archive_size,
+            self.population_size
+        )
 
     def _apply_due_population_reductions(self):
         if self._reduction_cursor >= len(self._reduction_epochs):
@@ -227,15 +245,6 @@ class DLSHADE(BaseAlg):
             return
         self._reduce_population_half()
         self._reduction_cursor += 1
-
-    def update_population_size(self, nfe: int, total_nfe: int, start_pop_size: int, min_pop_size: int):
-        """
-        Halve the population when the current generation is a reduction generation G_R.
-
-        The signature is the LSHADE hook. The schedule itself is generation-based
-        , not the linear function of nfe.
-        """
-        self._apply_due_population_reductions()
 
     def mutate(self,
                population: Population,
@@ -421,10 +430,8 @@ class DLSHADE(BaseAlg):
         # Selection step
         new_pop = self._selection(self._pop, trial, f_table, cr_table)
 
-        # Archive management
-        self._archive_size = self.population_size
-
-        self._archive = self._archive_reduction.reduce_archive(self._archive, self._archive_size, self.population_size)
+        # Archive management: SHADE randomly drops extra members down to NP.
+        self._reduce_archive_to_population_size()
 
         # Update the population
         self._pop = new_pop
@@ -432,5 +439,4 @@ class DLSHADE(BaseAlg):
         # Update the memory for CR and F
         self.update_memory(self._successF, self._successCr, self._difference_fitness_success)
 
-        self.update_population_size(self.nfe, self.nfe_max, self._start_population_size,
-                                    self._min_pop_size)
+        self._apply_due_population_reductions()
