@@ -77,6 +77,7 @@ The following variants have been implemented:
 | 34  | iL-SHADE (Improved L-SHADE Algorithm for Single Objective Real-Parameter Optimization) [32]                                     | 2016 |
 | 35  | jSO (Single Objective Real-Parameter Optimization: Algorithm jSO) [33]                                                          | 2017 |
 | 36  | D-SHADE (L-SHADE with dynamic population size reduction) [18, 34]                                                               | 2014 |
+| 37  | MjSO (Modified jSO with probability selection and directed mutation) [35]                                                       | 2023 |
 
 # Installation
 ```
@@ -190,6 +191,7 @@ Test functions prepared based on https://gitlab.com/luca.baronti/python_benchmar
 32. Janez Brest, Mirjam Sepesy Maučec, Borko Boškovič. *iL-SHADE: Improved L-SHADE algorithm for single objective real-parameter optimization*. IEEE Congress on Evolutionary Computation (CEC), 2016.
 33. Janez Brest, Mirjam Sepesy Maučec, Borko Boškovič. *Single objective real-parameter optimization: Algorithm jSO*. IEEE Congress on Evolutionary Computation (CEC), 2017.
 34. D-SHADE combines L-SHADE [18] with Janez Brest, Mirjam Sepesy Maučec. *Population size reduction for the differential evolution algorithm*. Applied Intelligence, vol. 29, no. 3, pp. 228–247, 2008. https://doi.org/10.1007/s10489-007-0091-x
+35. Yintong Li, Tong Han, Xiaofei Wang, Huan Zhou, Shangqin Tang, Changqiang Huang, Bo Han. *MjSO: A modified differential evolution with a probability selection mechanism and a directed mutation strategy*. Swarm and Evolutionary Computation, vol. 78, 101294, 2023. https://doi.org/10.1016/j.swevo.2023.101294
 # Documentation
 Full documentation is available: https://blazej-zielinski.github.io/detpy/
 
