@@ -102,6 +102,20 @@ class DLSHADE(BaseAlg):
             "pmax"
         )
 
+        pop_size_floor = max(params.minimum_population_size, 4)
+        max_pmax = 1
+        size_after_cuts = params.population_size
+        while size_after_cuts // 2 >= pop_size_floor:
+            size_after_cuts //= 2
+            max_pmax += 1
+
+        if params.pmax > max_pmax:
+            raise ValueError(
+                "pmax is the number of population sizes after successive halvings. "
+                f"With population_size={params.population_size} and minimum "
+                f"{pop_size_floor}, pmax must be <= {max_pmax}, got {params.pmax}."
+            )
+
         self._H = params.memory_size  # Memory size for f and cr adaptation
         self._memory_F = np.full(self._H, 0.5)  # Initial memory for F
         self._memory_Cr = np.full(self._H, 0.5)  # Initial memory for Cr
