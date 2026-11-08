@@ -275,12 +275,16 @@ class MJSO(BaseAlg):
             return
 
         total = np.sum(difference_fitness_success)
-        weights = difference_fitness_success / total
+        if np.isclose(total, 0.0, atol=self._EPSILON):
+            weights = np.full(len(difference_fitness_success), 1.0 / len(difference_fitness_success))
+        else:
+            weights = np.asarray(difference_fitness_success, dtype=float) / total
         old_cr = self._memory_Cr[self._k_index]
         old_f = self._memory_F[self._k_index]
 
-        if old_cr < 0 or np.max(success_cr) == 0 or np.isclose(total, 0.0, atol=self._EPSILON):
-            self._memory_Cr[self._k_index] = 0.0
+        # A negative entry is terminal: the next CR drawn from this slot is 0.
+        if old_cr < 0 or np.max(success_cr) == 0:
+            self._memory_Cr[self._k_index] = -1.0
         else:
             cr_new = MathFunctions.calculate_lehmer_mean(np.array(success_cr), weights, p=2)
             cr_new = np.clip((cr_new + old_cr) / 2, 0, 1)
