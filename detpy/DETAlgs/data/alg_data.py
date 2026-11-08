@@ -209,6 +209,20 @@ class JSOData(BaseData):
 
 
 @dataclass
+class JSOAData(BaseData):
+    population_reduction_strategy: PopulationSizeReductionStrategy = LinearPopulationSizeReduction()
+    minimum_population_size: int = 4
+    memory_size: int = 5
+    p_max: float = 0.25
+    p_min: float = 0.125
+    p_update_strategy: ILShadePUpdateStrategy = ILShadePUpdateStrategy.INCREASING
+    # Fraction of the worse archive members that may be replaced. 0.2 and 0.4
+    # were the strongest settings in Bujok (2024).
+    ap: float = 0.2
+    archive_ratio: float = 2.6
+
+
+@dataclass
 class MJSOData(BaseData):
     population_reduction_strategy: PopulationSizeReductionStrategy = LinearPopulationSizeReduction()
     minimum_population_size: int = 4
