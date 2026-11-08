@@ -80,8 +80,25 @@ The following variants have been implemented:
 | 37  | MjSO (Modified jSO with probability selection and directed mutation) [35]                                                       | 2023 |
 
 # Installation
-```
+```bash
 pip install detpy
+```
+
+### Optional dependencies
+
+For gradient-based constraint handling (EpsDEAG with automatic/symbolic derivatives):
+```bash
+pip install "detpy[gradient]"
+```
+
+For TensorBoard monitoring:
+```bash
+pip install "detpy[tensorboard]"
+```
+
+All optional dependencies at once:
+```bash
+pip install "detpy[all]"
 ```
 
 # Example - optimization of the Ackley function based SADE
@@ -131,27 +148,31 @@ result = function_loader.evaluate_function(function_name, variables, n_dimension
 
 Available functions:
 
-```
-        self.function_classes = {
-            "ackley": Ackley,
-            "rastrigin": Rastrigin,
-            "rosenbrock": Rosenbrock,
-            "sphere": Sphere,
-            "griewank": Griewank,
-            "schwefel": Schwefel,
-            "michalewicz": Michalewicz,
-            "easom": Easom,
-            "himmelblau": Himmelblau,
-            "keane": Keane,
-            "rana": Rana,
-            "pits_and_holes": PitsAndHoles,
-            "hypersphere": Hypersphere,
-            "hyperellipsoid": Hyperellipsoid,
-            "eggholder": EggHolder,
-            "styblinski_tang": StyblinskiTang,
-            "goldstein_and_price": GoldsteinAndPrice
-        }
-```
+| Function | Name |
+|----------|------|
+| Ackley | `ackley` |
+| Rastrigin | `rastrigin` |
+| Rosenbrock | `rosenbrock` |
+| Sphere | `sphere` |
+| Griewank | `griewank` |
+| Schwefel | `schwefel` |
+| Michalewicz | `michalewicz` |
+| Easom | `easom` |
+| Himmelblau | `himmelblau` |
+| Keane | `keane` |
+| Rana | `rana` |
+| Pits and Holes | `pits_and_holes` |
+| Hypersphere | `hypersphere` |
+| Hyperellipsoid | `hyperellipsoid` |
+| Egg Holder | `eggholder` |
+| Styblinski-Tang | `styblinski_tang` |
+| Goldstein-Price | `goldstein_and_price` |
+
+**Constrained benchmark functions (G-functions):**
+
+| Function | Name |
+|----------|------|
+| G01 – G12 | `G01`, `G02`, ..., `G12` |
 
 Test functions prepared based on https://gitlab.com/luca.baronti/python_benchmark_functions
 
