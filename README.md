@@ -35,7 +35,7 @@ Zieliński, B., Ściegienny, S., Orlicki, H., & Książek, W. (2025). *DetPy (Di
 ```
 
 # Introduction
-The DetPy library contains implementations of the differential evolution algorithm and 18 modifications of this 
+The DetPy library contains implementations of the differential evolution algorithm and over 35 variants of this 
 algorithm. It can be used to solve advanced optimization problems.
 The following variants have been implemented:
 
