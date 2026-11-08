@@ -204,12 +204,16 @@ class JSO(BaseAlg):
             return
 
         total = np.sum(difference_fitness_success)
-        weights = difference_fitness_success / total
+        if np.isclose(total, 0.0, atol=self._EPSILON):
+            weights = np.full(len(difference_fitness_success), 1.0 / len(difference_fitness_success))
+        else:
+            weights = np.asarray(difference_fitness_success, dtype=float) / total
         old_cr = self._memory_Cr[self._k_index]
         old_f = self._memory_F[self._k_index]
 
-        if old_cr < 0 or np.max(success_cr) == 0 or np.isclose(total, 0.0, atol=self._EPSILON):
-            self._memory_Cr[self._k_index] = 0.0
+        # A negative entry is terminal: the next CR drawn from this slot is 0.
+        if old_cr < 0 or np.max(success_cr) == 0:
+            self._memory_Cr[self._k_index] = -1.0
         else:
             cr_new = MathFunctions.calculate_lehmer_mean(np.array(success_cr), weights, p=2)
             cr_new = np.clip((cr_new + old_cr) / 2, 0, 1)
@@ -270,7 +274,7 @@ class JSO(BaseAlg):
             f_table.append(f)
             cr_table.append(cr)
             fw_table.append(self._compute_fw(f))
-            the_bests_to_select.append(max(2, int(self.population_size * self._p)))
+            the_bests_to_select.append(max(2, int(self._pop.size * self._p)))
 
         return f_table, cr_table, fw_table, the_bests_to_select
 
@@ -292,11 +296,10 @@ class JSO(BaseAlg):
 
         new_pop = self._selection(self._pop, trial, f_table, cr_table)
 
-        self._archive_size = self.population_size
-        self._archive = self._archive_reduction.reduce_archive(self._archive, self._archive_size)
-
         self._pop = new_pop
         self.update_memory(self._successF, self._successCr, self._difference_fitness_success)
 
         self.update_population_size(self.nfe, self.nfe_max, self._start_population_size, self._min_pop_size)
+        self._archive_size = self._pop.size
+        self._archive = self._archive_reduction.reduce_archive(self._archive, self._archive_size)
         self._update_p()
