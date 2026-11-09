@@ -10,9 +10,9 @@ import sys
 sys.path.insert(0, os.path.abspath('../detpy'))
 
 project = 'DetPy'
-copyright = 'workshop participant'
-author = 'workshop participant'
-release = '0.1'
+copyright = '2026, DetPy Contributors'
+author = 'Błażej Zieliński, Szymon Ściegienny, Hubert Orlicki, Wojciech Książek, Konrad Groń, Damian Golonka, Jakub Opaliński'
+release = '3.0'
 
 
 # -- General configuration ---------------------------------------------------
