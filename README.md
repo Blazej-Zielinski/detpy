@@ -79,6 +79,7 @@ The following variants have been implemented:
 | 36  | D-SHADE (L-SHADE with dynamic population size reduction) [18, 34]                                                               | 2014 |
 | 37  | MjSO (Modified jSO with probability selection and directed mutation) [35]                                                       | 2023 |
 | 38  | jSOa (Progressive Archive in Adaptive jSO Algorithm) [36]                                                                       | 2024 |
+| 39  | jSOe (Eigenvector Crossover in the Efficient jSO Algorithm) [37]                                                                | 2019 |
 
 # Installation
 ```bash
@@ -330,6 +331,7 @@ tensorboard --logdir=tb_logs
 34. D-SHADE combines L-SHADE [18] with Janez Brest, Mirjam Sepesy Maučec. *Population size reduction for the differential evolution algorithm*. Applied Intelligence, vol. 29, no. 3, pp. 228–247, 2008. https://doi.org/10.1007/s10489-007-0091-x
 35. Yintong Li, Tong Han, Xiaofei Wang, Huan Zhou, Shangqin Tang, Changqiang Huang, Bo Han. *MjSO: A modified differential evolution with a probability selection mechanism and a directed mutation strategy*. Swarm and Evolutionary Computation, vol. 78, 101294, 2023. https://doi.org/10.1016/j.swevo.2023.101294
 36. Petr Bujok. *Progressive archive in adaptive jSO algorithm*. Mathematics, vol. 12, no. 16, 2534, 2024. https://doi.org/10.3390/math12162534
+37. Petr Bujok, Radka Poláková. *Eigenvector crossover in the efficient jSO algorithm*. MENDEL Soft Computing Journal, vol. 25, no. 1, pp. 65–72, 2019. https://doi.org/10.13164/mendel.2019.1.065
 # Documentation
 Full documentation is available: https://blazej-zielinski.github.io/detpy/
 

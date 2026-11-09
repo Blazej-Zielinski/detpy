@@ -209,6 +209,19 @@ class JSOData(BaseData):
 
 
 @dataclass
+class JSOEData(BaseData):
+    population_reduction_strategy: PopulationSizeReductionStrategy = LinearPopulationSizeReduction()
+    minimum_population_size: int = 4
+    memory_size: int = 5
+    p_max: float = 0.25
+    p_min: float = 0.125
+    p_update_strategy: ILShadePUpdateStrategy = ILShadePUpdateStrategy.INCREASING
+    # jSOe0501, the strongest variant in Bujok and Poláková (2019).
+    ps: float = 0.5
+    pb: float = 0.1
+
+
+@dataclass
 class JSOAData(BaseData):
     population_reduction_strategy: PopulationSizeReductionStrategy = LinearPopulationSizeReduction()
     minimum_population_size: int = 4
