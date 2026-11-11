@@ -80,6 +80,7 @@ The following variants have been implemented:
 | 37  | MjSO (Modified jSO with probability selection and directed mutation) [35]                                                       | 2023 |
 | 38  | jSOa (Progressive Archive in Adaptive jSO Algorithm) [36]                                                                       | 2024 |
 | 39  | jSOe (Eigenvector Crossover in the Efficient jSO Algorithm) [37]                                                                | 2019 |
+| 40  | jSOaE (jSO with Progressive Archive and Eigenvector Crossover) [36]                                                             | 2024 |
 
 # Installation
 ```bash

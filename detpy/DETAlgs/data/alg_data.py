@@ -236,6 +236,20 @@ class JSOAData(BaseData):
 
 
 @dataclass
+class JSOAEData(BaseData):
+    population_reduction_strategy: PopulationSizeReductionStrategy = LinearPopulationSizeReduction()
+    minimum_population_size: int = 4
+    memory_size: int = 5
+    p_max: float = 0.25
+    p_min: float = 0.125
+    p_update_strategy: ILShadePUpdateStrategy = ILShadePUpdateStrategy.INCREASING
+    ap: float = 0.2
+    archive_ratio: float = 2.6
+    ps: float = 0.5
+    peig: float = 0.4
+
+
+@dataclass
 class MJSOData(BaseData):
     population_reduction_strategy: PopulationSizeReductionStrategy = LinearPopulationSizeReduction()
     minimum_population_size: int = 4
