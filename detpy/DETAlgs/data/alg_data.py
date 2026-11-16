@@ -301,6 +301,22 @@ class LShadeEpsinData(BaseData):
 
 
 @dataclass
+class LShadeCnEpsinData(BaseData):
+    minimum_population_size: int = 4
+    memory_size: int = 5
+    best_member_percentage: float = 0.2
+    f_init: float = 0.5
+    cr_init: float = 0.5
+    freq_init: float = 0.5
+    # Fixed frequency of the non-adaptive decreasing sinusoid. The article sets it to 0.5.
+    freq_decreasing: float = 0.5
+    covariance_probability: float = 0.4
+    neighborhood_fraction: float = 0.5
+    # The article defines the learning period LP but does not give its value.
+    learning_period: int = 20
+
+
+@dataclass
 class EPSDEData(BaseData):
     mutation_factor: float = 0.7
     crossover_rate: float = 0.9
