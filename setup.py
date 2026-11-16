@@ -57,13 +57,12 @@ setuptools.setup(
         "matplotlib",
         "tqdm",
         "scipy",
-        "sympy",
-        "autograd",
-        "pandas",
         "colorama",
     ],
     extras_require={
         "tensorboard": ["tensorboard"],
+        "gradient": ["autograd", "sympy"],
+        "all": ["tensorboard", "autograd", "sympy"],
     },
     python_requires='>=3.7',
 )

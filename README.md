@@ -35,7 +35,7 @@ Zieliński, B., Ściegienny, S., Orlicki, H., & Książek, W. (2025). *DetPy (Di
 ```
 
 # Introduction
-The DetPy library contains implementations of the differential evolution algorithm and 18 modifications of this 
+The DetPy library contains implementations of the differential evolution algorithm and over 35 variants of this 
 algorithm. It can be used to solve advanced optimization problems.
 The following variants have been implemented:
 
@@ -81,14 +81,64 @@ The following variants have been implemented:
 | 38  | jSOa (Progressive Archive in Adaptive jSO Algorithm) [36]                                                                       | 2024 |
 | 39  | jSOe (Eigenvector Crossover in the Efficient jSO Algorithm) [37]                                                                | 2019 |
 | 40  | jSOaE (jSO with Progressive Archive and Eigenvector Crossover) [36]                                                             | 2024 |
+| 40  | LSHADE_CNEPSIN (Ensemble Sinusoidal Differential Covariance Matrix Adaptation with Euclidean Neighborhood) [38]                 | 2017 |
 
 # Installation
-```
+```bash
 pip install detpy
 ```
 
-# Example - optimization of the Ackley function based SADE
+### Optional dependencies
+
+For gradient-based constraint handling (EpsDEAG with automatic/symbolic derivatives):
+```bash
+pip install "detpy[gradient]"
 ```
+
+For TensorBoard monitoring:
+```bash
+pip install "detpy[tensorboard]"
+```
+
+All optional dependencies at once:
+```bash
+pip install "detpy[all]"
+```
+
+# Quick Start
+
+```python
+from detpy.DETAlgs.data.alg_data import DEData
+from detpy.DETAlgs.de import DE
+from detpy.functions import FunctionLoader
+from detpy.models.enums.boundary_constrain import BoundaryFixing
+from detpy.models.enums.optimization import OptimizationType
+from detpy.models.fitness_function import BenchmarkFitnessFunction
+
+# Load a benchmark function
+function_loader = FunctionLoader()
+ackley = function_loader.get_function(function_name="ackley", n_dimensions=2)
+
+# Set up and run optimization
+params = DEData(
+    max_nfe=10000,
+    population_size=50,
+    dimension=2,
+    lb=[-32.768, -32.768],
+    ub=[32.768, 32.768],
+    optimization_type=OptimizationType.MINIMIZATION,
+    boundary_constraints_fun=BoundaryFixing.RANDOM,
+    function=BenchmarkFitnessFunction(ackley),
+)
+
+algorithm = DE(params)
+results = algorithm.run()
+print(f"Best fitness: {results.best_fitness}")
+```
+
+# Example — SADE with Database and Parallel Processing
+
+```python
 from detpy.DETAlgs.data.alg_data import SADEData
 from detpy.DETAlgs.sade import SADE
 from detpy.functions import FunctionLoader
@@ -113,50 +163,137 @@ params = SADEData(
     parallel_processing=['thread', 4]
 )
 
-default2 = SADE(params, db_conn="Differential_evolution.db", db_auto_write=False)
-results = default2.run()
+sade = SADE(params, db_conn="results.db", db_auto_write=False)
+results = sade.run()
 ```
 
 # Using FunctionLoader
 
-You can also use one of predefined functions to solve your problem. 
-To do this, call the FunctionLoader method and pass as an argument the name of a function from the folder and variables,
-which u want to use in your calculations.
+DetPy includes a set of built-in benchmark functions. Use `FunctionLoader` to load a function
+by name and specify the number of dimensions:
 
-```
+```python
+from detpy.functions import FunctionLoader
+
 function_loader = FunctionLoader()
-function_name = "ackley"
-variables = [0.0, 0.0]
-n_dimensions = 2
 
-result = function_loader.evaluate_function(function_name, variables, n_dimensions)
+# Load a function and evaluate it
+ackley = function_loader.get_function(function_name="ackley", n_dimensions=2)
+result = function_loader.evaluate_function("ackley", [0.0, 0.0], n_dimensions=2)
 ```
 
 Available functions:
 
-```
-        self.function_classes = {
-            "ackley": Ackley,
-            "rastrigin": Rastrigin,
-            "rosenbrock": Rosenbrock,
-            "sphere": Sphere,
-            "griewank": Griewank,
-            "schwefel": Schwefel,
-            "michalewicz": Michalewicz,
-            "easom": Easom,
-            "himmelblau": Himmelblau,
-            "keane": Keane,
-            "rana": Rana,
-            "pits_and_holes": PitsAndHoles,
-            "hypersphere": Hypersphere,
-            "hyperellipsoid": Hyperellipsoid,
-            "eggholder": EggHolder,
-            "styblinski_tang": StyblinskiTang,
-            "goldstein_and_price": GoldsteinAndPrice
-        }
-```
+| Function | Name |
+|----------|------|
+| Ackley | `ackley` |
+| Rastrigin | `rastrigin` |
+| Rosenbrock | `rosenbrock` |
+| Sphere | `sphere` |
+| Griewank | `griewank` |
+| Schwefel | `schwefel` |
+| Michalewicz | `michalewicz` |
+| Easom | `easom` |
+| Himmelblau | `himmelblau` |
+| Keane | `keane` |
+| Rana | `rana` |
+| Pits and Holes | `pits_and_holes` |
+| Hypersphere | `hypersphere` |
+| Hyperellipsoid | `hyperellipsoid` |
+| Egg Holder | `eggholder` |
+| Styblinski-Tang | `styblinski_tang` |
+| Goldstein-Price | `goldstein_and_price` |
+
+**Constrained benchmark functions (G-functions):**
+
+| Function | Name |
+|----------|------|
+| G01 – G12 | `G01`, `G02`, ..., `G12` |
 
 Test functions prepared based on https://gitlab.com/luca.baronti/python_benchmark_functions
+
+# Using Opfunu Functions
+
+DetPy integrates with [Opfunu](https://github.com/thieu1995/opfunu), providing access to
+CEC competition benchmark suites (CEC2014, CEC2017, etc.):
+
+```python
+from opfunu.cec_based import F82014
+from detpy.DETAlgs.data.alg_data import LShadeData
+from detpy.DETAlgs.lshade import LSHADE
+from detpy.models.enums.boundary_constrain import BoundaryFixing
+from detpy.models.enums.optimization import OptimizationType
+from detpy.models.fitness_function import FitnessFunctionOpfunu
+
+fitness_fun = FitnessFunctionOpfunu(func_type=F82014, ndim=10)
+
+params = LShadeData(
+    max_nfe=100000,
+    population_size=100,
+    dimension=10,
+    lb=[-100] * 10,
+    ub=[100] * 10,
+    optimization_type=OptimizationType.MINIMIZATION,
+    boundary_constraints_fun=BoundaryFixing.RANDOM,
+    function=fitness_fun,
+    log_population=True,
+)
+
+lshade = LSHADE(params)
+results = lshade.run()
+```
+
+# Monitoring
+
+DetPy supports real-time monitoring of optimization progress via CSV logs or TensorBoard.
+
+### CSV Monitoring
+
+```python
+from detpy.monitoring.csv_monitor import CSVMonitor
+
+monitor = CSVMonitor(
+    log_dir="results",
+    experiment_name="my_experiment",
+    every_nfe=100,
+    flush_every=1
+)
+
+algorithm = LSHADE(params, monitor=monitor)
+results = algorithm.run()
+```
+
+This creates two CSV files in the output directory: `general_metrics.csv` and `specific_metrics.csv`.
+
+### TensorBoard Monitoring
+
+First, install the optional TensorBoard dependency:
+
+```bash
+pip install "detpy[tensorboard]"
+```
+
+Then use `TensorBoardMonitor`:
+
+```python
+from detpy.monitoring import TensorBoardMonitor
+
+monitor = TensorBoardMonitor(
+    log_dir="tb_logs",
+    experiment_name="run_1",
+    flush_every=10,
+    every_nfe=1000
+)
+
+algorithm = LSHADE(params, monitor=monitor)
+results = algorithm.run()
+```
+
+Launch the TensorBoard dashboard with:
+
+```bash
+tensorboard --logdir=tb_logs
+```
 
 # References
 
@@ -197,6 +334,7 @@ Test functions prepared based on https://gitlab.com/luca.baronti/python_benchmar
 35. Yintong Li, Tong Han, Xiaofei Wang, Huan Zhou, Shangqin Tang, Changqiang Huang, Bo Han. *MjSO: A modified differential evolution with a probability selection mechanism and a directed mutation strategy*. Swarm and Evolutionary Computation, vol. 78, 101294, 2023. https://doi.org/10.1016/j.swevo.2023.101294
 36. Petr Bujok. *Progressive archive in adaptive jSO algorithm*. Mathematics, vol. 12, no. 16, 2534, 2024. https://doi.org/10.3390/math12162534
 37. Petr Bujok, Radka Poláková. *Eigenvector crossover in the efficient jSO algorithm*. MENDEL Soft Computing Journal, vol. 25, no. 1, pp. 65–72, 2019. https://doi.org/10.13164/mendel.2019.1.065
+38. Noor H. Awad, Mostafa Z. Ali, Ponnuthurai N. Suganthan. *Ensemble sinusoidal differential covariance matrix adaptation with Euclidean neighborhood for solving CEC2017 benchmark problems*. IEEE Congress on Evolutionary Computation (CEC), 2017.
 # Documentation
 Full documentation is available: https://blazej-zielinski.github.io/detpy/
 

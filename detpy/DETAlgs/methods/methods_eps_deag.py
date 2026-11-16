@@ -3,9 +3,7 @@ import random
 from functools import partial
 
 import numpy as np
-import sympy as sp
-from autograd import jacobian
-import autograd.numpy as anp
+
 
 from detpy.DETAlgs.methods.methods_de import mutation_ind
 from detpy.DETAlgs.methods.methods_eps_de import epsilon_level_comparisons, epsilon_constrained_method
@@ -146,6 +144,13 @@ def derivative_numeric(chromosome: list, g_funcs: list, h_funcs: list, eta: floa
 
 
 def derivative_symbolic(chromosome: list, g_funcs: list, h_funcs: list):
+    try:
+        import sympy as sp
+    except ImportError:
+        raise ImportError(
+            "sympy is required for symbolic derivative computation. "
+            "Install it with: pip install sympy"
+        )
     n = len(chromosome)
     variables = sp.symbols(f'x0:{n}')
 
@@ -162,6 +167,13 @@ def derivative_symbolic(chromosome: list, g_funcs: list, h_funcs: list):
 
 def constraint_functions(chromosomes: list, derivative_method: DerivativeMethod, g_funcs: list, h_funcs: list):
     if DerivativeMethod.AUTOMATIC == derivative_method:
+        try:
+            import autograd.numpy as anp
+        except ImportError:
+            raise ImportError(
+                "autograd is required for automatic derivative computation. "
+                "Install it with: pip install autograd"
+            )
         inequality_constraints = anp.array([g(chromosomes) for g in g_funcs])
         equality_constraints = anp.array([h(chromosomes) for h in h_funcs])
         return anp.concatenate((inequality_constraints, equality_constraints))
@@ -176,6 +188,14 @@ def calculate_delta_x(chromosomes : list[float], derivative_method : DerivativeM
     elif DerivativeMethod.SYMBOLIC == derivative_method:
         gradient_constraint = derivative_symbolic(chromosomes, g_funcs, h_funcs)
     else:
+        try:
+            from autograd import jacobian
+            import autograd.numpy as anp
+        except ImportError:
+            raise ImportError(
+                "autograd is required for automatic derivative computation. "
+                "Install it with: pip install autograd"
+            )
         constraint_func_fixed = partial(
             constraint_functions,
             derivative_method=derivative_method,

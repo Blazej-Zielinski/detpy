@@ -3,9 +3,35 @@ Installation
 
 To install **DetPy**, use the following command:
 
-.. code-block:: plaintext
+.. code-block:: bash
 
    pip install detpy
+
+This installs DetPy and its required dependencies, including ``numpy``, ``opfunu``, ``matplotlib``,
+``scipy``, ``tqdm``, and ``colorama``.
+
+**Optional dependencies**
+
+If you want to use gradient-based constraint handling (EpsDEAG algorithm with automatic or symbolic
+derivatives), install DetPy with the optional ``gradient`` dependency:
+
+.. code-block:: bash
+
+   pip install "detpy[gradient]"
+
+This installs ``autograd`` and ``sympy``.
+
+If you want to use TensorBoard monitoring, install DetPy with the optional ``tensorboard`` dependency:
+
+.. code-block:: bash
+
+   pip install "detpy[tensorboard]"
+
+To install all optional dependencies at once:
+
+.. code-block:: bash
+
+   pip install "detpy[all]"
 
 You can find the full source code on GitHub:
 `DetPy Repository <https://github.com/Blazej-Zielinski/detpy/tree/main>`_.
