@@ -74,6 +74,8 @@ class SHADE_1_1(BaseAlg):
         self._binomial_crossing = BinomialCrossover()
         self._archive_reduction = ArchiveReduction()
 
+        self._successful_mutations_last_epoch = 0
+
     def mutate(self,
                population: Population,
                the_best_to_select_table: List[int],
@@ -140,6 +142,7 @@ class SHADE_1_1(BaseAlg):
                 if origin_population.members[i] <= modified_population.members[i]:
                     new_members.append(copy.deepcopy(origin_population.members[i]))
                 else:
+                    self._successful_mutations_last_epoch += 1
                     self._archive.append(copy.deepcopy(origin_population.members[i]))
                     self._successF.append(ftable[i])
                     self._successCr.append(cr_table[i])
@@ -150,6 +153,7 @@ class SHADE_1_1(BaseAlg):
                 if origin_population.members[i] >= modified_population.members[i]:
                     new_members.append(copy.deepcopy(origin_population.members[i]))
                 else:
+                    self._successful_mutations_last_epoch += 1
                     self._archive.append(copy.deepcopy(origin_population.members[i]))
                     self._successF.append(ftable[i])
                     self._successCr.append(cr_table[i])
@@ -237,6 +241,7 @@ class SHADE_1_1(BaseAlg):
         """
         Perform the next epoch of the SHADE algorithm.
         """
+        self._successful_mutations_last_epoch = 0
         f_table, cr_table, the_bests_to_select = self.initialize_parameters_for_epoch()
 
         mutant = self.mutate(self._pop, the_bests_to_select, f_table)
@@ -260,3 +265,22 @@ class SHADE_1_1(BaseAlg):
 
         # Update the memory for CR and F
         self.update_memory(self._successF, self._successCr, self._difference_fitness_success)
+
+    def get_monitor_metrics(self) -> dict:
+        """Return SHADE 1.1 metrics that change during a run."""
+        cr_values = self._memory_Cr[~np.isnan(self._memory_Cr)]
+        if cr_values.size == 0:
+            memory_cr_mean = 0.0
+            memory_cr_std = 0.0
+        else:
+            memory_cr_mean = float(np.mean(cr_values))
+            memory_cr_std = float(np.std(cr_values))
+
+        return {
+            "memory_f_mean": float(np.mean(self._memory_F)),
+            "memory_f_std": float(np.std(self._memory_F)),
+            "memory_cr_mean": memory_cr_mean,
+            "memory_cr_std": memory_cr_std,
+            "successful_mutations": self._successful_mutations_last_epoch,
+            "archive_size": len(self._archive),
+        }
