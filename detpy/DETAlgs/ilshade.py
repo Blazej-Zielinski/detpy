@@ -108,6 +108,9 @@ class ILSHADE(BaseAlg):
         self._binomial_crossing = BinomialCrossover()
         self._archive_reduction = ArchiveReduction()
 
+        self._successful_mutations_last_epoch = 0
+        self._population_size_last_epoch = self.population_size
+
     def _update_p(self):
         """
         Update the p-best fraction for current-to-pBest/1 mutation.
@@ -210,6 +213,7 @@ class ILSHADE(BaseAlg):
                 new_members.append(copy.deepcopy(orig))
                 continue
 
+            self._successful_mutations_last_epoch += 1
             self._archive.append(copy.deepcopy(orig))
             self._successF.append(ftable[i])
             self._successCr.append(cr_table[i])
@@ -322,6 +326,8 @@ class ILSHADE(BaseAlg):
         Executes parameter initialization, mutation, crossover, selection, archive reduction,
         memory update, population size reduction, and dynamic p update.
         """
+        self._successful_mutations_last_epoch = 0
+        self._population_size_last_epoch = self._pop.size
         self._successF = []
         self._successCr = []
         self._difference_fitness_success = []
@@ -344,3 +350,22 @@ class ILSHADE(BaseAlg):
 
         self.update_population_size(self.nfe, self.nfe_max, self._start_population_size, self._min_pop_size)
         self._update_p()
+
+    def get_monitor_metrics(self) -> dict:
+        """Return iL-SHADE metrics that change during a run."""
+        evaluated_population_size = self._population_size_last_epoch
+        return {
+            "population_size": self._pop.size,
+            "memory_f_mean": float(np.mean(self._memory_F)),
+            "memory_f_std": float(np.std(self._memory_F)),
+            "memory_cr_mean": float(np.mean(self._memory_Cr)),
+            "memory_cr_std": float(np.std(self._memory_Cr)),
+            "successful_mutations": self._successful_mutations_last_epoch,
+            "successful_mutations_rate": (
+                self._successful_mutations_last_epoch / evaluated_population_size
+                if evaluated_population_size > 0
+                else 0.0
+            ),
+            "archive_size": len(self._archive),
+            "p": float(self._p),
+        }
