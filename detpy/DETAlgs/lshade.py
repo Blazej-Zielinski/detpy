@@ -118,6 +118,8 @@ class LSHADE(BaseAlg):
 
         self._successful_mutations_last_epoch = 0
         self._population_size_last_epoch = self.population_size
+        self._current_f = []
+        self._current_cr = []
 
     def get_monitor_metrics(self) -> dict:
         """Return LSHADE-specific metrics for monitoring."""
@@ -135,7 +137,11 @@ class LSHADE(BaseAlg):
                 if self._population_size_last_epoch > 0
                 else 0.0
             ),
-            "archive_size": len(self._archive)
+            "archive_size": len(self._archive),
+            "f_mean": float(np.mean(self._current_f)) if self._current_f else 0.0,
+            "f_std": float(np.std(self._current_f)) if self._current_f else 0.0,
+            "cr_mean": float(np.mean(self._current_cr)) if self._current_cr else 0.0,
+            "cr_std": float(np.std(self._current_cr)) if self._current_cr else 0.0,
         }
 
     def update_population_size(self, nfe: int, total_nfe: int, start_pop_size: int, min_pop_size: int):
@@ -333,6 +339,8 @@ class LSHADE(BaseAlg):
         """
         f_table, cr_table, the_bests_to_select = self.initialize_parameters_for_epoch()
 
+        self._current_f = f_table
+        self._current_cr = cr_table
         self._population_size_last_epoch = self._pop.size
 
         mutant = self.mutate(self._pop, the_bests_to_select, f_table)

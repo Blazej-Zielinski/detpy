@@ -341,8 +341,9 @@ class LSHADERSP(BaseAlg):
         """
         metrics = {}
 
-        metrics["mutation_success_rate"] = (
-            100.0 * self._mutation_success / self._pop.size
+        metrics["successful_mutations"] = self._mutation_success
+        metrics["successful_mutations_rate"] = (
+            self._mutation_success / self._pop.size
             if self._pop.size > 0
             else 0.0
         )
@@ -351,7 +352,6 @@ class LSHADERSP(BaseAlg):
         metrics["population_size"] = self._pop.size
 
         # Rank-based selection
-        metrics["rank_selection_k"] = float(self._k)
         metrics["pbest_fraction"] = float(self._current_p)
 
         # F memory

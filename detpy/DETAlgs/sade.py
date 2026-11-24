@@ -42,6 +42,23 @@ class SADE(BaseAlg):
         self.prob_f = params.prob_f
         self.prob_cr = params.prob_cr
 
+        self._successful_mutations_last_epoch = 0
+
+    def get_monitor_metrics(self) -> dict:
+        """Return SADE-specific metrics for monitoring."""
+        return {
+            "f_mean": float(np.mean(self._f_arr)),
+            "f_std": float(np.std(self._f_arr)),
+            "cr_mean": float(np.mean(self._cr_arr)),
+            "cr_std": float(np.std(self._cr_arr)),
+            "successful_mutations": self._successful_mutations_last_epoch,
+            "successful_mutations_rate": (
+                self._successful_mutations_last_epoch / self.population_size
+                if self.population_size > 0
+                else 0.0
+            ),
+        }
+
     def next_epoch(self):
         f_arr, cr_arr, prob_f, prob_cr = (self._f_arr, self._cr_arr, self.prob_f, self.prob_cr)
 
@@ -58,7 +75,14 @@ class SADE(BaseAlg):
         u_pop.update_fitness_values(self._function.eval, self.parallel_processing)
 
         # Select new population
+        old_fitness = [m.fitness_value for m in self._pop.members]
         new_pop, f_arr, cr_arr = sade_selection(self._pop, u_pop, f_arr, cr_arr, prob_f, prob_cr)
+
+        # Count successful mutations
+        self._successful_mutations_last_epoch = sum(
+            1 for old_f, new_m in zip(old_fitness, new_pop.members)
+            if new_m.fitness_value != old_f
+        )
 
         # Override data
         self._pop = new_pop
