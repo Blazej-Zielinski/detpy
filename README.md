@@ -35,7 +35,7 @@ Zieliński, B., Ściegienny, S., Orlicki, H., & Książek, W. (2025). *DetPy (Di
 ```
 
 # Introduction
-The DetPy library contains implementations of the differential evolution algorithm and over 35 variants of this 
+The DetPy library contains implementations of the differential evolution algorithm and over 40 variants of this 
 algorithm. It can be used to solve advanced optimization problems.
 The following variants have been implemented:
 
@@ -81,7 +81,7 @@ The following variants have been implemented:
 | 38  | jSOa (Progressive Archive in Adaptive jSO Algorithm) [36]                                                                       | 2024 |
 | 39  | jSOe (Eigenvector Crossover in the Efficient jSO Algorithm) [37]                                                                | 2019 |
 | 40  | jSOaE (jSO with Progressive Archive and Eigenvector Crossover) [36]                                                             | 2024 |
-| 40  | LSHADE_CNEPSIN (Ensemble Sinusoidal Differential Covariance Matrix Adaptation with Euclidean Neighborhood) [38]                 | 2017 |
+| 41  | LSHADE_CNEPSIN (Ensemble Sinusoidal Differential Covariance Matrix Adaptation with Euclidean Neighborhood) [38]                 | 2017 |
 
 # Installation
 ```bash

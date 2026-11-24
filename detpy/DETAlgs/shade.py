@@ -69,6 +69,8 @@ class SHADE(BaseAlg):
         self._archive_reduction = ArchiveReduction()
 
         self._successful_mutations_last_epoch = 0
+        self._current_f = []
+        self._current_cr = []
 
     def _mutate(self,
                 population: Population,
@@ -241,6 +243,9 @@ class SHADE(BaseAlg):
         """
         f_table, cr_table, the_bests_to_select = self._initialize_parameters_for_epoch()
 
+        self._current_f = f_table
+        self._current_cr = cr_table
+
         mutant = self._mutate(self._pop, the_bests_to_select, f_table)
 
         fix_boundary_constraints(mutant, self.boundary_constraints_fun)
@@ -274,4 +279,13 @@ class SHADE(BaseAlg):
             "memory_cr_mean": float(np.mean(self._memory_Cr)),
             "memory_cr_std": float(np.std(self._memory_Cr)),
             "successful_mutations": self._successful_mutations_last_epoch,
+            "successful_mutations_rate": (
+                self._successful_mutations_last_epoch / self.population_size
+                if self.population_size > 0
+                else 0.0
+            ),
+            "f_mean": float(np.mean(self._current_f)) if self._current_f else 0.0,
+            "f_std": float(np.std(self._current_f)) if self._current_f else 0.0,
+            "cr_mean": float(np.mean(self._current_cr)) if self._current_cr else 0.0,
+            "cr_std": float(np.std(self._current_cr)) if self._current_cr else 0.0,
         }

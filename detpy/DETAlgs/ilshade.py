@@ -110,6 +110,8 @@ class ILSHADE(BaseAlg):
 
         self._successful_mutations_last_epoch = 0
         self._population_size_last_epoch = self.population_size
+        self._current_f = []
+        self._current_cr = []
 
     def _update_p(self):
         """
@@ -334,6 +336,9 @@ class ILSHADE(BaseAlg):
 
         f_table, cr_table, the_bests_to_select = self.initialize_parameters_for_epoch()
 
+        self._current_f = f_table
+        self._current_cr = cr_table
+
         mutant = self.mutate(self._pop, the_bests_to_select, f_table)
         trial = self._binomial_crossing.crossover_population(self._pop, mutant, cr_table)
 
@@ -366,6 +371,9 @@ class ILSHADE(BaseAlg):
                 if evaluated_population_size > 0
                 else 0.0
             ),
-            "archive_size": len(self._archive),
             "p": float(self._p),
+            "f_mean": float(np.mean(self._current_f)) if self._current_f else 0.0,
+            "f_std": float(np.std(self._current_f)) if self._current_f else 0.0,
+            "cr_mean": float(np.mean(self._current_cr)) if self._current_cr else 0.0,
+            "cr_std": float(np.std(self._current_cr)) if self._current_cr else 0.0,
         }

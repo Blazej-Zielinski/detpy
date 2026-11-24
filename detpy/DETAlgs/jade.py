@@ -1,3 +1,5 @@
+import numpy as np
+
 from detpy.DETAlgs.base import BaseAlg
 from detpy.DETAlgs.data.alg_data import JADEData
 from detpy.DETAlgs.methods.methods_jade import jade_adapt_mutation_factors, jade_binomial_crossing, \
@@ -108,6 +110,25 @@ class JADE(BaseAlg):
         self.c = params.c
         self.p = params.p
 
+        self._successful_mutations_last_epoch = 0
+
+    def get_monitor_metrics(self) -> dict:
+        """Return JADE-specific metrics for monitoring."""
+        return {
+            "f_global": float(self.mutation_factor_mean),
+            "cr_global": float(self.crossover_rate_mean),
+            "f_mean": float(np.mean(self.mutation_factors)),
+            "f_std": float(np.std(self.mutation_factors)),
+            "cr_mean": float(np.mean(self.crossover_rates)),
+            "cr_std": float(np.std(self.crossover_rates)),
+            "successful_mutations": self._successful_mutations_last_epoch,
+            "successful_mutations_rate": (
+                self._successful_mutations_last_epoch / self.population_size
+                if self.population_size > 0
+                else 0.0
+            ),
+        }
+
     def next_epoch(self):
         # New population after mutation
         v_pop = jade_mutation(self._pop, self.mutation_factors, self.p, self.archive)
@@ -126,6 +147,9 @@ class JADE(BaseAlg):
                                  self.success_mutation_factors, self.success_crossover_rates, self.archive)
 
         jade_reduce_archive(self.archive, self.archive_size)
+
+        # Save count before adapt clears the lists
+        self._successful_mutations_last_epoch = len(self.success_mutation_factors)
 
         self.mutation_factors, self.mutation_factor_mean = jade_adapt_mutation_factors(self.c,
                                                                                        self.mutation_factor_mean,

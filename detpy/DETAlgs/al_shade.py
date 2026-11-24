@@ -126,6 +126,9 @@ class ALSHADE(BaseAlg):
             "current_to_xamean": 0.0
         }
 
+        self._current_f = []
+        self._current_cr = []
+
     def _update_population_size(self, nfe: int, total_nfe: int, start_pop_size: int, min_pop_size: int):
         """
         Update the population size based on the current nfe using the specified population size reduction strategy.
@@ -359,6 +362,9 @@ class ALSHADE(BaseAlg):
     def next_epoch(self):
         f_table, cr_table, bests_to_select = self._initialize_parameters_for_epoch()
 
+        self._current_f = f_table
+        self._current_cr = cr_table
+
         mutant = self._mutate(self._pop, bests_to_select, f_table)
 
         trial = self._binomial_crossing.crossover_population(self._pop, mutant, cr_table)
@@ -426,5 +432,17 @@ class ALSHADE(BaseAlg):
             if len(valid_cr) > 0
             else 0.0
         )
+
+        total_success = sum(self._mutation_success.values())
+        total_usage = sum(self._mutation_usage.values())
+        metrics["successful_mutations"] = total_success
+        metrics["successful_mutations_rate"] = (
+            total_success / total_usage if total_usage > 0 else 0.0
+        )
+
+        metrics["f_mean"] = float(np.mean(self._current_f)) if self._current_f else 0.0
+        metrics["f_std"] = float(np.std(self._current_f)) if self._current_f else 0.0
+        metrics["cr_mean"] = float(np.mean(self._current_cr)) if self._current_cr else 0.0
+        metrics["cr_std"] = float(np.std(self._current_cr)) if self._current_cr else 0.0
 
         return metrics

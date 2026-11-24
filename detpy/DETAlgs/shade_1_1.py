@@ -75,6 +75,8 @@ class SHADE_1_1(BaseAlg):
         self._archive_reduction = ArchiveReduction()
 
         self._successful_mutations_last_epoch = 0
+        self._current_f = []
+        self._current_cr = []
 
     def mutate(self,
                population: Population,
@@ -244,6 +246,9 @@ class SHADE_1_1(BaseAlg):
         self._successful_mutations_last_epoch = 0
         f_table, cr_table, the_bests_to_select = self.initialize_parameters_for_epoch()
 
+        self._current_f = f_table
+        self._current_cr = cr_table
+
         mutant = self.mutate(self._pop, the_bests_to_select, f_table)
 
         # Crossover step
@@ -282,5 +287,13 @@ class SHADE_1_1(BaseAlg):
             "memory_cr_mean": memory_cr_mean,
             "memory_cr_std": memory_cr_std,
             "successful_mutations": self._successful_mutations_last_epoch,
-            "archive_size": len(self._archive),
+            "successful_mutations_rate": (
+                self._successful_mutations_last_epoch / self.population_size
+                if self.population_size > 0
+                else 0.0
+            ),
+            "f_mean": float(np.mean(self._current_f)) if self._current_f else 0.0,
+            "f_std": float(np.std(self._current_f)) if self._current_f else 0.0,
+            "cr_mean": float(np.mean(self._current_cr)) if self._current_cr else 0.0,
+            "cr_std": float(np.std(self._current_cr)) if self._current_cr else 0.0,
         }
