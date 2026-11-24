@@ -107,6 +107,25 @@ class ALSHADE(BaseAlg):
         self._binomial_crossing = BinomialCrossover()
         self._archive_reduction = ArchiveReduction()
 
+
+        #Initialize statistics for monitoring
+        self._mutation_memory = []
+
+        self._mutation_usage = {
+            "current_to_pbest": 0,
+            "current_to_xamean": 0
+        }
+
+        self._mutation_success = {
+            "current_to_pbest": 0,
+            "current_to_xamean": 0
+        }
+
+        self._mutation_improvement = {
+            "current_to_pbest": 0.0,
+            "current_to_xamean": 0.0
+        }
+
     def _update_population_size(self, nfe: int, total_nfe: int, start_pop_size: int, min_pop_size: int):
         """
         Update the population size based on the current nfe using the specified population size reduction strategy.
@@ -159,6 +178,12 @@ class ALSHADE(BaseAlg):
         # Contains 1 if "current-to-pbest/1" was used, 3 if "current to xamean" was used
         memory = []
 
+        # Reset statistics counters for the current epoch
+        for strategy in self._mutation_usage:
+            self._mutation_usage[strategy] = 0
+            self._mutation_success[strategy] = 0
+            self._mutation_improvement[strategy] = 0.0
+
         pa = np.concatenate((population.members, self._archive))
 
         for i in range(population.size):
@@ -180,6 +205,7 @@ class ALSHADE(BaseAlg):
                     r2=pa[r2],
                     f=f_table[i]
                 )
+                self._mutation_usage["current_to_pbest"] += 1
 
                 memory.append(1)
             else:
@@ -192,9 +218,13 @@ class ALSHADE(BaseAlg):
                     r2=pa[r2],
                     f=f_table[i]
                 )
+                self._mutation_usage["current_to_xamean"] += 1
                 # current to xamean
                 memory.append(3)
             new_members.append(mutant)
+
+        # Save the mutation strategy used for each individual in the current epoch for monitoring purposes
+        self._mutation_memory = memory
 
         return Population.with_new_members(population, new_members)
 
@@ -222,6 +252,16 @@ class ALSHADE(BaseAlg):
                 df = abs(modified.members[i].fitness_value - origin.members[i].fitness_value)
                 self._difference_fitness_success.append(df)
                 new_members.append(copy.deepcopy(modified.members[i]))
+
+                # Update mutation strategy statistics for monitoring
+                strategy = (
+                    "current_to_pbest"
+                    if memory_flags[i] == 1
+                    else "current_to_xamean"
+                )
+
+                self._mutation_success[strategy] += 1
+                self._mutation_improvement[strategy] += df
 
         a1_all = sum(1 for m in memory_flags if m == 1)
         a2_all = sum(1 for m in memory_flags if m == 3)
@@ -330,3 +370,61 @@ class ALSHADE(BaseAlg):
         self._update_memory(self._successF, self._successCr, self._difference_fitness_success)
         self._update_population_size(self.nfe, self.nfe_max, self._start_population_size,
                                      self._min_pop_size)
+
+    def get_monitor_metrics(self) -> dict:
+        """
+        Get the metrics for monitoring the algorithm.
+        """
+
+        metrics = {}
+
+        # Mutation strategies
+        for strategy in (
+                "current_to_pbest",
+                "current_to_xamean"
+        ):
+            usage = self._mutation_usage[strategy]
+            success = self._mutation_success[strategy]
+
+            metrics[f"{strategy}_usage"] = usage
+
+            metrics[f"{strategy}_success_rate"] = (
+                success / usage
+                if usage > 0
+                else 0.0
+            )
+
+        # Population
+        metrics["population_size"] = self._pop.size
+
+        # Adaptive mutation probability
+        metrics["mutation_probability_pbest"] = float(self._P)
+        metrics["mutation_probability_xamean"] = float(1 - self._P)
+
+
+        # Memory parameters
+        metrics["memory_f_mean"] = float(
+            np.mean(self._memory_F)
+        )
+
+        metrics["memory_f_std"] = float(
+            np.std(self._memory_F)
+        )
+
+        valid_cr = self._memory_Cr[
+            ~np.isnan(self._memory_Cr)
+        ]
+
+        metrics["memory_cr_mean"] = (
+            float(np.mean(valid_cr))
+            if len(valid_cr) > 0
+            else 0.0
+        )
+
+        metrics["memory_cr_std"] = (
+            float(np.std(valid_cr))
+            if len(valid_cr) > 0
+            else 0.0
+        )
+
+        return metrics

@@ -81,10 +81,6 @@ class LSHADERSP(BaseAlg):
         self._success_f = []  # List of successful F values
         self._success_cr = []  # List of successful Cr values
 
-        self._f = np.random.standard_cauchy() * 0.1 + np.random.choice(self._memory_F)
-        self._fw = 0.7 * self._f if self.nfe < 0.2 * self.nfe_max else (
-            0.8 * self._f if self.nfe < 0.4 * self.nfe_max else 1.2 * self._f)
-
         self._difference_fitness_success = []
 
         # Define a terminal value for memory_Cr. It indicates that no successful Cr was found in the epoch.
@@ -95,6 +91,10 @@ class LSHADERSP(BaseAlg):
 
         self._binomial_crossing = BinomialCrossover()
         self._random_value_gen = RandomValueGenerator()
+
+        # Initialize statistics for monitoring
+        self._mutation_success = 0
+        self._current_p = 0.0
 
     def _adapt_parameters(self, fitness_improvement: List[float]):
         """
@@ -184,15 +184,17 @@ class LSHADERSP(BaseAlg):
         """
 
         new_members = []
+        p = 0.085 + (0.085 * nfe) / nfe_max
+        self._current_p = p
+
+        how_many_best_to_select = max(1, int(p * pop_size))
+        # at least one best member also for pbest it
+        # is require minimum 4 members for selection: current, best, r1, r2
+
         for i in range(population.size):
             members = np.append(population.members, self._archive)
 
             r1, r2 = rank_selection(members, self._k, self.optimization_type)
-
-            p = 0.085 + (0.085 * nfe) / nfe_max
-            how_many_best_to_select = p * pop_size
-            how_many_best_to_select = max(1, how_many_best_to_select)  # at least one best member also for pbest it
-            # is require minimum 4 members for selection: current, best, r1, r2
 
             best_members = population.get_best_members(int(how_many_best_to_select))
             all_best_members = self._get_best_members(best_members,
@@ -207,6 +209,7 @@ class LSHADERSP(BaseAlg):
                                                         members[r2], f_table[i], fw_table[i])
 
             new_members.append(new_member)
+
         return Population.with_new_members(population, new_members)
 
     def _selection(self, origin_population: Population, modified_population: Population, cr_table: List[float],
@@ -223,6 +226,8 @@ class LSHADERSP(BaseAlg):
         Returns: A new population with the selected members.
         """
 
+        self._mutation_success = 0
+
         optimization = origin_population.optimization
         new_members = []
         for i in range(origin_population.size):
@@ -237,6 +242,10 @@ class LSHADERSP(BaseAlg):
 
                     self._difference_fitness_success.append(
                         origin_population.members[i].fitness_value - modified_population.members[i].fitness_value)
+
+                    if modified_population.members[i].fitness_value < origin_population.members[i].fitness_value:
+                        self._mutation_success += 1
+
             elif optimization == OptimizationType.MAXIMIZATION:
                 if origin_population.members[i] > modified_population.members[i]:
                     new_members.append(copy.deepcopy(origin_population.members[i]))
@@ -247,6 +256,10 @@ class LSHADERSP(BaseAlg):
                     self._success_cr.append(cr_table[i])
                     self._difference_fitness_success.append(
                         modified_population.members[i].fitness_value - origin_population.members[i].fitness_value)
+
+                    if modified_population.members[i].fitness_value > origin_population.members[i].fitness_value:
+                        self._mutation_success += 1
+
         return Population.with_new_members(origin_population, new_members)
 
     def _update_population_size(self, nfe: int, total_nfe: int, start_pop_size: int, min_pop_size: int):
@@ -275,6 +288,10 @@ class LSHADERSP(BaseAlg):
         Parameters:
         - pop_size (int): The population size.
         """
+        self._current_f = []
+        self._current_cr = []
+        self._current_fw = []
+
         f_table = []
         cr_table = []
         fw_table = []
@@ -302,6 +319,7 @@ class LSHADERSP(BaseAlg):
             f_table.append(f)
             cr_table.append(cr)
 
+
             # Set Fw based on the current NFE
             if self.nfe < 0.2 * self.nfe_max:
                 fw = 0.7 * f
@@ -311,7 +329,89 @@ class LSHADERSP(BaseAlg):
                 fw = 1.2 * f
             fw_table.append(fw)
 
+            self._current_f.append(f)
+            self._current_cr.append(cr)
+            self._current_fw.append(fw)
+
         return f_table, cr_table, fw_table
+
+    def get_monitor_metrics(self) -> dict:
+        """
+        Get the metrics for monitoring the algorithm.
+        """
+        metrics = {}
+
+        metrics["mutation_success_rate"] = (
+            100.0 * self._mutation_success / self._pop.size
+            if self._pop.size > 0
+            else 0.0
+        )
+
+        # Population and archive
+        metrics["population_size"] = self._pop.size
+
+        # Rank-based selection
+        metrics["rank_selection_k"] = float(self._k)
+        metrics["pbest_fraction"] = float(self._current_p)
+
+        # F memory
+        metrics["memory_f_mean"] = float(
+            np.mean(self._memory_F)
+        )
+
+        metrics["memory_f_std"] = float(
+            np.std(self._memory_F)
+        )
+
+        # CR memory
+        valid_cr = self._memory_Cr[
+            ~np.isnan(self._memory_Cr)
+        ]
+
+        metrics["memory_cr_mean"] = (
+            float(np.mean(valid_cr))
+            if len(valid_cr) > 0
+            else 0.0
+        )
+
+        metrics["memory_cr_std"] = (
+            float(np.std(valid_cr))
+            if len(valid_cr) > 0
+            else 0.0
+        )
+
+        # Current epoch parameters
+        metrics["f_mean"] = (
+            float(np.mean(self._current_f))
+            if self._current_f else 0.0
+        )
+
+        metrics["fw_mean"] = (
+            float(np.mean(self._current_fw))
+            if self._current_fw else 0.0
+        )
+
+        metrics["cr_mean"] = (
+            float(np.mean(self._current_cr))
+            if self._current_cr else 0.0
+        )
+
+        metrics["f_std"] = (
+            float(np.std(self._current_f))
+            if self._current_f else 0.0
+        )
+
+        metrics["fw_std"] = (
+            float(np.std(self._current_fw))
+            if self._current_fw else 0.0
+        )
+
+        metrics["cr_std"] = (
+            float(np.std(self._current_cr))
+            if self._current_cr else 0.0
+        )
+
+        return metrics
 
     def next_epoch(self):
         """
