@@ -352,7 +352,7 @@ class LSHADERSP(BaseAlg):
         metrics["population_size"] = self._pop.size
 
         # Rank-based selection
-        metrics["pbest_fraction"] = float(self._current_p)
+        metrics["p_value"] = float(self._current_p)
 
         # F memory
         metrics["memory_f_mean"] = float(
