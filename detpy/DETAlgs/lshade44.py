@@ -611,32 +611,6 @@ class LSHADE44(BaseAlg):
         )
         self._pop.resize(new_size)
 
-    def get_monitor_metrics(self) -> dict:
-        """Return LSHADE44 metrics that change during a run."""
-        evaluated_population_size = self._population_size_last_epoch
-        metrics = {
-            "population_size": self._pop.size,
-            "memory_f_mean": float(np.mean(self._memory_F)),
-            "memory_f_std": float(np.std(self._memory_F)),
-            "memory_cr_mean": float(np.mean(self._memory_Cr)),
-            "memory_cr_std": float(np.std(self._memory_Cr)),
-            "successful_mutations": self._successful_mutations_last_epoch,
-            "successful_mutations_rate": (
-                self._successful_mutations_last_epoch / evaluated_population_size
-                if evaluated_population_size > 0
-                else 0.0
-            ),
-            "archive_size": len(self._archive),
-            "f_mean": float(np.mean(self._current_f)) if len(self._current_f) else 0.0,
-            "f_std": float(np.std(self._current_f)) if len(self._current_f) else 0.0,
-            "cr_mean": float(np.mean(self._current_cr)) if len(self._current_cr) else 0.0,
-            "cr_std": float(np.std(self._current_cr)) if len(self._current_cr) else 0.0,
-        }
-        for strategy in range(self._K):
-            name = self.STRATEGY_SHORT_NAMES[strategy]
-            metrics[f"strategy_{name}_probability"] = float(self._strategy_probabilities[strategy])
-        return metrics
-
     def get_strategy_statistics(self) -> dict:
         """
         Compute and return statistics describing the usage and performance of all DE strategies.
