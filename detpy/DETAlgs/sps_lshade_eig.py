@@ -168,6 +168,12 @@ class SPS_LSHADE_EIG(BaseAlg):
         self._last_er_table = np.array([])
         self._index_gen = IndexGenerator()
 
+        self._successful_mutations_last_epoch = 0
+        self._population_size_last_epoch = self.population_size
+        self._current_f = []
+        self._current_cr = []
+        self._current_er = []
+
     def _update_covariance_matrix(self):
         """Update the covariance matrix based on the current population."""
         population_matrix = np.array([
@@ -241,6 +247,7 @@ class SPS_LSHADE_EIG(BaseAlg):
         Returns: A new population with the selected members.
         """
         new_members = []
+        successful_count = 0
         for i in range(origin_population.size):
 
             if origin_population.optimization == OptimizationType.MINIMIZATION:
@@ -259,6 +266,7 @@ class SPS_LSHADE_EIG(BaseAlg):
                 )
                 new_members.append(copy.deepcopy(modified_population.members[i]))
                 self._recently_consecutive_unsuccessful_updates_table[i] = 0
+                successful_count += 1
             else:
                 new_members.append(copy.deepcopy(origin_population.members[i]))
                 self._recently_consecutive_unsuccessful_updates_table[i] += 1
@@ -286,6 +294,7 @@ class SPS_LSHADE_EIG(BaseAlg):
                                 key=lambda i: new_population.members[i].fitness_value)
                 new_population.members[worst_idx] = copy.deepcopy(prev_best)
 
+        self._successful_mutations_last_epoch = successful_count
         return new_population
 
     def _initialize_parameters_for_epoch(self):
@@ -452,6 +461,7 @@ class SPS_LSHADE_EIG(BaseAlg):
         """
         Perform the next epoch of the SPS-L-SHADE-EIG algorithm.
         """
+        self._population_size_last_epoch = self._pop.size
         f_table, cr_table, er_table, the_bests_to_select = self._initialize_parameters_for_epoch()
 
         # Store for monitoring

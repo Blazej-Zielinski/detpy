@@ -157,6 +157,11 @@ class LSHADE44(BaseAlg):
         self._archive_reduction = ArchiveReduction()
         self._random_value_gen = RandomValueGenerator()
 
+        self._successful_mutations_last_epoch = 0
+        self._population_size_last_epoch = self.population_size
+        self._current_f = []
+        self._current_cr = []
+
         # Statistics
         self._strategy_usage_stats = []
         self._strategy_success_stats = []
@@ -473,6 +478,8 @@ class LSHADE44(BaseAlg):
         """
         Perform the next epoch of the LSHADE44 algorithm.
         """
+        self._population_size_last_epoch = self._pop.size
+
         # Reset success sets for each strategy
         for k in range(self._K):
             self._successF[k] = []
@@ -572,6 +579,8 @@ class LSHADE44(BaseAlg):
                 # Keep original member
                 new_members.append(copy.deepcopy(origin_member))
 
+        self._successful_mutations_last_epoch = int(np.sum(self._strategy_success_counts))
+
         # Update population
         self._pop = Population.with_new_members(self._pop, new_members)
 
@@ -601,6 +610,32 @@ class LSHADE44(BaseAlg):
             nfe, total_nfe, start_pop_size, min_pop_size
         )
         self._pop.resize(new_size)
+
+    def get_monitor_metrics(self) -> dict:
+        """Return LSHADE44 metrics that change during a run."""
+        evaluated_population_size = self._population_size_last_epoch
+        metrics = {
+            "population_size": self._pop.size,
+            "memory_f_mean": float(np.mean(self._memory_F)),
+            "memory_f_std": float(np.std(self._memory_F)),
+            "memory_cr_mean": float(np.mean(self._memory_Cr)),
+            "memory_cr_std": float(np.std(self._memory_Cr)),
+            "successful_mutations": self._successful_mutations_last_epoch,
+            "successful_mutations_rate": (
+                self._successful_mutations_last_epoch / evaluated_population_size
+                if evaluated_population_size > 0
+                else 0.0
+            ),
+            "archive_size": len(self._archive),
+            "f_mean": float(np.mean(self._current_f)) if len(self._current_f) else 0.0,
+            "f_std": float(np.std(self._current_f)) if len(self._current_f) else 0.0,
+            "cr_mean": float(np.mean(self._current_cr)) if len(self._current_cr) else 0.0,
+            "cr_std": float(np.std(self._current_cr)) if len(self._current_cr) else 0.0,
+        }
+        for strategy in range(self._K):
+            name = self.STRATEGY_SHORT_NAMES[strategy]
+            metrics[f"strategy_{name}_probability"] = float(self._strategy_probabilities[strategy])
+        return metrics
 
     def get_strategy_statistics(self) -> dict:
         """

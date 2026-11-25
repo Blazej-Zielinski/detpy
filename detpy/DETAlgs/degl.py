@@ -4,6 +4,7 @@ from detpy.DETAlgs.methods.methods_de import selection, crossing
 from detpy.DETAlgs.methods.methods_degl import degl_mutation, degl_adapt_weight
 from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
+from detpy.models.enums.optimization import OptimizationType
 
 
 class DEGL(BaseAlg):
@@ -55,6 +56,27 @@ class DEGL(BaseAlg):
         self.crossing_type = params.crossing_type
         self.radius = params.radius
         self.weight = 0
+        self._successful_mutations_last_epoch = 0
+
+    def get_monitor_metrics(self) -> dict:
+        """Return DEGL metrics that change during a run."""
+        return {
+            "successful_mutations": self._successful_mutations_last_epoch,
+            "successful_mutations_rate": (
+                self._successful_mutations_last_epoch / self.population_size
+                if self.population_size > 0
+                else 0.0
+            ),
+            "neighborhood_weight": float(self.weight),
+        }
+
+    def _count_successes(self, new_population) -> int:
+        count = 0
+        minimize = self._pop.optimization == OptimizationType.MINIMIZATION
+        for old_member, new_member in zip(self._pop.members, new_population.members):
+            if (new_member < old_member) if minimize else (new_member > old_member):
+                count += 1
+        return count
 
     def next_epoch(self):
         # New population after mutation
@@ -71,6 +93,7 @@ class DEGL(BaseAlg):
 
         # Select new population
         new_pop = selection(self._pop, u_pop)
+        self._successful_mutations_last_epoch = self._count_successes(new_pop)
 
         self.weight = degl_adapt_weight(self.nfe, self.nfe_max)
 

@@ -387,6 +387,8 @@ class DETCR(BaseAlg):
         refresh_population = self.population_refreshment_mechanism(self._pop)
 
         mutation_factories, crossover_rates = self.adaptive_mechanism()
+        self._current_f = list(mutation_factories)
+        self._current_cr = list(crossover_rates)
 
         # Store for monitoring
         self._last_mutation_factories = mutation_factories
@@ -415,6 +417,7 @@ class DETCR(BaseAlg):
 
         # Select new population
         new_pop = selection(self._pop, u_pop)
+        self._successful_mutations_last_epoch = self._count_successes(new_pop)
 
         self.adapting_triangular_distribution(mutation_factories)
 

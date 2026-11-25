@@ -105,6 +105,10 @@ class SHADE4(BaseAlg):
         self._archive_reduction = ArchiveReduction()
         self._random_value_gen = RandomValueGenerator()
 
+        self._successful_mutations_last_epoch = 0
+        self._current_f = []
+        self._current_cr = []
+
     def _select_strategy(self) -> int:
         """
         Selects a DE strategy using roulette-wheel selection.
@@ -256,6 +260,9 @@ class SHADE4(BaseAlg):
             cr_table.append(cr)
             best_counts.append(best)
 
+        self._current_f = f_table
+        self._current_cr = cr_table
+
 
         trial_members = [None] * self._pop.size
 
@@ -357,7 +364,31 @@ class SHADE4(BaseAlg):
         if not new_members:
             new_members = copy.deepcopy(origin.members)
 
+        self._successful_mutations_last_epoch = int(np.sum(self._strategy_success_counts))
         return Population.with_new_members(origin, new_members)
+
+    def get_monitor_metrics(self) -> dict:
+        """Return SHADE4 metrics that change during a run."""
+        metrics = {
+            "memory_f_mean": float(np.mean(self._memory_F)),
+            "memory_f_std": float(np.std(self._memory_F)),
+            "memory_cr_mean": float(np.mean(self._memory_Cr)),
+            "memory_cr_std": float(np.std(self._memory_Cr)),
+            "successful_mutations": self._successful_mutations_last_epoch,
+            "successful_mutations_rate": (
+                self._successful_mutations_last_epoch / self.population_size
+                if self.population_size > 0
+                else 0.0
+            ),
+            "f_mean": float(np.mean(self._current_f)) if self._current_f else 0.0,
+            "f_std": float(np.std(self._current_f)) if self._current_f else 0.0,
+            "cr_mean": float(np.mean(self._current_cr)) if self._current_cr else 0.0,
+            "cr_std": float(np.std(self._current_cr)) if self._current_cr else 0.0,
+        }
+        for strategy in range(self._K):
+            name = self.STRATEGY_SHORT_NAMES[strategy]
+            metrics[f"strategy_{name}_probability"] = float(self._strategy_probabilities[strategy])
+        return metrics
 
     def get_strategy_statistics(self) -> dict:
         """
