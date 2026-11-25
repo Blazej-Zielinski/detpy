@@ -254,7 +254,6 @@ class DLSHADE(BaseAlg):
         self._archive = self._archive_reduction.reduce_archive(
             self._archive,
             self._archive_size,
-            self.population_size
         )
 
     def _apply_due_population_reductions(self):

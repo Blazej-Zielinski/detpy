@@ -161,6 +161,11 @@ class SPS_LSHADE_EIG(BaseAlg):
         self._binomial_crossing = BinomialCrossover()
         self._random_value_gen = RandomValueGenerator()
         self._archive_reduction = ArchiveReduction()
+
+        # Per-epoch generated values for monitoring
+        self._last_f_table = np.array([])
+        self._last_cr_table = np.array([])
+        self._last_er_table = np.array([])
         self._index_gen = IndexGenerator()
 
         self._successful_mutations_last_epoch = 0
@@ -434,29 +439,22 @@ class SPS_LSHADE_EIG(BaseAlg):
         self._difference_fitness_success.clear()
 
     def get_monitor_metrics(self) -> dict:
-        """Return SPS-L-SHADE-EIG metrics that change during a run."""
-        evaluated_population_size = self._population_size_last_epoch
+        """Return SPS-L-SHADE-EIG-specific metrics for monitoring."""
         return {
-            "population_size": self._pop.size,
+            "f_mean": float(np.mean(self._last_f_table)) if len(self._last_f_table) > 0 else 0.0,
+            "f_std": float(np.std(self._last_f_table)) if len(self._last_f_table) > 0 else 0.0,
+            "cr_mean": float(np.mean(self._last_cr_table)) if len(self._last_cr_table) > 0 else 0.0,
+            "cr_std": float(np.std(self._last_cr_table)) if len(self._last_cr_table) > 0 else 0.0,
+            "er_mean": float(np.mean(self._last_er_table)) if len(self._last_er_table) > 0 else 0.0,
+            "er_std": float(np.std(self._last_er_table)) if len(self._last_er_table) > 0 else 0.0,
             "memory_f_mean": float(np.mean(self._memory_F)),
             "memory_f_std": float(np.std(self._memory_F)),
             "memory_cr_mean": float(np.mean(self._memory_Cr)),
             "memory_cr_std": float(np.std(self._memory_Cr)),
             "memory_er_mean": float(np.mean(self._memory_Er)),
             "memory_er_std": float(np.std(self._memory_Er)),
-            "successful_mutations": self._successful_mutations_last_epoch,
-            "successful_mutations_rate": (
-                self._successful_mutations_last_epoch / evaluated_population_size
-                if evaluated_population_size > 0
-                else 0.0
-            ),
-            "archive_size": len(self._archive),
-            "f_mean": float(np.mean(self._current_f)) if self._current_f else 0.0,
-            "f_std": float(np.std(self._current_f)) if self._current_f else 0.0,
-            "cr_mean": float(np.mean(self._current_cr)) if self._current_cr else 0.0,
-            "cr_std": float(np.std(self._current_cr)) if self._current_cr else 0.0,
-            "er_mean": float(np.mean(self._current_er)) if self._current_er else 0.0,
-            "er_std": float(np.std(self._current_er)) if self._current_er else 0.0,
+            "learning_rate": float(self._learning_rate),
+            "population_size": self._pop.size,
         }
 
     def next_epoch(self):
@@ -465,9 +463,12 @@ class SPS_LSHADE_EIG(BaseAlg):
         """
         self._population_size_last_epoch = self._pop.size
         f_table, cr_table, er_table, the_bests_to_select = self._initialize_parameters_for_epoch()
-        self._current_f = f_table
-        self._current_cr = cr_table
-        self._current_er = er_table
+
+        # Store for monitoring
+        self._last_f_table = f_table.copy()
+        self._last_cr_table = cr_table.copy()
+        self._last_er_table = er_table.copy()
+
         mutant = self._mutate(self._pop, the_bests_to_select, f_table)
         trial = self._crossing_with_er(self._pop, mutant, cr_table, er_table)
 

@@ -81,32 +81,10 @@ class DETCR(BaseAlg):
         self.lineal_recombination_factor = params.lineal_recombination_factor
         self.optimization_bounds = np.column_stack((self.lb, self.ub))
 
+        # Monitoring
+        self._last_mutation_factories = []
+        self._last_crossover_rates = []
         self._successful_mutations_last_epoch = 0
-        self._current_f = []
-        self._current_cr = []
-
-    def get_monitor_metrics(self) -> dict:
-        """Return DETCR metrics that change during a run."""
-        return {
-            "successful_mutations": self._successful_mutations_last_epoch,
-            "successful_mutations_rate": (
-                self._successful_mutations_last_epoch / self.population_size
-                if self.population_size > 0
-                else 0.0
-            ),
-            "f_mean": float(np.mean(self._current_f)) if len(self._current_f) else 0.0,
-            "f_std": float(np.std(self._current_f)) if len(self._current_f) else 0.0,
-            "cr_mean": float(np.mean(self._current_cr)) if len(self._current_cr) else 0.0,
-            "cr_std": float(np.std(self._current_cr)) if len(self._current_cr) else 0.0,
-        }
-
-    def _count_successes(self, new_population) -> int:
-        count = 0
-        minimize = self._pop.optimization == OptimizationType.MINIMIZATION
-        for old_member, new_member in zip(self._pop.members, new_population.members):
-            if (new_member < old_member) if minimize else (new_member > old_member):
-                count += 1
-        return count
 
     @staticmethod
     def _validate_triangular_distribution(values, name):
@@ -186,7 +164,8 @@ class DETCR(BaseAlg):
                 options=options)
 
         if not np.any(np.isnan(res.x)):
-            local_search_member.chromosomes = res.x
+            for i in range(local_search_member.args_num):
+                local_search_member.chromosomes[i].real_value = res.x[i]
 
         return local_search_member, res.nfev
 
@@ -242,9 +221,13 @@ class DETCR(BaseAlg):
                     permutation_first_value]
 
             if mutation_success_count == 0 and 0.5 <= cr < 0.95:
-                new_member.chromosomes = (origin_population.members[i].chromosomes + linear_recombination
-                                          * (mutated_population.members[i].chromosomes - origin_population.members[
-                            i].chromosomes))
+                for j in range(new_member.args_num):
+                    new_member.chromosomes[j].real_value = (
+                        origin_population.members[i].chromosomes[j].real_value
+                        + linear_recombination
+                        * (mutated_population.members[i].chromosomes[j].real_value
+                           - origin_population.members[i].chromosomes[j].real_value)
+                    )
 
             if no_change_counter == self.nr_of_args:
                 permutation_first_value = np.random.permutation(self.nr_of_args)
@@ -386,12 +369,30 @@ class DETCR(BaseAlg):
         new_population.members = np.array(new_members)
         return new_population
 
+    def get_monitor_metrics(self) -> dict:
+        """Return DETCR-specific metrics for monitoring."""
+        return {
+            "f_mean": float(np.mean(self._last_mutation_factories)) if self._last_mutation_factories else 0.0,
+            "f_std": float(np.std(self._last_mutation_factories)) if self._last_mutation_factories else 0.0,
+            "cr_mean": float(np.mean(self._last_crossover_rates)) if self._last_crossover_rates else 0.0,
+            "cr_std": float(np.std(self._last_crossover_rates)) if self._last_crossover_rates else 0.0,
+            "successful_mutations_rate": (
+                self._successful_mutations_last_epoch / self.population_size
+                if self.population_size > 0
+                else 0.0
+            ),
+        }
+
     def next_epoch(self):
         refresh_population = self.population_refreshment_mechanism(self._pop)
 
         mutation_factories, crossover_rates = self.adaptive_mechanism()
         self._current_f = list(mutation_factories)
         self._current_cr = list(crossover_rates)
+
+        # Store for monitoring
+        self._last_mutation_factories = mutation_factories
+        self._last_crossover_rates = crossover_rates
 
         v_pop = self.mutation(refresh_population, mutation_factories)
 
@@ -402,6 +403,17 @@ class DETCR(BaseAlg):
 
         # Update values before selection
         u_pop.update_fitness_values(self._function.eval, self.parallel_processing)
+
+        # Count successful mutations before selection overwrites
+        successful = 0
+        for i in range(self._pop.size):
+            if self.optimization_type == OptimizationType.MINIMIZATION:
+                if u_pop.members[i].fitness_value < self._pop.members[i].fitness_value:
+                    successful += 1
+            else:
+                if u_pop.members[i].fitness_value > self._pop.members[i].fitness_value:
+                    successful += 1
+        self._successful_mutations_last_epoch = successful
 
         # Select new population
         new_pop = selection(self._pop, u_pop)

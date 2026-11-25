@@ -166,6 +166,10 @@ class LSHADE44(BaseAlg):
         self._strategy_usage_stats = []
         self._strategy_success_stats = []
 
+        # Per-epoch generated values for monitoring
+        self._last_f_table = np.array([])
+        self._last_cr_table = np.array([])
+
     def _precompute_pm_to_cr_table(self) -> Dict[float, float]:
         """
         Pre-compute table mapping pm -> CR for exponential crossover.
@@ -436,6 +440,40 @@ class LSHADE44(BaseAlg):
 
         return mutant
 
+    def get_monitor_metrics(self) -> dict:
+        """Return LSHADE44-specific metrics for monitoring."""
+        # Flatten per-strategy memory into overall means
+        memory_f_all = self._memory_F.flatten()
+        memory_cr_all = self._memory_Cr.flatten()
+
+        total_successes = float(np.sum(self._strategy_success_counts))
+
+        metrics = {
+            "f_mean": float(np.mean(self._last_f_table)) if len(self._last_f_table) > 0 else 0.0,
+            "f_std": float(np.std(self._last_f_table)) if len(self._last_f_table) > 0 else 0.0,
+            "cr_mean": float(np.mean(self._last_cr_table)) if len(self._last_cr_table) > 0 else 0.0,
+            "cr_std": float(np.std(self._last_cr_table)) if len(self._last_cr_table) > 0 else 0.0,
+            "memory_f_mean": float(np.mean(memory_f_all)),
+            "memory_f_std": float(np.std(memory_f_all)),
+            "memory_cr_mean": float(np.mean(memory_cr_all)),
+            "memory_cr_std": float(np.std(memory_cr_all)),
+            "population_size": self._pop.size,
+        }
+
+        # Per-strategy probabilities and success rates
+        for k in range(self._K):
+            sname = self.STRATEGY_SHORT_NAMES.get(k, str(k))
+            metrics[f"strategy_{sname}_probability"] = float(self._strategy_probabilities[k])
+            metrics[f"strategy_{sname}_success_rate"] = (
+                float(self._strategy_success_counts[k]) / total_successes
+                if total_successes > 0
+                else 0.0
+            )
+            metrics[f"strategy_{sname}_memory_f_mean"] = float(np.mean(self._memory_F[k]))
+            metrics[f"strategy_{sname}_memory_cr_mean"] = float(np.mean(self._memory_Cr[k]))
+
+        return metrics
+
     def next_epoch(self):
         """
         Perform the next epoch of the LSHADE44 algorithm.
@@ -468,8 +506,9 @@ class LSHADE44(BaseAlg):
             pm_table[i] = pm  # it can be None if the strategy is binomial crossover
             crossover_types[i] = crossover_type
 
-        self._current_f = f_table
-        self._current_cr = cr_table
+        # Store for monitoring
+        self._last_f_table = f_table.copy()
+        self._last_cr_table = cr_table.copy()
 
         # Generate trial vectors
         trial_members = [None] * self._pop.size
@@ -547,7 +586,7 @@ class LSHADE44(BaseAlg):
 
         # Reduce archive if needed
         self._archive = self._archive_reduction.reduce_archive(
-            self._archive, self._archive_size, self.population_size
+            self._archive, self._archive_size,
         )
 
         # Update historical circle memories for each strategy
