@@ -111,6 +111,11 @@ class JSOAE(BaseAlg):
         self._binomial_crossing = BinomialCrossover()
         self._archive_reduction = ArchiveReduction()
 
+        self._successful_mutations_last_epoch = 0
+        self._population_size_last_epoch = self.population_size
+        self._current_f = []
+        self._current_cr = []
+
     def _compute_fw(self, f: float) -> float:
         """
         Compute the weighted scaling factor Fw for current-to-pBest-w/1.
@@ -201,6 +206,7 @@ class JSOAE(BaseAlg):
             is_strict_improvement = lambda orig, mod: mod.fitness_value > orig.fitness_value
             diff = lambda orig, mod: mod.fitness_value - orig.fitness_value
 
+        successful_count = 0
         for i in range(origin_population.size):
             orig = origin_population.members[i]
             mod = modified_population.members[i]
@@ -214,9 +220,11 @@ class JSOAE(BaseAlg):
                 self._successF.append(ftable[i])
                 self._successCr.append(cr_table[i])
                 self._difference_fitness_success.append(diff(orig, mod))
+                successful_count += 1
 
             new_members.append(copy.deepcopy(mod))
 
+        self._successful_mutations_last_epoch = successful_count
         return Population.with_new_members(origin_population, new_members)
 
     def _archive_capacity(self, population_size: int) -> int:
@@ -334,15 +342,41 @@ class JSOAE(BaseAlg):
 
         return f_table, cr_table, fw_table, the_bests_to_select
 
+    def get_monitor_metrics(self) -> dict:
+        """Return jSOAE metrics that change during a run."""
+        valid_cr = self._memory_Cr[self._memory_Cr >= 0]
+        return {
+            "population_size": self._pop.size,
+            "memory_f_mean": float(np.mean(self._memory_F)),
+            "memory_f_std": float(np.std(self._memory_F)),
+            "memory_cr_mean": float(np.mean(valid_cr)) if len(valid_cr) > 0 else 0.0,
+            "memory_cr_std": float(np.std(valid_cr)) if len(valid_cr) > 0 else 0.0,
+            "successful_mutations": self._successful_mutations_last_epoch,
+            "successful_mutations_rate": (
+                self._successful_mutations_last_epoch / self._population_size_last_epoch
+                if self._population_size_last_epoch > 0
+                else 0.0
+            ),
+            "archive_size": len(self._archive),
+            "p_value": float(self._p),
+            "f_mean": float(np.mean(self._current_f)) if self._current_f else 0.0,
+            "f_std": float(np.std(self._current_f)) if self._current_f else 0.0,
+            "cr_mean": float(np.mean(self._current_cr)) if self._current_cr else 0.0,
+            "cr_std": float(np.std(self._current_cr)) if self._current_cr else 0.0,
+        }
+
     def next_epoch(self):
         """
         Perform the next epoch of JSOAE.
         """
+        self._population_size_last_epoch = self._pop.size
         self._successF = []
         self._successCr = []
         self._difference_fitness_success = []
 
         f_table, cr_table, fw_table, the_bests_to_select = self.initialize_parameters_for_epoch()
+        self._current_f = f_table
+        self._current_cr = cr_table
 
         mutant = self.mutate(self._pop, the_bests_to_select, f_table, fw_table)
         trial = self._crossover(self._pop, mutant, cr_table)

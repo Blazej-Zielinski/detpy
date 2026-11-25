@@ -371,7 +371,7 @@ class ILSHADE(BaseAlg):
                 if evaluated_population_size > 0
                 else 0.0
             ),
-            "p": float(self._p),
+            "p_value": float(self._p),
             "f_mean": float(np.mean(self._current_f)) if self._current_f else 0.0,
             "f_std": float(np.std(self._current_f)) if self._current_f else 0.0,
             "cr_mean": float(np.mean(self._current_cr)) if self._current_cr else 0.0,

@@ -106,6 +106,11 @@ class LSHADECnEpSin(BaseAlg):
         self._binomial_crossing = BinomialCrossover()
         self._archive_reduction = ArchiveReduction()
 
+        self._successful_mutations_last_epoch = 0
+        self._population_size_last_epoch = self.population_size
+        self._current_f = []
+        self._current_cr = []
+
     def _current_generation(self):
         return self._generation
 
@@ -277,6 +282,7 @@ class LSHADECnEpSin(BaseAlg):
         new_members = []
         successes = [0, 0]
         failures = [0, 0]
+        successful_count = 0
         record_configurations = any(config is not None for config in config_table)
 
         for i in range(origin.size):
@@ -297,6 +303,7 @@ class LSHADECnEpSin(BaseAlg):
                     self._difference_fitness_success_freq.append(difference)
                 if record_configurations and config is not None:
                     successes[config] += 1
+                successful_count += 1
                 new_members.append(copy.deepcopy(modified.members[i]))
             else:
                 if record_configurations and config is not None:
@@ -311,6 +318,7 @@ class LSHADECnEpSin(BaseAlg):
                 del self._ns_history[:extra]
                 del self._nf_history[:extra]
 
+        self._successful_mutations_last_epoch = successful_count
         return Population.with_new_members(origin, new_members)
 
     def _reset_success_metrics(self):
@@ -358,10 +366,38 @@ class LSHADECnEpSin(BaseAlg):
 
         self._reset_success_metrics()
 
+    def get_monitor_metrics(self) -> dict:
+        """Return LSHADE-cnEpSin metrics that change during a run."""
+        evaluated_population_size = self._population_size_last_epoch
+        return {
+            "population_size": self._pop.size,
+            "memory_f_mean": float(np.mean(self._memory_F)),
+            "memory_f_std": float(np.std(self._memory_F)),
+            "memory_cr_mean": float(np.mean(self._memory_Cr)),
+            "memory_cr_std": float(np.std(self._memory_Cr)),
+            "memory_freq_mean": float(np.mean(self._memory_freq)),
+            "memory_freq_std": float(np.std(self._memory_freq)),
+            "sin_increasing_probability": float(self._prob_sin[1]),
+            "successful_mutations": self._successful_mutations_last_epoch,
+            "successful_mutations_rate": (
+                self._successful_mutations_last_epoch / evaluated_population_size
+                if evaluated_population_size > 0
+                else 0.0
+            ),
+            "archive_size": len(self._archive),
+            "f_mean": float(np.mean(self._current_f)) if self._current_f else 0.0,
+            "f_std": float(np.std(self._current_f)) if self._current_f else 0.0,
+            "cr_mean": float(np.mean(self._current_cr)) if self._current_cr else 0.0,
+            "cr_std": float(np.std(self._current_cr)) if self._current_cr else 0.0,
+        }
+
     def next_epoch(self):
         """Run one generation: adapt parameters, mutate, cross, select, then reduce NP."""
+        self._population_size_last_epoch = self._pop.size
         self._generation += 1
         f_table, cr_table, freq_table, config_table, pbest_counts = self._initialize_parameters_for_epoch()
+        self._current_f = f_table
+        self._current_cr = cr_table
         mutant = self._mutate(self._pop, pbest_counts, f_table)
         trial = self._crossover(self._pop, mutant, cr_table)
         fix_boundary_constraints_with_parent(self._pop, trial, self.boundary_constraints_fun)

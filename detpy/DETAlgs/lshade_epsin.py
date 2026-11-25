@@ -104,6 +104,11 @@ class LShadeEpsin(BaseAlg):
         self._binomial_crossing = BinomialCrossover()
         self._archive_reduction = ArchiveReduction()
 
+        self._successful_mutations_last_epoch = 0
+        self._population_size_last_epoch = self.population_size
+        self._current_f = []
+        self._current_cr = []
+
         self._local_search_done = False
 
     def _update_population_size(self, nfe: int, max_nfe: int, start_pop_size: int, min_pop_size: int):
@@ -170,6 +175,7 @@ class LShadeEpsin(BaseAlg):
         Returns: A new population with the selected members.
         """
         new_members = []
+        successful_count = 0
 
         for i in range(origin.size):
             if (origin.optimization == OptimizationType.MINIMIZATION and origin.members[i] <= modified.members[i]) or \
@@ -186,7 +192,10 @@ class LShadeEpsin(BaseAlg):
                     self._difference_fitness_success_freg.append(df)
                     self._success_freg.append(ftable[i])
 
+                successful_count += 1
                 new_members.append(copy.deepcopy(modified.members[i]))
+
+        self._successful_mutations_last_epoch = successful_count
         return Population.with_new_members(origin, new_members)
 
     def _reset_success_metrics(self):
@@ -312,6 +321,30 @@ class LShadeEpsin(BaseAlg):
 
         return f_table, cr_table, bests_to_select, freg_values
 
+    def get_monitor_metrics(self) -> dict:
+        """Return LSHADE-EpSin metrics that change during a run."""
+        valid_cr = self._memory_Cr[~np.isnan(self._memory_Cr)]
+        evaluated_population_size = self._population_size_last_epoch
+        return {
+            "population_size": self._pop.size,
+            "memory_f_mean": float(np.mean(self._memory_F)),
+            "memory_f_std": float(np.std(self._memory_F)),
+            "memory_cr_mean": float(np.mean(valid_cr)) if valid_cr.size > 0 else 0.0,
+            "memory_cr_std": float(np.std(valid_cr)) if valid_cr.size > 0 else 0.0,
+            "memory_freq_mean": float(np.mean(self._freq_memory)),
+            "memory_freq_std": float(np.std(self._freq_memory)),
+            "successful_mutations": self._successful_mutations_last_epoch,
+            "successful_mutations_rate": (
+                self._successful_mutations_last_epoch / evaluated_population_size
+                if evaluated_population_size > 0
+                else 0.0
+            ),
+            "f_mean": float(np.mean(self._current_f)) if self._current_f else 0.0,
+            "f_std": float(np.std(self._current_f)) if self._current_f else 0.0,
+            "cr_mean": float(np.mean(self._current_cr)) if self._current_cr else 0.0,
+            "cr_std": float(np.std(self._current_cr)) if self._current_cr else 0.0,
+        }
+
     def _perform_local_search(self):
         """
         Perform the Gaussian Walk local search phase as defined in the LSHADE-EpSin algorithm
@@ -386,7 +419,10 @@ class LShadeEpsin(BaseAlg):
         """
         Perform the next epoch of the LSHADE-EpSin algorithm.
         """
+        self._population_size_last_epoch = self._pop.size
         f_table, cr_table, bests_to_select, freg_values = self._initialize_parameters_for_epoch()
+        self._current_f = f_table
+        self._current_cr = cr_table
         mutant = self._mutate(self._pop, bests_to_select, f_table)
 
         trial = self._binomial_crossing.crossover_population(self._pop, mutant, cr_table)
