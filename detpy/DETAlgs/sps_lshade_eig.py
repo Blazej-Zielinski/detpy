@@ -161,6 +161,11 @@ class SPS_LSHADE_EIG(BaseAlg):
         self._binomial_crossing = BinomialCrossover()
         self._random_value_gen = RandomValueGenerator()
         self._archive_reduction = ArchiveReduction()
+
+        # Per-epoch generated values for monitoring
+        self._last_f_table = np.array([])
+        self._last_cr_table = np.array([])
+        self._last_er_table = np.array([])
         self._index_gen = IndexGenerator()
 
     def _update_covariance_matrix(self):
@@ -424,11 +429,36 @@ class SPS_LSHADE_EIG(BaseAlg):
         self._successEr.clear()
         self._difference_fitness_success.clear()
 
+    def get_monitor_metrics(self) -> dict:
+        """Return SPS-L-SHADE-EIG-specific metrics for monitoring."""
+        return {
+            "f_mean": float(np.mean(self._last_f_table)) if len(self._last_f_table) > 0 else 0.0,
+            "f_std": float(np.std(self._last_f_table)) if len(self._last_f_table) > 0 else 0.0,
+            "cr_mean": float(np.mean(self._last_cr_table)) if len(self._last_cr_table) > 0 else 0.0,
+            "cr_std": float(np.std(self._last_cr_table)) if len(self._last_cr_table) > 0 else 0.0,
+            "er_mean": float(np.mean(self._last_er_table)) if len(self._last_er_table) > 0 else 0.0,
+            "er_std": float(np.std(self._last_er_table)) if len(self._last_er_table) > 0 else 0.0,
+            "memory_f_mean": float(np.mean(self._memory_F)),
+            "memory_f_std": float(np.std(self._memory_F)),
+            "memory_cr_mean": float(np.mean(self._memory_Cr)),
+            "memory_cr_std": float(np.std(self._memory_Cr)),
+            "memory_er_mean": float(np.mean(self._memory_Er)),
+            "memory_er_std": float(np.std(self._memory_Er)),
+            "learning_rate": float(self._learning_rate),
+            "population_size": self._pop.size,
+        }
+
     def next_epoch(self):
         """
         Perform the next epoch of the SPS-L-SHADE-EIG algorithm.
         """
         f_table, cr_table, er_table, the_bests_to_select = self._initialize_parameters_for_epoch()
+
+        # Store for monitoring
+        self._last_f_table = f_table.copy()
+        self._last_cr_table = cr_table.copy()
+        self._last_er_table = er_table.copy()
+
         mutant = self._mutate(self._pop, the_bests_to_select, f_table)
         trial = self._crossing_with_er(self._pop, mutant, cr_table, er_table)
 
