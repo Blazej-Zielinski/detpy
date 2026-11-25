@@ -13,6 +13,7 @@ from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.basevectorschema import BaseVectorSchema
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 from detpy.models.enums.crossingtype import CrossingType
+from detpy.models.enums.optimization import OptimizationType
 from detpy.models.population import Population
 
 
@@ -112,6 +113,31 @@ class EPSADE(BaseAlg):
         self.epsilon_level = self.init_epsilon_level
         self.penalty_power = params.penalty_power
 
+        self._successful_mutations_last_epoch = 0
+        self._current_f = None
+        self._current_cr = None
+
+    def get_monitor_metrics(self) -> dict:
+        """Return EPSADE metrics that change during a run."""
+        return {
+            "successful_mutations": self._successful_mutations_last_epoch,
+            "successful_mutations_rate": (
+                self._successful_mutations_last_epoch / self.population_size
+                if self.population_size > 0
+                else 0.0
+            ),
+            "f_mean": 0.0 if self._current_f is None else float(self._current_f),
+            "cr_mean": 0.0 if self._current_cr is None else float(self._current_cr),
+        }
+
+    def _count_successes(self, new_population) -> int:
+        count = 0
+        minimize = self._pop.optimization == OptimizationType.MINIMIZATION
+        for old_member, new_member in zip(self._pop.members, new_population.members):
+            if (new_member < old_member) if minimize else (new_member > old_member):
+                count += 1
+        return count
+
     def selection(self, modified_population: Population) -> Population | None:
 
         if self._pop.size != modified_population.size:
@@ -174,6 +200,8 @@ class EPSADE(BaseAlg):
                         self.weight_of_update * self.crossover_rate_sum) / self.number_of_successful_operation
 
     def next_epoch(self):
+        self._current_f = self.mu_mutation_factory
+        self._current_cr = self.mu_crossover_rate
         self.number_of_successful_operation = 0
         self.mutation_factor_sum = 0
         self.crossover_rate_sum = 0
@@ -195,6 +223,7 @@ class EPSADE(BaseAlg):
 
         # Select new population
         new_pop = self.selection(u_pop)
+        self._successful_mutations_last_epoch = self._count_successes(new_pop)
 
         self.update_adaptive_parameters()
 

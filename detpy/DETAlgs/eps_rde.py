@@ -8,6 +8,8 @@ from detpy.DETAlgs.methods.methods_eps_rde import mutation, crossing, create_ran
 from detpy.DETAlgs.random.index_generator import IndexGenerator
 from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
+from detpy.models.enums.optimization import OptimizationType
+import numpy as np
 
 
 class EPSRDE(BaseAlg):
@@ -111,6 +113,33 @@ class EPSRDE(BaseAlg):
         self.ranks = create_ranks(self.epsilon_constrained)
         self._index_gen = IndexGenerator()
 
+        self._successful_mutations_last_epoch = 0
+        self._current_f = []
+        self._current_cr = []
+
+    def get_monitor_metrics(self) -> dict:
+        """Return EPSRDE metrics that change during a run."""
+        return {
+            "successful_mutations": self._successful_mutations_last_epoch,
+            "successful_mutations_rate": (
+                self._successful_mutations_last_epoch / self.population_size
+                if self.population_size > 0
+                else 0.0
+            ),
+            "f_mean": float(np.mean(self._current_f)) if len(self._current_f) else 0.0,
+            "f_std": float(np.std(self._current_f)) if len(self._current_f) else 0.0,
+            "cr_mean": float(np.mean(self._current_cr)) if len(self._current_cr) else 0.0,
+            "cr_std": float(np.std(self._current_cr)) if len(self._current_cr) else 0.0,
+        }
+
+    def _count_successes(self, new_population) -> int:
+        count = 0
+        minimize = self._pop.optimization == OptimizationType.MINIMIZATION
+        for old_member, new_member in zip(self._pop.members, new_population.members):
+            if (new_member < old_member) if minimize else (new_member > old_member):
+                count += 1
+        return count
+
     def next_epoch(self):
         ranks = []
         for i in range(self.population_size):
@@ -120,6 +149,8 @@ class EPSRDE(BaseAlg):
             ranks.append([r1, r2, r3])
         mutation_factors = calculate_mutation_factors(self.population_size, self.ranks, ranks, self.min_mutation_factor, self.max_mutation_factor)
         crossover_rates = calculate_crossover_rates(self.population_size, self.ranks, ranks, self.min_crossover_rate, self.max_crossover_rate)
+        self._current_f = list(mutation_factors)
+        self._current_cr = list(crossover_rates)
 
         # New population after mutation
         v_pop = mutation(self._pop, f=mutation_factors, ranks=ranks)
@@ -138,6 +169,7 @@ class EPSRDE(BaseAlg):
 
         # Select new population
         new_pop = selection(self._pop, u_pop, self.epsilon_constrained, u_pop_epsilon_constrained, self.epsilon_level)
+        self._successful_mutations_last_epoch = self._count_successes(new_pop)
 
         self.epsilon_level = calculate_epsilon_level(self.init_epsilon_level, self._epoch_number,
                                                      self.control_generations, self.epsilon_scaling_factor)

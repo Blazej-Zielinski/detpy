@@ -4,6 +4,7 @@ from detpy.DETAlgs.data.alg_data import ImprovedDEData
 from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 from detpy.DETAlgs.methods.methods_improved_de import mutation, selection, improve_de_binomial_crossing
+from detpy.models.enums.optimization import OptimizationType
 
 
 class ImprovedDE(BaseAlg):
@@ -39,6 +40,28 @@ class ImprovedDE(BaseAlg):
         self.initial_mutation_factor = params.mutation_factor  # Initial F value
         self.crossover_rate = params.crossover_rate  # Cr
         self.iteration = 0
+        self._successful_mutations_last_epoch = 0
+        self._current_f = None
+
+    def get_monitor_metrics(self) -> dict:
+        """Return ImprovedDE metrics that change during a run."""
+        return {
+            "successful_mutations": self._successful_mutations_last_epoch,
+            "successful_mutations_rate": (
+                self._successful_mutations_last_epoch / self.population_size
+                if self.population_size > 0
+                else 0.0
+            ),
+            "f_mean": 0.0 if self._current_f is None else float(self._current_f),
+        }
+
+    def _count_successes(self, new_population) -> int:
+        count = 0
+        minimize = self._pop.optimization == OptimizationType.MINIMIZATION
+        for old_member, new_member in zip(self._pop.members, new_population.members):
+            if (new_member < old_member) if minimize else (new_member > old_member):
+                count += 1
+        return count
 
     def dynamic_mutation_factor(self, iteration):
         """
@@ -49,6 +72,7 @@ class ImprovedDE(BaseAlg):
 
     def next_epoch(self):
         dynamic_fs = self.dynamic_mutation_factor(self.iteration)
+        self._current_f = dynamic_fs
 
         # New population after mutation using dynamic mutation factor
         v_pop = mutation(self._pop, fs=dynamic_fs)
@@ -64,6 +88,7 @@ class ImprovedDE(BaseAlg):
 
         # Select new population
         new_pop = selection(self._pop, u_pop)
+        self._successful_mutations_last_epoch = self._count_successes(new_pop)
 
         # Override population with the newly selected one
         self._pop = new_pop

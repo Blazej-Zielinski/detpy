@@ -13,6 +13,7 @@ from detpy.DETAlgs.methods.methods_eps_deag import mutation, selection, calculat
 from detpy.DETAlgs.validator.params_validator import ParameterValidator
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 from detpy.models.enums.crossingtype import CrossingType
+from detpy.models.enums.optimization import OptimizationType
 from detpy.models.population import Population
 
 
@@ -119,6 +120,31 @@ class EPSDEAG(BaseAlg):
         self.epsilon_scaling_factor = calculate_epsilon_scaling_factory \
             if calculate_epsilon_scaling_factory >= self.min_epsilon_scaling_factory else self.min_epsilon_scaling_factory
 
+        self._successful_mutations_last_epoch = 0
+        self._current_f = None
+        self._current_cr = None
+
+    def get_monitor_metrics(self) -> dict:
+        """Return EPSDEAG metrics that change during a run."""
+        return {
+            "successful_mutations": self._successful_mutations_last_epoch,
+            "successful_mutations_rate": (
+                self._successful_mutations_last_epoch / self.population_size
+                if self.population_size > 0
+                else 0.0
+            ),
+            "f_mean": 0.0 if self._current_f is None else float(self._current_f),
+            "cr_mean": 0.0 if self._current_cr is None else float(self._current_cr),
+        }
+
+    def _count_successes(self, new_population) -> int:
+        count = 0
+        minimize = self._pop.optimization == OptimizationType.MINIMIZATION
+        for old_member, new_member in zip(self._pop.members, new_population.members):
+            if (new_member < old_member) if minimize else (new_member > old_member):
+                count += 1
+        return count
+
     def _initialize_population(self):
         population = Population(
             lb=self.lb,
@@ -154,6 +180,9 @@ class EPSDEAG(BaseAlg):
         if random.uniform(0, 1) < 0.05:
             mutation_factory = min(1 + abs(np.random.normal(0, 0.05)), 1.1)
             crossover_rate = random.uniform(0, 1)
+
+        self._current_f = mutation_factory
+        self._current_cr = crossover_rate
 
         new_pop = self._pop
         selected_child = set()
@@ -194,6 +223,7 @@ class EPSDEAG(BaseAlg):
                                                      self.control_generations, self.epsilon_scaling_factor)
         self.epsilon_constrained = calculate_epsilon_constrained(new_pop, self.g_funcs, self.h_funcs,
                                                                  self.penalty_power, self.tolerance_h)
+        self._successful_mutations_last_epoch = self._count_successes(new_pop)
 
         # Override data
         self._pop = new_pop

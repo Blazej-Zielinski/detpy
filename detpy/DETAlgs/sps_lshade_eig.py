@@ -163,6 +163,12 @@ class SPS_LSHADE_EIG(BaseAlg):
         self._archive_reduction = ArchiveReduction()
         self._index_gen = IndexGenerator()
 
+        self._successful_mutations_last_epoch = 0
+        self._population_size_last_epoch = self.population_size
+        self._current_f = []
+        self._current_cr = []
+        self._current_er = []
+
     def _update_covariance_matrix(self):
         """Update the covariance matrix based on the current population."""
         population_matrix = np.array([
@@ -236,6 +242,7 @@ class SPS_LSHADE_EIG(BaseAlg):
         Returns: A new population with the selected members.
         """
         new_members = []
+        successful_count = 0
         for i in range(origin_population.size):
 
             if origin_population.optimization == OptimizationType.MINIMIZATION:
@@ -254,6 +261,7 @@ class SPS_LSHADE_EIG(BaseAlg):
                 )
                 new_members.append(copy.deepcopy(modified_population.members[i]))
                 self._recently_consecutive_unsuccessful_updates_table[i] = 0
+                successful_count += 1
             else:
                 new_members.append(copy.deepcopy(origin_population.members[i]))
                 self._recently_consecutive_unsuccessful_updates_table[i] += 1
@@ -281,6 +289,7 @@ class SPS_LSHADE_EIG(BaseAlg):
                                 key=lambda i: new_population.members[i].fitness_value)
                 new_population.members[worst_idx] = copy.deepcopy(prev_best)
 
+        self._successful_mutations_last_epoch = successful_count
         return new_population
 
     def _initialize_parameters_for_epoch(self):
@@ -424,11 +433,41 @@ class SPS_LSHADE_EIG(BaseAlg):
         self._successEr.clear()
         self._difference_fitness_success.clear()
 
+    def get_monitor_metrics(self) -> dict:
+        """Return SPS-L-SHADE-EIG metrics that change during a run."""
+        evaluated_population_size = self._population_size_last_epoch
+        return {
+            "population_size": self._pop.size,
+            "memory_f_mean": float(np.mean(self._memory_F)),
+            "memory_f_std": float(np.std(self._memory_F)),
+            "memory_cr_mean": float(np.mean(self._memory_Cr)),
+            "memory_cr_std": float(np.std(self._memory_Cr)),
+            "memory_er_mean": float(np.mean(self._memory_Er)),
+            "memory_er_std": float(np.std(self._memory_Er)),
+            "successful_mutations": self._successful_mutations_last_epoch,
+            "successful_mutations_rate": (
+                self._successful_mutations_last_epoch / evaluated_population_size
+                if evaluated_population_size > 0
+                else 0.0
+            ),
+            "archive_size": len(self._archive),
+            "f_mean": float(np.mean(self._current_f)) if self._current_f else 0.0,
+            "f_std": float(np.std(self._current_f)) if self._current_f else 0.0,
+            "cr_mean": float(np.mean(self._current_cr)) if self._current_cr else 0.0,
+            "cr_std": float(np.std(self._current_cr)) if self._current_cr else 0.0,
+            "er_mean": float(np.mean(self._current_er)) if self._current_er else 0.0,
+            "er_std": float(np.std(self._current_er)) if self._current_er else 0.0,
+        }
+
     def next_epoch(self):
         """
         Perform the next epoch of the SPS-L-SHADE-EIG algorithm.
         """
+        self._population_size_last_epoch = self._pop.size
         f_table, cr_table, er_table, the_bests_to_select = self._initialize_parameters_for_epoch()
+        self._current_f = f_table
+        self._current_cr = cr_table
+        self._current_er = er_table
         mutant = self._mutate(self._pop, the_bests_to_select, f_table)
         trial = self._crossing_with_er(self._pop, mutant, cr_table, er_table)
 

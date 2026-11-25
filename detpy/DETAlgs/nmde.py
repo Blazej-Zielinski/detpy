@@ -48,7 +48,28 @@ class NMDE(BaseAlg):
         self._f_set = set()
         self._cr_set = set()
 
+        self._successful_mutations_last_epoch = 0
+        self._current_f = []
+        self._current_cr = []
+
+    def get_monitor_metrics(self) -> dict:
+        """Return NMDE metrics that change during a run."""
+        return {
+            "successful_mutations": self._successful_mutations_last_epoch,
+            "successful_mutations_rate": (
+                self._successful_mutations_last_epoch / self.population_size
+                if self.population_size > 0
+                else 0.0
+            ),
+            "f_mean": float(np.mean(self._current_f)) if len(self._current_f) else 0.0,
+            "f_std": float(np.std(self._current_f)) if len(self._current_f) else 0.0,
+            "cr_mean": float(np.mean(self._current_cr)) if len(self._current_cr) else 0.0,
+            "cr_std": float(np.std(self._current_cr)) if len(self._current_cr) else 0.0,
+        }
+
     def next_epoch(self):
+        self._current_f = np.array(self._f_arr, copy=True)
+        self._current_cr = np.array(self._cr_arr, copy=True)
         delta_f, delta_cr, sp, flags, f_arr, cr_arr, f_set, cr_set = (
             self.delta_f, self.delta_cr, self.sp, self._flags,
             self._f_arr, self._cr_arr, self._f_set, self._cr_set
@@ -68,6 +89,7 @@ class NMDE(BaseAlg):
 
         # Select new population
         new_pop, better_members_indexes = nmde_selection(self._pop, u_pop)
+        self._successful_mutations_last_epoch = len(better_members_indexes)
 
         for i in range(self.population_size):
             if i in better_members_indexes:

@@ -4,6 +4,7 @@ from detpy.DETAlgs.data.alg_data import EIDEData
 from detpy.DETAlgs.methods.methods_de import mutation, selection, crossing
 from detpy.DETAlgs.methods.methods_eide import eide_adopt_parameters
 from detpy.DETAlgs.validator.params_validator import ParameterValidator
+from detpy.models.enums.optimization import OptimizationType
 from detpy.models.enums.boundary_constrain import fix_boundary_constraints
 
 
@@ -58,7 +59,31 @@ class EIDE(BaseAlg):
         self.crossover_rate_max = params.crossover_rate_max
         self.generation = None
 
+        self._successful_mutations_last_epoch = 0
+        self._current_f = None
+
+    def get_monitor_metrics(self) -> dict:
+        """Return EIDE metrics that change during a run."""
+        return {
+            "successful_mutations": self._successful_mutations_last_epoch,
+            "successful_mutations_rate": (
+                self._successful_mutations_last_epoch / self.population_size
+                if self.population_size > 0
+                else 0.0
+            ),
+            "f_mean": 0.0 if self._current_f is None else float(self._current_f),
+        }
+
+    def _count_successes(self, new_population) -> int:
+        count = 0
+        minimize = self._pop.optimization == OptimizationType.MINIMIZATION
+        for old_member, new_member in zip(self._pop.members, new_population.members):
+            if (new_member < old_member) if minimize else (new_member > old_member):
+                count += 1
+        return count
+
     def next_epoch(self):
+        self._current_f = self.mutation_factor
         # New population after mutation
         v_pop = mutation(self._pop, base_vector_schema=self.base_vector_schema,
                          optimization_type=self.optimization_type, y=self.y, f=self.mutation_factor)
@@ -74,6 +99,7 @@ class EIDE(BaseAlg):
 
         # Select new population
         new_pop = selection(self._pop, u_pop)
+        self._successful_mutations_last_epoch = self._count_successes(new_pop)
 
         self.mutation_factor, self.crossover_rate = eide_adopt_parameters(self.crossover_rate_min,
                                                                           self.crossover_rate_max, self.nfe,
